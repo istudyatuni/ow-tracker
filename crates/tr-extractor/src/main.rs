@@ -41,85 +41,63 @@ const V15_LANG_ORDER: &[Lang] = &[
 
 fn main() -> Result<()> {
     let dir = find_data_dir()?;
-    let ids_file = File::open(dir.join(SHARED_FILE))?;
-    let tr_file = File::open(dir.join(RES_FILE))?;
-
-    // extract info about astro objects
-    let mmap = unsafe {
-        MmapOptions::new()
-            .offset(V15_SHARED_OFFSET)
-            .map(&ids_file)?
-    };
-
-    let mut offset = 0;
-    let mut astro_objects: Vec<AstroObject<JsonEntry>> = Vec::with_capacity(100);
-    loop {
-        let astro_object = match extract_astro_object(&mmap, offset) {
-            Ok((astro_object, next_offset)) => {
-                offset = next_offset;
-                parse_astro_object(astro_object)?
-            }
-            Err(e) => match e {
-                FindError::NotFound => break,
-                FindError::Utf8Error(e) => return Err(e.into()),
-            },
-        };
-        println!("extracted {}", astro_object.id);
-        astro_objects.push(astro_object.into());
-    }
-
-    drop(mmap);
+    let astro_objects = load_astro_objects(File::open(dir.join(SHARED_FILE))?)?;
+    let tr_objects = load_tr_objects(File::open(dir.join(RES_FILE))?)?;
 
     // save info about astro objects
     // todo: do it after replacing with translations keys or after removing text at all
     // let output = PathBuf::from("output/entries.json");
     // serde_json::to_writer(File::create(output)?, &astro_objects)?;
 
-    // collect names and ids of astro objects for searching in translations
+    // names and ids of astro objects for searching in translations
     let mut astro_names = HashMap::with_capacity(100);
     for a in &astro_objects {
         astro_names.extend(collect_astro_names(&a.entries));
     }
 
-    // collect keys for texts
+    // keys for texts
     let mut astro_facts = HashMap::with_capacity(400);
     for a in astro_objects {
         astro_facts.extend(collect_astro_texts(&a.entries));
     }
 
-    // collect translations
-    let mmap = unsafe { Mmap::map(&tr_file)? };
+    // save translations
+    //
+    // todo: count of translation keys not matches number of "text" in astro_objects
+    let translations = clean_translations(tr_objects, &astro_names)?;
+    for (lang, tr) in translations {
+        let mut translation = HashMap::with_capacity(tr.len());
+        for (text, key) in &astro_facts {
+            translation.insert(key, tr.get(text).expect("should have key for text"));
+        }
+        for (name, id) in &astro_names {
+            translation.insert(id, tr.get(name).expect("should have name for astro object"));
+        }
 
-    let mut offset = 0;
-    let mut tr_objects: Vec<Translations> = Vec::with_capacity(100);
-    loop {
-        let tr_object = match extract_shiplog_tr_object(&mmap, offset) {
-            Ok((tr_object, next_offset)) => {
-                offset = next_offset;
-                parse_tr_object(tr_object)?
-            }
-            Err(e) => match e {
-                FindError::NotFound => break,
-                FindError::Utf8Error(e) => return Err(e.into()),
-            },
-        };
-        tr_objects.push(tr_object);
+        let output = PathBuf::from(format!("output/translations/{}.json", lang.file_name()));
+        serde_json::to_writer(File::create(output)?, &translation)?;
     }
 
-    drop(mmap);
+    Ok(())
+}
 
-    // clean translation keys from prefixes. most translation keys starts from
-    // prefix, equal to one of astro object names, e.g "VillageThe one and
-    // only Hearthian village, ...". find them and trim
-    //
-    // map translations to keys for all languages
+/// Clean translation keys from prefixes and map translations to keys for all
+/// languages
+///
+/// Most translation keys starts from prefix, equal to one of astro object
+/// names, e.g "VillageThe one and only Hearthian village, ...". Find them
+/// and trim
+fn clean_translations(
+    tr_objects: Vec<Translations>,
+    astro_names: &HashMap<String, String>,
+) -> Result<HashMap<&Lang, HashMap<String, String>>> {
     let mut last_prefix = astro_names
         .keys()
         .next()
         .ok_or_else(|| anyhow!("bug: astro_names can't be empty"))?
         .to_owned();
-    let mut lang_order = V15_LANG_ORDER.iter();
 
+    let mut lang_order = V15_LANG_ORDER.iter();
     let mut translations = HashMap::new();
     for tr in tr_objects {
         let mut translation = HashMap::new();
@@ -156,24 +134,54 @@ fn main() -> Result<()> {
             translation,
         );
     }
+    Ok(translations)
+}
 
-    // save translations
-    //
-    // todo: count of translation keys not matches number of "text" in astro_objects
-    for (lang, tr) in translations {
-        let mut translation = HashMap::with_capacity(tr.len());
-        for (text, key) in &astro_facts {
-            translation.insert(key, tr.get(text).expect("should have key for text"));
-        }
-        for (name, id) in &astro_names {
-            translation.insert(id, tr.get(name).expect("should have name for astro object"));
-        }
+/// Extract info about astro objects
+fn load_astro_objects(file: File) -> Result<Vec<AstroObject<JsonEntry>>> {
+    let mmap = unsafe { MmapOptions::new().offset(V15_SHARED_OFFSET).map(&file)? };
 
-        let output = PathBuf::from(format!("output/translations/{}.json", lang.file_name()));
-        serde_json::to_writer(File::create(output)?, &translation)?;
+    let mut offset = 0;
+    let mut astro_objects: Vec<AstroObject<JsonEntry>> = Vec::with_capacity(100);
+    loop {
+        let astro_object = match extract_astro_object(&mmap, offset) {
+            Ok((astro_object, next_offset)) => {
+                offset = next_offset;
+                parse_astro_object(astro_object)?
+            }
+            Err(e) => match e {
+                FindError::NotFound => break,
+                FindError::Utf8Error(e) => return Err(e.into()),
+            },
+        };
+        println!("extracted {}", astro_object.id);
+        astro_objects.push(astro_object.into());
     }
 
-    Ok(())
+    Ok(astro_objects)
+}
+
+/// Extract translations
+fn load_tr_objects(file: File) -> Result<Vec<Translations>> {
+    let mmap = unsafe { Mmap::map(&file)? };
+
+    let mut offset = 0;
+    let mut tr_objects: Vec<Translations> = Vec::with_capacity(100);
+    loop {
+        let tr_object = match extract_shiplog_tr_object(&mmap, offset) {
+            Ok((tr_object, next_offset)) => {
+                offset = next_offset;
+                parse_tr_object(tr_object)?
+            }
+            Err(e) => match e {
+                FindError::NotFound => break,
+                FindError::Utf8Error(e) => return Err(e.into()),
+            },
+        };
+        tr_objects.push(tr_object);
+    }
+
+    Ok(tr_objects)
 }
 
 /// Returns Vec of (text, key)
