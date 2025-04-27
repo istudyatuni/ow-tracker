@@ -25,7 +25,7 @@ const TR_SHIPLOG_START: &[u8] = b"<table_shipLog>";
 const TR_SHIPLOG_END: &[u8] = b"</table_shipLog>";
 const RES_FILE: &str = "resources.assets";
 
-/// Order of `TranslationTable_XML`'s in `resources.assets` for game version 1.1.15
+/// Order of `TranslationTable_XML`s in `resources.assets` for game version 1.1.15
 const V15_LANG_ORDER: &[Lang] = &[
     Lang::SpanishLa,
     Lang::English,

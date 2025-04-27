@@ -51,6 +51,8 @@ pub struct XmlEntry {
 pub struct JsonEntry {
     pub id: String,
 
+    // serializing skipped because value should be taken by id from translation
+    #[serde(skip_serializing)]
     pub name: String,
 
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
@@ -93,7 +95,8 @@ pub struct RumorFact {
     // #[serde(rename(deserialize = "RumorNamePriority"))]
     // pub name_priority: Option<u32>,
 
-    //
+    // serializing skipped because value should be taken by id from translation
+    #[serde(skip_serializing)]
     pub text: String,
 }
 
@@ -115,6 +118,8 @@ pub struct ExploreFact {
     #[cfg_attr(test, builder(default))]
     pub ignore_more_to_explore: bool,
 
+    // serializing skipped because value should be taken by id from translation
+    #[serde(skip_serializing)]
     pub text: String,
 }
 
@@ -143,7 +148,7 @@ impl From<XmlEntry> for JsonEntry {
     }
 }
 
-/// Returns `true` if field present, but doesn't contain value "true"
+/// Returns `true` if field present, but doesn't contain any value
 fn bool_when_present<'de, D>(deserializer: D) -> Result<bool, D::Error>
 where
     D: Deserializer<'de>,
