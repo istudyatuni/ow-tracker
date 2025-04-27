@@ -10,7 +10,7 @@ use memmap2::{Mmap, MmapOptions};
 use info::Lang;
 use models::{
     entries::{AstroObject, JsonEntry, XmlEntry},
-    translations::Translations,
+    translations::{Translation, Translations},
 };
 
 mod info;
@@ -47,13 +47,14 @@ fn main() -> Result<()> {
     let dir = find_data_dir()?;
     let ids_file = File::open(dir.join(SHARED_FILE))?;
     let tr_file = File::open(dir.join(RES_FILE))?;
+
+    // extract info about astro objects
     let mmap = unsafe {
         MmapOptions::new()
             .offset(V15_SHARED_OFFSET)
             .map(&ids_file)?
     };
 
-    // extract info about astro objects
     let mut offset = 0;
     let mut astro_objects: Vec<AstroObject<JsonEntry>> = Vec::with_capacity(100);
     loop {
@@ -73,7 +74,7 @@ fn main() -> Result<()> {
 
     drop(mmap);
 
-    // write info about astro objects
+    // save info about astro objects
     // todo: do it after replacing with translations keys or after removing text at all
     // let output = PathBuf::from("output/entries.json");
     // serde_json::to_writer(File::create(output)?, &astro_objects)?;
@@ -106,11 +107,58 @@ fn main() -> Result<()> {
                 FindError::Utf8Error(e) => return Err(e.into()),
             },
         };
-        println!("extracted {:?}", &tr_object.entries[..3]);
         tr_objects.push(tr_object);
     }
 
     drop(mmap);
+
+    // clean translation keys from prefixes. most translation keys starts from
+    // prefix, equal to one of astro object names, e.g "VillageThe one and
+    // only Hearthian village, ...". find them and trim
+    //
+    // map translations to keys for all languages
+    let mut last_prefix = astro_names
+        .iter()
+        .next()
+        .ok_or_else(|| anyhow!("bug: astro_names can't be empty"))?
+        .to_owned();
+    let mut lang_order = V15_LANG_ORDER.iter();
+
+    let mut translations = HashMap::new();
+    for tr in tr_objects {
+        let mut translation = HashMap::new();
+        for Translation { key, value } in tr.entries {
+            // todo: fix this case ("Escape Pod 3" detected as prefix)
+            if key == "Escape Pod 3 Survivors" {
+                translation.insert(key, value);
+                continue;
+            }
+
+            if !key.starts_with(&last_prefix) {
+                let Some(prefix) = astro_names.iter().find(|&p| {
+                    // remove prefix only if key is bigger
+                    key.len() > p.len()
+                        && key.starts_with(p)
+                        // if character after prefix is not whitespace (not work)
+                        && key.chars().nth(p.len()).is_some_and(|ch| !ch.is_whitespace())
+                }) else {
+                    // rumor translation
+                    translation.insert(key, value);
+                    continue;
+                };
+                last_prefix = prefix.to_owned();
+            }
+            translation.insert(
+                key.strip_prefix(&last_prefix)
+                    .expect("checked for prefix above")
+                    .to_string(),
+                value,
+            );
+        }
+        translations.insert(lang_order.next(), translation);
+    }
+
+    // save translations
 
     Ok(())
 }
@@ -180,6 +228,8 @@ fn find_end_of(mmap: &Mmap, offset: usize, search: &[u8]) -> Result<usize, FindE
     Ok(find_indices_of(mmap, offset, search)?.1)
 }
 
+/// Search for byte substring in Mmap with offset. Returns indices of first
+/// byte and next byte after substring
 fn find_indices_of(mmap: &Mmap, offset: usize, search: &[u8]) -> Result<(usize, usize), FindError> {
     let search_len = search.len();
     let total_len = mmap.len();

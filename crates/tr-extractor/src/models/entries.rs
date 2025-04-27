@@ -12,7 +12,11 @@ where
     #[serde(rename(deserialize = "ID"))]
     pub id: String,
 
-    #[serde(default, rename(deserialize = "Entry"), skip_serializing_if = "Vec::is_empty")]
+    #[serde(
+        default,
+        rename(deserialize = "Entry"),
+        skip_serializing_if = "Vec::is_empty"
+    )]
     pub entries: Vec<Entry>,
 }
 
@@ -78,7 +82,10 @@ pub struct RumorFact {
     #[serde(rename(deserialize = "ID"))]
     pub id: String,
 
-    #[serde(rename(deserialize = "SourceID"), skip_serializing_if = "Option::is_none")]
+    #[serde(
+        rename(deserialize = "SourceID"),
+        skip_serializing_if = "Option::is_none"
+    )]
     pub source_id: Option<String>,
 
     // #[serde(rename(deserialize = "RumorName"))]
@@ -102,9 +109,9 @@ pub struct ExploreFact {
 
     //
     #[serde(
-    	default,
-    	deserialize_with = "bool_when_present",
-    	skip_serializing_if = "std::ops::Not::not",
+        default,
+        deserialize_with = "bool_when_present",
+        skip_serializing_if = "std::ops::Not::not"
     )]
     #[cfg_attr(test, builder(default))]
     pub ignore_more_to_explore: bool,

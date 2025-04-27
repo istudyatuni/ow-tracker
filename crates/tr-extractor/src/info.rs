@@ -1,5 +1,5 @@
 /// Supported language
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy)]
 pub enum Lang {
     English,
     SpanishLa,
