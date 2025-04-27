@@ -2,7 +2,7 @@ use std::{collections::HashMap, fs::File, path::PathBuf};
 
 use anyhow::{Result, anyhow};
 use memmap2::{Mmap, MmapOptions};
-use tracing::{debug, warn, Level};
+use tracing::{Level, debug, warn};
 use tracing_subscriber::FmtSubscriber;
 
 use info::Lang;
@@ -71,38 +71,51 @@ fn main() -> Result<()> {
     // serde_json::to_writer(File::create(output)?, &astro_objects)?;
 
     // names and ids of astro objects for searching in translations
-    let mut astro_names = HashMap::with_capacity(100);
+    let mut astro_names_keys = HashMap::<String, Vec<String>>::with_capacity(100);
     for a in &astro_objects {
-        astro_names.extend(collect_astro_names(&a.entries));
+        for (name, id) in collect_astro_names(&a.entries) {
+            astro_names_keys
+                .entry(name)
+                .and_modify(|ids| ids.push(id.clone()))
+                .or_insert_with(|| vec![id]);
+        }
     }
-    debug!("count of astro names: {}", astro_names.len());
+    debug!("count of astro names: {}", astro_names_keys.len());
 
     // keys for texts
-    let mut astro_facts = HashMap::with_capacity(400);
+    let mut astro_facts = HashMap::<String, Vec<String>>::with_capacity(400);
     for a in &astro_objects {
-        astro_facts.extend(collect_astro_texts(&a.entries));
+        for (text, id) in collect_astro_texts(&a.entries) {
+            astro_facts
+                .entry(text)
+                .and_modify(|ids| ids.push(id.clone()))
+                .or_insert_with(|| vec![id]);
+        }
     }
     debug!("count of astro texts: {}", astro_facts.len());
 
     // remap translations
-    //
-    // todo: count of translation keys not matches number of "text" in astro_objects
     let mut translations = HashMap::new();
-    for (&&lang, tr) in &clean_translations(tr_objects, &astro_names)? {
+    let astro_names = astro_names_keys.keys().map(ToOwned::to_owned).collect();
+    for (lang, tr) in clean_translations(tr_objects, astro_names)? {
         let mut translation = HashMap::with_capacity(tr.len());
-        for (text, key) in &astro_facts {
-            translation.insert(
-                key.to_owned(),
-                tr.get(text).expect("should have key for text").to_owned(),
-            );
+        for (text, ids) in &astro_facts {
+            for id in ids {
+                translation.insert(
+                    id.to_owned(),
+                    tr.get(text).expect("should have key for text").to_owned(),
+                );
+            }
         }
-        for (name, id) in &astro_names {
-            translation.insert(
-                id.to_owned(),
-                tr.get(name)
-                    .expect("should have name for astro object")
-                    .to_owned(),
-            );
+        for (name, ids) in &astro_names_keys {
+            for id in ids {
+                translation.insert(
+                    id.to_owned(),
+                    tr.get(name)
+                        .expect("should have name for astro object")
+                        .to_owned(),
+                );
+            }
         }
         debug!(
             "count of keys in {} translation: {}",
@@ -110,24 +123,25 @@ fn main() -> Result<()> {
             translation.len()
         );
 
-        translations.insert(lang, translation);
-
         // let output = PathBuf::from(format!("output/translations/{}.json", lang.file_name()));
         // serde_json::to_writer(File::create(output)?, &translation)?;
+
+        translations.insert(lang, translation);
     }
 
     // validate
+    debug!("checking for missing keys in translations for entries");
     for (lang, tr) in translations {
         debug!("checking {}", lang.file_name());
         for a in &astro_objects {
-            check_entries_tr(&a.entries, &tr);
+            validate_entries_tr(&a.entries, &tr);
         }
     }
 
     Ok(())
 }
 
-fn check_entries_tr(entries: &[JsonEntry], tr: &HashMap<String, String>) {
+fn validate_entries_tr(entries: &[JsonEntry], tr: &HashMap<String, String>) {
     for e in entries {
         if tr.get(&e.id).is_none() {
             warn!("missing translation for {}", e.id);
@@ -143,7 +157,7 @@ fn check_entries_tr(entries: &[JsonEntry], tr: &HashMap<String, String>) {
             }
         }
         if !e.entries.is_empty() {
-            check_entries_tr(&e.entries, tr);
+            validate_entries_tr(&e.entries, tr);
         }
     }
 }
@@ -167,11 +181,10 @@ fn count_entries(entries: &[JsonEntry]) -> u32 {
 /// and trim
 fn clean_translations(
     tr_objects: Vec<Translations>,
-    astro_names: &HashMap<String, String>,
-) -> Result<HashMap<&Lang, HashMap<String, String>>> {
+    astro_names: Vec<String>,
+) -> Result<HashMap<Lang, HashMap<String, String>>> {
     let mut last_prefix = astro_names
-        .keys()
-        .next()
+        .first()
         .ok_or_else(|| anyhow!("bug: astro_names can't be empty"))?
         .to_owned();
 
@@ -179,36 +192,44 @@ fn clean_translations(
     let mut translations = HashMap::new();
     for tr in tr_objects {
         let mut translation = HashMap::new();
-        for Translation { key, value } in tr.entries {
+        for Translation {
+            key: original,
+            value: translated,
+        } in tr.entries
+        {
             // todo: fix this case ("Escape Pod 3" detected as prefix)
-            if key == "Escape Pod 3 Survivors" {
-                translation.insert(key, value);
+            if original == "Escape Pod 3 Survivors" {
+                translation.insert(original, translated);
                 continue;
             }
 
-            if !key.starts_with(&last_prefix) {
-                let Some(prefix) = astro_names.keys().find(|&p| {
+            if !original.starts_with(&last_prefix) {
+                let Some(prefix) = astro_names.iter().find(|&p| {
                     // remove prefix only if key is bigger
-                    key.len() > p.len()
-                        && key.starts_with(p)
+                    original.len() > p.len()
+                        && original.starts_with(p)
                         // if character after prefix is not whitespace (not work)
-                        && key.chars().nth(p.len()).is_some_and(|ch| !ch.is_whitespace())
+                        && original.chars().nth(p.len()).is_some_and(|ch| !ch.is_whitespace())
                 }) else {
                     // rumor translation
-                    translation.insert(key, value);
+                    translation.insert(original, translated);
                     continue;
                 };
                 last_prefix = prefix.to_owned();
             }
             translation.insert(
-                key.strip_prefix(&last_prefix)
+                original
+                    .strip_prefix(&last_prefix)
                     .expect("checked for prefix above")
                     .to_string(),
-                value,
+                translated,
             );
         }
         translations.insert(
-            lang_order.next().expect("there should be known language"),
+            lang_order
+                .next()
+                .expect("there should be known language")
+                .to_owned(),
             translation,
         );
     }
@@ -263,7 +284,7 @@ fn load_tr_objects(file: File) -> Result<Vec<Translations>> {
     Ok(tr_objects)
 }
 
-/// Returns Vec of (text, key)
+/// Returns Vec of (text, id)
 fn collect_astro_texts(entries: &[JsonEntry]) -> Vec<(String, String)> {
     let mut kvs = vec![];
     for e in entries {
