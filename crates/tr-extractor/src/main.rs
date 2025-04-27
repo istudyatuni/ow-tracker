@@ -44,6 +44,14 @@ fn main() -> Result<()> {
     let astro_objects = load_astro_objects(File::open(dir.join(SHARED_FILE))?)?;
     let tr_objects = load_tr_objects(File::open(dir.join(RES_FILE))?)?;
 
+    println!("count of astro objects: {}", astro_objects.len());
+    let mut entries_count = 0;
+    for a in &astro_objects {
+        entries_count += count_entries(&a.entries);
+    }
+    println!("count of astro entries: {}", entries_count);
+    println!("count of translation entries: {}", tr_objects[0].entries.len());
+
     // save info about astro objects
     // todo: do it after replacing with translations keys or after removing text at all
     // let output = PathBuf::from("output/entries.json");
@@ -54,31 +62,85 @@ fn main() -> Result<()> {
     for a in &astro_objects {
         astro_names.extend(collect_astro_names(&a.entries));
     }
+    println!("astro names: {astro_names:#?}");
+    println!("count of astro names: {}", astro_names.len());
 
     // keys for texts
     let mut astro_facts = HashMap::with_capacity(400);
-    for a in astro_objects {
+    for a in &astro_objects {
         astro_facts.extend(collect_astro_texts(&a.entries));
     }
+    println!("count of astro texts: {}", astro_facts.len());
 
-    // save translations
+    // remap translations
     //
     // todo: count of translation keys not matches number of "text" in astro_objects
-    let translations = clean_translations(tr_objects, &astro_names)?;
-    for (lang, tr) in translations {
+    let mut translations = HashMap::new();
+    for (&&lang, tr) in &clean_translations(tr_objects, &astro_names)? {
         let mut translation = HashMap::with_capacity(tr.len());
         for (text, key) in &astro_facts {
-            translation.insert(key, tr.get(text).expect("should have key for text"));
+            translation.insert(
+                key.to_owned(),
+                tr.get(text).expect("should have key for text").to_owned(),
+            );
         }
         for (name, id) in &astro_names {
-            translation.insert(id, tr.get(name).expect("should have name for astro object"));
+            translation.insert(
+                id.to_owned(),
+                tr.get(name)
+                    .expect("should have name for astro object")
+                    .to_owned(),
+            );
         }
+        println!("count of keys in {} translation: {}", lang.file_name(), translation.len());
+
+        translations.insert(lang, translation);
 
         // let output = PathBuf::from(format!("output/translations/{}.json", lang.file_name()));
         // serde_json::to_writer(File::create(output)?, &translation)?;
     }
 
+    // validate
+    for (lang, tr) in translations {
+        println!("checking {}", lang.file_name());
+        for a in &astro_objects {
+            check_entries_tr(&a.entries, &tr);
+        }
+    }
+
     Ok(())
+}
+
+fn check_entries_tr(entries: &[JsonEntry], tr: &HashMap<String, String>) {
+    for e in entries {
+        if tr.get(&e.id).is_none() {
+            println!("missing translation for {}", e.id);
+        }
+        for f in &e.facts.explore {
+            if tr.get(&f.id).is_none() {
+                println!("missing translation for {}", f.id);
+            }
+        }
+        for f in &e.facts.rumor {
+            if tr.get(&f.id).is_none() {
+                println!("missing translation for {}", f.id);
+            }
+        }
+        if !e.entries.is_empty() {
+            check_entries_tr(&e.entries, tr);
+        }
+    }
+}
+
+fn count_entries(entries: &[JsonEntry]) -> u32 {
+    let mut count = 0;
+    for e in entries {
+        count += 1;
+        if !e.entries.is_empty() {
+            count += count_entries(&e.entries);
+        }
+    }
+    count
 }
 
 /// Clean translation keys from prefixes and map translations to keys for all
@@ -134,6 +196,7 @@ fn clean_translations(
             translation,
         );
     }
+
     Ok(translations)
 }
 
