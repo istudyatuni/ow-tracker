@@ -2,6 +2,8 @@ use std::{collections::HashMap, fs::File, path::PathBuf};
 
 use anyhow::{Result, anyhow};
 use memmap2::{Mmap, MmapOptions};
+use tracing::{debug, warn, Level};
+use tracing_subscriber::FmtSubscriber;
 
 use info::Lang;
 use models::{
@@ -40,17 +42,28 @@ const V15_LANG_ORDER: &[Lang] = &[
 ];
 
 fn main() -> Result<()> {
+    tracing::subscriber::set_global_default(
+        FmtSubscriber::builder()
+            .without_time()
+            .with_target(false)
+            .with_max_level(Level::DEBUG)
+            .finish(),
+    )?;
+
     let dir = find_data_dir()?;
     let astro_objects = load_astro_objects(File::open(dir.join(SHARED_FILE))?)?;
     let tr_objects = load_tr_objects(File::open(dir.join(RES_FILE))?)?;
 
-    println!("count of astro objects: {}", astro_objects.len());
+    debug!("count of astro objects: {}", astro_objects.len());
     let mut entries_count = 0;
     for a in &astro_objects {
         entries_count += count_entries(&a.entries);
     }
-    println!("count of astro entries: {}", entries_count);
-    println!("count of translation entries: {}", tr_objects[0].entries.len());
+    debug!("count of astro entries: {}", entries_count);
+    debug!(
+        "count of translation entries: {}",
+        tr_objects[0].entries.len()
+    );
 
     // save info about astro objects
     // todo: do it after replacing with translations keys or after removing text at all
@@ -62,15 +75,14 @@ fn main() -> Result<()> {
     for a in &astro_objects {
         astro_names.extend(collect_astro_names(&a.entries));
     }
-    println!("astro names: {astro_names:#?}");
-    println!("count of astro names: {}", astro_names.len());
+    debug!("count of astro names: {}", astro_names.len());
 
     // keys for texts
     let mut astro_facts = HashMap::with_capacity(400);
     for a in &astro_objects {
         astro_facts.extend(collect_astro_texts(&a.entries));
     }
-    println!("count of astro texts: {}", astro_facts.len());
+    debug!("count of astro texts: {}", astro_facts.len());
 
     // remap translations
     //
@@ -92,7 +104,11 @@ fn main() -> Result<()> {
                     .to_owned(),
             );
         }
-        println!("count of keys in {} translation: {}", lang.file_name(), translation.len());
+        debug!(
+            "count of keys in {} translation: {}",
+            lang.file_name(),
+            translation.len()
+        );
 
         translations.insert(lang, translation);
 
@@ -102,7 +118,7 @@ fn main() -> Result<()> {
 
     // validate
     for (lang, tr) in translations {
-        println!("checking {}", lang.file_name());
+        debug!("checking {}", lang.file_name());
         for a in &astro_objects {
             check_entries_tr(&a.entries, &tr);
         }
@@ -114,16 +130,16 @@ fn main() -> Result<()> {
 fn check_entries_tr(entries: &[JsonEntry], tr: &HashMap<String, String>) {
     for e in entries {
         if tr.get(&e.id).is_none() {
-            println!("missing translation for {}", e.id);
+            warn!("missing translation for {}", e.id);
         }
         for f in &e.facts.explore {
             if tr.get(&f.id).is_none() {
-                println!("missing translation for {}", f.id);
+                warn!("missing translation for {}", f.id);
             }
         }
         for f in &e.facts.rumor {
             if tr.get(&f.id).is_none() {
-                println!("missing translation for {}", f.id);
+                warn!("missing translation for {}", f.id);
             }
         }
         if !e.entries.is_empty() {
@@ -217,7 +233,7 @@ fn load_astro_objects(file: File) -> Result<Vec<AstroObject<JsonEntry>>> {
                 FindError::Utf8Error(e) => return Err(e.into()),
             },
         };
-        println!("extracted {}", astro_object.id);
+        debug!("extracted {}", astro_object.id);
         astro_objects.push(astro_object.into());
     }
 
