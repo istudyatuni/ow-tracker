@@ -1,0 +1,17 @@
+[package]
+name = "tr-extractor"
+description = "Extract translations from game data"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+anyhow.workspace = true
+bon.workspace = true
+derive_builder.workspace = true
+dirs.workspace = true
+memmap2.workspace = true
+serde.workspace = true
+serde-xml-rs.workspace = true
+
+[dev-dependencies]
+similar-asserts.workspace = true
