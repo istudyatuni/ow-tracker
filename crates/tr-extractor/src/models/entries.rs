@@ -25,9 +25,10 @@ pub struct XmlEntry {
 
     pub name: String,
 
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub curiosity: Option<String>,
 
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     #[cfg_attr(test, builder(default))]
     pub is_curiosity: bool,
 
@@ -49,9 +50,10 @@ pub struct JsonEntry {
 
     pub name: String,
 
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub is_curiosity: bool,
 
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub curiosity: Option<String>,
 
     pub facts: JsonEntryFacts,
@@ -64,6 +66,7 @@ pub struct JsonEntry {
 pub struct JsonEntryFacts {
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub explore: Vec<ExploreFact>,
+
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub rumor: Vec<RumorFact>,
 }
@@ -75,7 +78,7 @@ pub struct RumorFact {
     #[serde(rename(deserialize = "ID"))]
     pub id: String,
 
-    #[serde(rename(deserialize = "SourceID"))]
+    #[serde(rename(deserialize = "SourceID"), skip_serializing_if = "Option::is_none")]
     pub source_id: Option<String>,
 
     // #[serde(rename(deserialize = "RumorName"))]
@@ -98,7 +101,11 @@ pub struct ExploreFact {
     // pub clue_type: Option<String>,
 
     //
-    #[serde(default, deserialize_with = "bool_when_present")]
+    #[serde(
+    	default,
+    	deserialize_with = "bool_when_present",
+    	skip_serializing_if = "std::ops::Not::not",
+    )]
     #[cfg_attr(test, builder(default))]
     pub ignore_more_to_explore: bool,
 
