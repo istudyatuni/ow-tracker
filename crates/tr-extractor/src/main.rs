@@ -8,7 +8,9 @@ use anyhow::{Result, anyhow};
 use memmap2::{Mmap, MmapOptions};
 
 use models::entries::{AstroObject, JsonEntry, XmlEntry};
+use info::Lang;
 
+mod info;
 mod models;
 
 const ASTRO_OBJECT_START: &[u8] = b"<AstroObjectEntry>";
@@ -17,6 +19,22 @@ const SHARED_FILE: &str = "sharedassets1.assets";
 /// Offset in file `sharedassets1.assets` for game version 1.1.15. Probably
 /// unnecessary since search seems to be pretty fast
 const V15_SHARED_OFFSET: u64 = 930000000;
+
+/// Order of `TranslationTable_XML`'s in `resources.assets` for game version 1.1.15
+const V15_LANG_ORDER: &[Lang] = &[
+    Lang::SpanishLa,
+    Lang::English,
+    Lang::Turkish,
+    Lang::PortugueseBr,
+    Lang::Italian,
+    Lang::French,
+    Lang::Polish,
+    Lang::Korean,
+    Lang::ChineseSimple,
+    Lang::German,
+    Lang::Russian,
+    Lang::Japanese,
+];
 
 fn main() -> Result<()> {
     let dir = find_data_dir()?;
