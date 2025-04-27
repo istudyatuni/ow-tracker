@@ -12,6 +12,7 @@ dirs.workspace = true
 memmap2.workspace = true
 serde.workspace = true
 serde-xml-rs.workspace = true
+thiserror.workspace = true
 
 [dev-dependencies]
 similar-asserts.workspace = true

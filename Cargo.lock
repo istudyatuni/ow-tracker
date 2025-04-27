@@ -405,6 +405,7 @@ dependencies = [
  "serde",
  "serde-xml-rs",
  "similar-asserts",
+ "thiserror 2.0.12",
 ]
 
 [[package]]
