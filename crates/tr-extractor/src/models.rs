@@ -1,21 +1,25 @@
-#![cfg_attr(not(test), expect(unused))]
+use std::fmt::Debug;
 
-use serde::{Deserialize, Deserializer};
+use serde::{Deserialize, Deserializer, Serialize, de::DeserializeOwned};
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 #[cfg_attr(test, derive(PartialEq, bon::Builder))]
-pub struct AstroObject {
+pub struct AstroObject<Entry>
+where
+    Entry: Debug,
+    Vec<Entry>: DeserializeOwned,
+{
     #[serde(rename(deserialize = "ID"))]
     pub id: String,
 
-    #[serde(default, rename(deserialize = "Entry"))]
+    #[serde(default, rename(deserialize = "Entry"), skip_serializing_if = "Vec::is_empty")]
     pub entries: Vec<Entry>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Default, Deserialize)]
 #[cfg_attr(test, derive(PartialEq, bon::Builder))]
 #[serde(rename_all(deserialize = "PascalCase"))]
-pub struct Entry {
+pub struct XmlEntry {
     #[serde(rename(deserialize = "ID"))]
     pub id: String,
 
@@ -36,10 +40,35 @@ pub struct Entry {
 
     #[serde(default, rename(deserialize = "Entry"))]
     #[cfg_attr(test, builder(default))]
-    pub entries: Vec<Entry>,
+    pub entries: Vec<XmlEntry>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Default, Serialize, Deserialize)]
+pub struct JsonEntry {
+    pub id: String,
+
+    pub name: String,
+
+    #[serde(default)]
+    pub is_curiosity: bool,
+
+    pub curiosity: Option<String>,
+
+    pub facts: JsonEntryFacts,
+
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub entries: Vec<JsonEntry>,
+}
+
+#[derive(Debug, Default, Serialize, Deserialize)]
+pub struct JsonEntryFacts {
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub explore: Vec<ExploreFact>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub rumor: Vec<RumorFact>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
 #[cfg_attr(test, derive(PartialEq, bon::Builder))]
 #[serde(rename_all(deserialize = "PascalCase"))]
 pub struct RumorFact {
@@ -55,10 +84,11 @@ pub struct RumorFact {
     // #[serde(rename(deserialize = "RumorNamePriority"))]
     // pub name_priority: Option<u32>,
 
+    //
     pub text: String,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 #[cfg_attr(test, derive(PartialEq, bon::Builder))]
 #[serde(rename_all(deserialize = "PascalCase"))]
 pub struct ExploreFact {
@@ -67,11 +97,37 @@ pub struct ExploreFact {
 
     // pub clue_type: Option<String>,
 
+    //
     #[serde(default, deserialize_with = "bool_when_present")]
     #[cfg_attr(test, builder(default))]
     pub ignore_more_to_explore: bool,
 
     pub text: String,
+}
+
+impl From<AstroObject<XmlEntry>> for AstroObject<JsonEntry> {
+    fn from(value: AstroObject<XmlEntry>) -> Self {
+        Self {
+            id: value.id,
+            entries: value.entries.into_iter().map(Into::into).collect(),
+        }
+    }
+}
+
+impl From<XmlEntry> for JsonEntry {
+    fn from(value: XmlEntry) -> Self {
+        Self {
+            id: value.id,
+            name: value.name,
+            curiosity: value.curiosity,
+            is_curiosity: value.is_curiosity,
+            facts: JsonEntryFacts {
+                rumor: value.rumor_facts,
+                explore: value.explore_facts,
+            },
+            entries: value.entries.into_iter().map(Into::into).collect(),
+        }
+    }
 }
 
 /// Returns `true` if field present, but doesn't contain value "true"

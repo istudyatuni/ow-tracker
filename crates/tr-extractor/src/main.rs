@@ -2,7 +2,7 @@ use std::{fs::File, path::PathBuf};
 
 use anyhow::{Result, anyhow};
 use memmap2::{Mmap, MmapOptions};
-use models::AstroObject;
+use models::{AstroObject, JsonEntry, XmlEntry};
 
 mod models;
 
@@ -23,7 +23,7 @@ fn main() -> Result<()> {
     };
 
     let mut offset = 0;
-    let mut astro_objects = Vec::with_capacity(100);
+    let mut astro_objects: Vec<AstroObject<JsonEntry>> = Vec::with_capacity(100);
     loop {
         let astro_object = match extract_astro_object(&mmap, offset) {
             Ok((astro_object, next_offset)) => {
@@ -35,13 +35,17 @@ fn main() -> Result<()> {
                 FindError::Utf8Error(e) => return Err(e.into()),
             },
         };
-        astro_objects.push(astro_object);
+        println!("extracted {}", astro_object.id);
+        astro_objects.push(astro_object.into());
     }
+
+    let output = PathBuf::from("output/entries.json");
+    serde_json::to_writer(File::create(output)?, &astro_objects)?;
 
     Ok(())
 }
 
-fn parse_astro_object(data: &str) -> Result<AstroObject> {
+fn parse_astro_object(data: &str) -> Result<AstroObject<XmlEntry>> {
     Ok(serde_xml_rs::from_str(data)?)
 }
 
@@ -64,7 +68,7 @@ fn find_end_of(mmap: &Mmap, offset: usize, search: &[u8]) -> Result<usize, FindE
 fn find_indices_of(mmap: &Mmap, offset: usize, search: &[u8]) -> Result<(usize, usize), FindError> {
     let search_len = search.len();
     let total_len = mmap.len();
-    for (i, &_) in mmap.iter().skip(offset).enumerate() {
+    for (i, &_) in mmap.iter().enumerate().skip(offset) {
         // ....f...t
         // ......i   - break
         // t = total_len
@@ -96,7 +100,7 @@ enum FindError {
 
 #[cfg(test)]
 mod tests {
-    use models::{Entry, ExploreFact, RumorFact};
+    use models::{ExploreFact, RumorFact, XmlEntry};
 
     use super::*;
 
@@ -138,7 +142,7 @@ mod tests {
         let expected = AstroObject::builder()
             .id("TIMBER_HEARTH".to_string())
             .entries(vec![
-                Entry::builder()
+                XmlEntry::builder()
                     .id("TH_VILLAGE".to_string())
                     .name("Village".to_string())
                     .curiosity("1".to_string())
@@ -149,7 +153,7 @@ mod tests {
                             .build(),
                     ])
                     .entries(vec![
-                        Entry::builder()
+                        XmlEntry::builder()
                             .id("TH_ZERO_G_CAVE".to_string())
                             .name("Zero-G Cave".to_string())
                             .rumor_facts(vec![
