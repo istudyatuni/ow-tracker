@@ -1,8 +1,4 @@
-use std::{
-    collections::{HashMap, HashSet},
-    fs::File,
-    path::PathBuf,
-};
+use std::{collections::HashMap, fs::File, path::PathBuf};
 
 use anyhow::{Result, anyhow};
 use memmap2::{Mmap, MmapOptions};
@@ -79,8 +75,8 @@ fn main() -> Result<()> {
     // let output = PathBuf::from("output/entries.json");
     // serde_json::to_writer(File::create(output)?, &astro_objects)?;
 
-    // collect names of astro objects for searching in translations
-    let mut astro_names = HashSet::with_capacity(100);
+    // collect names and ids of astro objects for searching in translations
+    let mut astro_names = HashMap::with_capacity(100);
     for a in &astro_objects {
         astro_names.extend(collect_astro_names(&a.entries));
     }
@@ -118,7 +114,7 @@ fn main() -> Result<()> {
     //
     // map translations to keys for all languages
     let mut last_prefix = astro_names
-        .iter()
+        .keys()
         .next()
         .ok_or_else(|| anyhow!("bug: astro_names can't be empty"))?
         .to_owned();
@@ -135,7 +131,7 @@ fn main() -> Result<()> {
             }
 
             if !key.starts_with(&last_prefix) {
-                let Some(prefix) = astro_names.iter().find(|&p| {
+                let Some(prefix) = astro_names.keys().find(|&p| {
                     // remove prefix only if key is bigger
                     key.len() > p.len()
                         && key.starts_with(p)
@@ -155,10 +151,27 @@ fn main() -> Result<()> {
                 value,
             );
         }
-        translations.insert(lang_order.next(), translation);
+        translations.insert(
+            lang_order.next().expect("there should be known language"),
+            translation,
+        );
     }
 
     // save translations
+    //
+    // todo: count of translation keys not matches number of "text" in astro_objects
+    for (lang, tr) in translations {
+        let mut translation = HashMap::with_capacity(tr.len());
+        for (text, key) in &astro_facts {
+            translation.insert(key, tr.get(text).expect("should have key for text"));
+        }
+        for (name, id) in &astro_names {
+            translation.insert(id, tr.get(name).expect("should have name for astro object"));
+        }
+
+        let output = PathBuf::from(format!("output/translations/{}.json", lang.file_name()));
+        serde_json::to_writer(File::create(output)?, &translation)?;
+    }
 
     Ok(())
 }
@@ -180,10 +193,11 @@ fn collect_astro_texts(entries: &[JsonEntry]) -> Vec<(String, String)> {
     kvs
 }
 
-fn collect_astro_names(entries: &[JsonEntry]) -> Vec<String> {
+/// Returns Vec of (name, id)
+fn collect_astro_names(entries: &[JsonEntry]) -> Vec<(String, String)> {
     let mut names = vec![];
     for e in entries {
-        names.push(e.name.clone());
+        names.push((e.name.clone(), e.id.clone()));
         if !e.entries.is_empty() {
             names.extend_from_slice(&collect_astro_names(&e.entries));
         }
