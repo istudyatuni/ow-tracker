@@ -2,7 +2,8 @@ use std::{fs::File, path::PathBuf};
 
 use anyhow::{Result, anyhow};
 use memmap2::{Mmap, MmapOptions};
-use models::{AstroObject, JsonEntry, XmlEntry};
+
+use models::entries::{AstroObject, JsonEntry, XmlEntry};
 
 mod models;
 
@@ -100,7 +101,7 @@ enum FindError {
 
 #[cfg(test)]
 mod tests {
-    use models::{ExploreFact, RumorFact, XmlEntry};
+    use models::entries::{ExploreFact, RumorFact, XmlEntry};
 
     use super::*;
 
