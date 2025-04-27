@@ -1,4 +1,8 @@
-use std::{fs::File, path::PathBuf};
+use std::{
+    collections::{HashMap, HashSet},
+    fs::File,
+    path::PathBuf,
+};
 
 use anyhow::{Result, anyhow};
 use memmap2::{Mmap, MmapOptions};
@@ -23,6 +27,7 @@ fn main() -> Result<()> {
             .map(&ids_file)?
     };
 
+    // extract info about astro objects
     let mut offset = 0;
     let mut astro_objects: Vec<AstroObject<JsonEntry>> = Vec::with_capacity(100);
     loop {
@@ -40,10 +45,52 @@ fn main() -> Result<()> {
         astro_objects.push(astro_object.into());
     }
 
-    let output = PathBuf::from("output/entries.json");
-    serde_json::to_writer(File::create(output)?, &astro_objects)?;
+    // write info about astro objects
+    // todo: do it after replacing with translations keys or after removing text at all
+    // let output = PathBuf::from("output/entries.json");
+    // serde_json::to_writer(File::create(output)?, &astro_objects)?;
+
+    // collect names of astro objects for searching in translations
+    let mut astro_names = HashSet::with_capacity(100);
+    for a in &astro_objects {
+        astro_names.extend(collect_astro_names(&a.entries));
+    }
+
+    // collect keys for texts
+    let mut astro_facts = HashMap::with_capacity(400);
+    for a in astro_objects {
+        astro_facts.extend(collect_astro_texts(&a.entries));
+    }
 
     Ok(())
+}
+
+/// Returns Vec of (text, key)
+fn collect_astro_texts(entries: &[JsonEntry]) -> Vec<(String, String)> {
+    let mut kvs = vec![];
+    for e in entries {
+        for fact in &e.facts.explore {
+            kvs.push((fact.text.clone(), fact.id.clone()));
+        }
+        for fact in &e.facts.rumor {
+            kvs.push((fact.text.clone(), fact.id.clone()));
+        }
+        if !e.entries.is_empty() {
+            kvs.extend_from_slice(&collect_astro_texts(&e.entries));
+        }
+    }
+    kvs
+}
+
+fn collect_astro_names(entries: &[JsonEntry]) -> Vec<String> {
+    let mut names = vec![];
+    for e in entries {
+        names.push(e.name.clone());
+        if !e.entries.is_empty() {
+            names.extend_from_slice(&collect_astro_names(&e.entries));
+        }
+    }
+    names
 }
 
 fn parse_astro_object(data: &str) -> Result<AstroObject<XmlEntry>> {
