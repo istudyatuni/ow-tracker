@@ -74,8 +74,8 @@ fn main() -> Result<()> {
             translation.insert(id, tr.get(name).expect("should have name for astro object"));
         }
 
-        let output = PathBuf::from(format!("output/translations/{}.json", lang.file_name()));
-        serde_json::to_writer(File::create(output)?, &translation)?;
+        // let output = PathBuf::from(format!("output/translations/{}.json", lang.file_name()));
+        // serde_json::to_writer(File::create(output)?, &translation)?;
     }
 
     Ok(())

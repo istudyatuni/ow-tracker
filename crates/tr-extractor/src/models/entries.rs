@@ -29,10 +29,9 @@ pub struct XmlEntry {
 
     pub name: String,
 
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub curiosity: Option<String>,
 
-    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    #[serde(default)]
     #[cfg_attr(test, builder(default))]
     pub is_curiosity: bool,
 
@@ -149,5 +148,5 @@ fn bool_when_present<'de, D>(deserializer: D) -> Result<bool, D::Error>
 where
     D: Deserializer<'de>,
 {
-    Ok(Option::<String>::deserialize(deserializer)?.is_some())
+    Ok(Option::<bool>::deserialize(deserializer)?.is_some())
 }
