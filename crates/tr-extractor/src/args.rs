@@ -9,6 +9,10 @@ pub struct Cli {
     #[arg(long)]
     pub data_dir: Option<PathBuf>,
 
+    /// Path to output directory
+    #[arg(long = "output-dir", default_value = "output")]
+    pub out_dir: PathBuf,
+
     /// Write files
     #[arg(long)]
     pub write: bool,

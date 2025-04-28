@@ -83,12 +83,11 @@ fn main() -> Result<()> {
 
     // save info about astro objects
     if args.write {
-        let output = PathBuf::from("output");
-        if !output.exists() {
-            std::fs::create_dir(&output).context("creating output directory")?;
+        if !args.out_dir.exists() {
+            std::fs::create_dir(&args.out_dir).context("creating output directory")?;
         }
 
-        let output = output.join("entries.json");
+        let output = args.out_dir.join("entries.json");
         info!("writing {}", output.display());
         serde_json::to_writer(File::create(output)?, &astro_objects)?;
     }
@@ -147,7 +146,7 @@ fn main() -> Result<()> {
         );
 
         if args.write {
-            let output = PathBuf::from("output/translations");
+            let output = args.out_dir.join("translations");
             if !output.exists() {
                 std::fs::create_dir(&output).context("creating output translations directory")?;
             }
