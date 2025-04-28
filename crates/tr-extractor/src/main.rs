@@ -54,7 +54,10 @@ fn main() -> Result<()> {
 
     let args = args::Cli::parse();
 
-    let dir = find_data_dir()?;
+    let dir = match args.data_dir {
+        Some(d) => d,
+        None => find_data_dir()?,
+    };
     let astro_objects = load_astro_objects(File::open(dir.join(SHARED_FILE))?)?;
     let tr_objects = load_tr_objects(File::open(dir.join(RES_FILE))?)?;
 
