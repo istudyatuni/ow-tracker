@@ -1,6 +1,6 @@
 use std::{collections::HashMap, fs::File, path::PathBuf};
 
-use anyhow::{Context, Result, anyhow};
+use anyhow::{Context, Result, anyhow, bail};
 use clap::Parser;
 use memmap2::{Mmap, MmapOptions};
 use tracing::{Level, debug, info, warn};
@@ -44,15 +44,22 @@ const V15_LANG_ORDER: &[Lang] = &[
 ];
 
 fn main() -> Result<()> {
+    let args = args::Cli::parse();
+
+    let level = match args.verbosity {
+        0 => Level::WARN,
+        1 => Level::INFO,
+        2 => Level::DEBUG,
+        3 => Level::TRACE,
+        _ => bail!("to high log verbosity"),
+    };
     tracing::subscriber::set_global_default(
         FmtSubscriber::builder()
             .without_time()
             .with_target(false)
-            .with_max_level(Level::DEBUG)
+            .with_max_level(level)
             .finish(),
     )?;
-
-    let args = args::Cli::parse();
 
     let dir = match args.data_dir {
         Some(d) => d,
