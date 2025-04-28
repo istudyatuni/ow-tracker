@@ -1,6 +1,6 @@
 use std::{collections::HashMap, fs::File, path::PathBuf};
 
-use anyhow::{Result, anyhow};
+use anyhow::{Context, Result, anyhow};
 use clap::Parser;
 use memmap2::{Mmap, MmapOptions};
 use tracing::{Level, debug, info, warn};
@@ -73,7 +73,12 @@ fn main() -> Result<()> {
 
     // save info about astro objects
     if args.write {
-        let output = PathBuf::from("output/entries.json");
+        let output = PathBuf::from("output");
+        if !output.exists() {
+            std::fs::create_dir(&output).context("creating output directory")?;
+        }
+
+        let output = output.join("entries.json");
         info!("writing {}", output.display());
         serde_json::to_writer(File::create(output)?, &astro_objects)?;
     }
@@ -132,7 +137,12 @@ fn main() -> Result<()> {
         );
 
         if args.write {
-            let output = PathBuf::from(format!("output/translations/{}.json", lang.file_name()));
+            let output = PathBuf::from("output/translations");
+            if !output.exists() {
+                std::fs::create_dir(&output).context("creating output translations directory")?;
+            }
+
+            let output = output.join(format!("{}.json", lang.file_name()));
             info!("writing {}", output.display());
             serde_json::to_writer(File::create(output)?, &translation)?;
         }
