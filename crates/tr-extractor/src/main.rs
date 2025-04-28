@@ -1,8 +1,9 @@
 use std::{collections::HashMap, fs::File, path::PathBuf};
 
 use anyhow::{Result, anyhow};
+use clap::Parser;
 use memmap2::{Mmap, MmapOptions};
-use tracing::{Level, debug, warn};
+use tracing::{Level, debug, info, warn};
 use tracing_subscriber::FmtSubscriber;
 
 use info::Lang;
@@ -11,6 +12,7 @@ use models::{
     translations::{Translation, Translations},
 };
 
+mod args;
 mod info;
 mod models;
 
@@ -50,6 +52,8 @@ fn main() -> Result<()> {
             .finish(),
     )?;
 
+    let args = args::Cli::parse();
+
     let dir = find_data_dir()?;
     let astro_objects = load_astro_objects(File::open(dir.join(SHARED_FILE))?)?;
     let tr_objects = load_tr_objects(File::open(dir.join(RES_FILE))?)?;
@@ -68,9 +72,11 @@ fn main() -> Result<()> {
     );
 
     // save info about astro objects
-    // todo: do it after replacing with translations keys or after removing text at all
-    // let output = PathBuf::from("output/entries.json");
-    // serde_json::to_writer(File::create(output)?, &astro_objects)?;
+    if args.write {
+        let output = PathBuf::from("output/entries.json");
+        info!("writing {}", output.display());
+        serde_json::to_writer(File::create(output)?, &astro_objects)?;
+    }
 
     // names and ids of astro objects for searching in translations
     let mut astro_names_keys = HashMap::<String, Vec<String>>::with_capacity(100);
@@ -125,8 +131,11 @@ fn main() -> Result<()> {
             translation.len()
         );
 
-        // let output = PathBuf::from(format!("output/translations/{}.json", lang.file_name()));
-        // serde_json::to_writer(File::create(output)?, &translation)?;
+        if args.write {
+            let output = PathBuf::from(format!("output/translations/{}.json", lang.file_name()));
+            info!("writing {}", output.display());
+            serde_json::to_writer(File::create(output)?, &translation)?;
+        }
 
         translations.insert(lang, translation);
     }
