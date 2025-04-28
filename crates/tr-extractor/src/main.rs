@@ -55,11 +55,13 @@ fn main() -> Result<()> {
     let tr_objects = load_tr_objects(File::open(dir.join(RES_FILE))?)?;
 
     debug!("count of astro objects: {}", astro_objects.len());
-    let mut entries_count = 0;
-    for a in &astro_objects {
-        entries_count += count_entries(&a.entries);
-    }
-    debug!("count of astro entries: {}", entries_count);
+    debug!(
+        "count of astro entries: {}",
+        astro_objects
+            .iter()
+            .map(|a| count_entries(&a.entries))
+            .sum::<u32>()
+    );
     debug!(
         "count of translation entries: {}",
         tr_objects[0].entries.len()
@@ -163,14 +165,14 @@ fn validate_entries_tr(entries: &[JsonEntry], tr: &HashMap<String, String>) {
 }
 
 fn count_entries(entries: &[JsonEntry]) -> u32 {
-    let mut count = 0;
-    for e in entries {
-        count += 1;
-        if !e.entries.is_empty() {
-            count += count_entries(&e.entries);
-        }
+    if entries.is_empty() {
+        return 0;
     }
-    count
+    entries.len() as u32
+        + entries
+            .iter()
+            .map(|e| count_entries(&e.entries))
+            .sum::<u32>()
 }
 
 /// Clean translation keys from prefixes and map translations to keys for all
