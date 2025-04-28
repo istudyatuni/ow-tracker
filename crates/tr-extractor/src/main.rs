@@ -65,6 +65,9 @@ fn main() -> Result<()> {
         Some(d) => d,
         None => find_data_dir()?,
     };
+    if !dir.exists() {
+        bail!("data dir \"{}\" not exists", dir.display());
+    }
     let astro_objects = load_astro_objects(File::open(dir.join(SHARED_FILE))?)?;
     let tr_objects = load_tr_objects(File::open(dir.join(RES_FILE))?)?;
 
