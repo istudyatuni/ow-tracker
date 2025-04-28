@@ -57,6 +57,8 @@ fn main() -> Result<()> {
         FmtSubscriber::builder()
             .without_time()
             .with_target(false)
+            .with_file(args.verbosity > 2)
+            .with_line_number(args.verbosity > 2)
             .with_max_level(level)
             .finish(),
     )?;
