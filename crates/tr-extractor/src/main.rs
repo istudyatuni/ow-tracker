@@ -68,6 +68,7 @@ fn main() -> Result<()> {
     if !dir.exists() {
         bail!("data dir \"{}\" not exists", dir.display());
     }
+
     let astro_objects = load_astro_objects(File::open(dir.join(SHARED_FILE))?)?;
     let tr_objects = load_tr_objects(File::open(dir.join(RES_FILE))?)?;
 
@@ -98,6 +99,7 @@ fn main() -> Result<()> {
     // names and ids of astro objects for searching in translations
     let mut astro_names_keys = HashMap::<String, Vec<String>>::with_capacity(100);
     for a in &astro_objects {
+        // different ids can have same name
         for (name, id) in collect_astro_names(&a.entries) {
             astro_names_keys
                 .entry(name)
@@ -110,6 +112,7 @@ fn main() -> Result<()> {
     // keys for texts
     let mut astro_facts = HashMap::<String, Vec<String>>::with_capacity(400);
     for a in &astro_objects {
+        // different ids can have same text
         for (text, id) in collect_astro_texts(&a.entries) {
             astro_facts
                 .entry(text)
@@ -128,7 +131,7 @@ fn main() -> Result<()> {
             for id in ids {
                 translation.insert(
                     id.to_owned(),
-                    tr.get(text).expect("should have key for text").to_owned(),
+                    tr.get(text).expect("should have id for entry text").to_owned(),
                 );
             }
         }
