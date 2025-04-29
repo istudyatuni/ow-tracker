@@ -1,4 +1,8 @@
-use std::{collections::HashMap, fs::File, path::PathBuf};
+use std::{
+    collections::{BTreeMap, HashMap},
+    fs::File,
+    path::PathBuf,
+};
 
 use anyhow::{Context, Result, anyhow, bail};
 use clap::Parser;
@@ -71,7 +75,7 @@ fn main() -> Result<()> {
         bail!("data dir \"{}\" not exists", dir.display());
     }
 
-    let astro_objects = load_astro_objects(File::open(dir.join(SHARED_FILE))?)?;
+    let mut astro_objects = load_astro_objects(File::open(dir.join(SHARED_FILE))?)?;
     let tr_objects = load_tr_objects(File::open(dir.join(RES_FILE))?)?;
 
     debug!("count of astro objects: {}", astro_objects.len());
@@ -91,6 +95,10 @@ fn main() -> Result<()> {
     if args.write {
         if !args.out_dir.exists() {
             std::fs::create_dir(&args.out_dir).context("creating output directory")?;
+        }
+
+        for a in &mut astro_objects {
+            sort_entries(&mut a.entries);
         }
 
         let output = args.out_dir.join("entries.json");
@@ -128,12 +136,15 @@ fn main() -> Result<()> {
     let mut translations = HashMap::new();
     let astro_names = astro_names_keys.keys().map(ToOwned::to_owned).collect();
     for (lang, tr) in clean_translations(tr_objects, astro_names)? {
-        let mut translation = HashMap::with_capacity(tr.len());
+        // BTreeMap is used for sorting keys
+        let mut translation = BTreeMap::new();
         for (text, ids) in &astro_facts {
             for id in ids {
                 translation.insert(
                     id.to_owned(),
-                    tr.get(text).expect("should have id for entry text").to_owned(),
+                    tr.get(text)
+                        .expect("should have id for entry text")
+                        .to_owned(),
                 );
             }
         }
@@ -179,7 +190,7 @@ fn main() -> Result<()> {
     Ok(())
 }
 
-fn validate_entries_tr(entries: &[JsonEntry], tr: &HashMap<String, String>) {
+fn validate_entries_tr(entries: &[JsonEntry], tr: &BTreeMap<String, String>) {
     for e in entries {
         if tr.get(&e.id).is_none() {
             warn!("missing translation for {}", e.id);
@@ -197,6 +208,13 @@ fn validate_entries_tr(entries: &[JsonEntry], tr: &HashMap<String, String>) {
         if !e.entries.is_empty() {
             validate_entries_tr(&e.entries, tr);
         }
+    }
+}
+
+fn sort_entries(entries: &mut [JsonEntry]) {
+    entries.sort_unstable_by_key(|e| e.id.clone());
+    for e in entries {
+        sort_entries(&mut e.entries);
     }
 }
 
