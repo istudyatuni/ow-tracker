@@ -16,11 +16,12 @@ const TEXT_STYLE = 'margin: auto; font-family: ui-sans-serif, system-ui, sans-se
 /**
  * @param  {string} text
  * @param  {string} image_url
+ * @param  {string} color
  * @return {string}
  */
-export function make_card_svg(text, image_url) {
+export function make_card_svg(text, image_url, color) {
   return `<svg width="${FULL_CARD_WIDTH}" height="${FULL_CARD_HEIGHT}" xmlns="http://www.w3.org/2000/svg">
-    <rect x="0" y="0" width="${FULL_CARD_WIDTH}" height="${FULL_CARD_HEIGHT}" fill="#f77f35" />
+    <rect x="0" y="0" width="${FULL_CARD_WIDTH}" height="${FULL_CARD_HEIGHT}" fill="${color}" />
     <switch>
       <foreignObject x="0" y="0" width="${CARD_WIDTH}" height="${TEXT_HEIGHT}">
         <p xmlns="http://www.w3.org/1999/xhtml" style="font-size: 1.6em; ${TEXT_STYLE}">${text}</p>

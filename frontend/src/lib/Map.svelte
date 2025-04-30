@@ -52,6 +52,9 @@
     // load translations
     let tr = await (await fetch("translations/english.json")).json();
 
+    // load theme colors
+    let theme = await (await fetch("theme.json")).json();
+
     map = L.map("map", {
       center: [250, 250],
       zoom: 0,
@@ -66,10 +69,13 @@
       maxBounds: [coord_to_leaflet(-1500, -2200), coord_to_leaflet(4000, 2300)],
     });
 
+    let neutral_color = theme.neutral.color;
     for (let [id, e] of Object.entries(entries)) {
       // L.marker(e.coordinates).addTo(map).bindPopup(id);
       let c = e.coordinates;
       let [x, y] = c;
+
+      let colors = theme[library[id]?.curiosity];
 
       let is_small = id in parents;
       let mult = is_small ? SMALL_MULT : DEFAULT_MULT;
@@ -82,6 +88,7 @@
           tr[id].replaceAll("@@", "<br/>").replaceAll("$$", "-<br/>"),
           // @ts-ignore
           reader.result,
+          colors?.color || neutral_color,
         );
         L.imageOverlay("data:image/svg+xml;utf8," + encodeURIComponent(svg), [
           c,
