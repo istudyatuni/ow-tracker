@@ -5,6 +5,7 @@
   import L from "leaflet";
 
   import { CARD_HEIGHT, CARD_WIDTH, make_card_svg } from "./card";
+  import { detect_language } from "./language";
 
   const DEFAULT_MULT = 1;
   const SMALL_MULT = 0.5;
@@ -50,7 +51,8 @@
     let parents = await (await fetch("parents.json")).json();
 
     // load translations
-    let tr = await (await fetch("translations/english.json")).json();
+    let lang = detect_language();
+    let tr = await (await fetch(`translations/${lang}.json`)).json();
 
     // load theme colors
     let theme = await (await fetch("theme.json")).json();
