@@ -7,9 +7,12 @@
   import { CARD_HEIGHT, CARD_WIDTH, make_card_svg } from "./card";
   import { detect_language } from "./language";
   import { to_data_url } from "./dataurl";
+  import { CURIOSITY } from "./info";
 
   const DEFAULT_MULT = 1;
   const SMALL_MULT = 0.4;
+
+  const HIDE_CURIOSITIES = [CURIOSITY.INVISIBLE_PLANET];
 
   /** @type {import('leaflet').Map} */
   let map;
@@ -24,10 +27,10 @@
     // load ids data and rumors source ids
     let library = {};
     /**
-     * source id -> [rumor id]
+     * rumor source id -> [entry id]
      * @type {Object.<string, string[]>}
      */
-    let rumors_ids = {};
+    let source_ids = {};
     let entries_data = await (await fetch("entries.json")).json();
     function handle_entries(entries, depth = 1) {
       for (let e of entries || []) {
@@ -39,10 +42,10 @@
 
         for (let rumor of e?.facts?.rumor || []) {
           if (rumor.source_id !== undefined) {
-            if (rumors_ids[rumor.source_id] !== undefined) {
-              rumors_ids[rumor.source_id].push(e.id);
+            if (source_ids[rumor.source_id] !== undefined) {
+              source_ids[rumor.source_id].push(e.id);
             } else {
-              rumors_ids[rumor.source_id] = [e.id];
+              source_ids[rumor.source_id] = [e.id];
             }
           }
         }
@@ -111,6 +114,10 @@
 
       centers[id] = [x + h / 2, y + w / 2];
 
+      if (HIDE_CURIOSITIES.includes(library[id]?.curiosity)) {
+        continue;
+      }
+
       let img = await (await fetch(e.sprite)).blob();
       let svg = make_card_svg(
         id,
@@ -122,9 +129,12 @@
       L.svgOverlay(svg, [c, bounds]).addTo(map);
     }
 
-    for (let [source_id, rumors] of Object.entries(rumors_ids)) {
-      for (let rumor_id of rumors) {
-        L.polyline([centers[rumor_id], centers[source_id]]).addTo(map);
+    for (let [source_id, entry_ids] of Object.entries(source_ids)) {
+      if (HIDE_CURIOSITIES.includes(library[source_id]?.curiosity)) {
+        continue;
+      }
+      for (let entry_id of entry_ids) {
+        L.polyline([centers[entry_id], centers[source_id]]).addTo(map);
       }
     }
   });
