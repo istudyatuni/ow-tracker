@@ -134,7 +134,10 @@
         continue;
       }
       for (let entry_id of entry_ids) {
-        L.polyline([centers[entry_id], centers[source_id]]).addTo(map);
+        L.polyline([centers[entry_id], centers[source_id]], {
+          color: neutral_theme.color,
+          pane: "mapPane",
+        }).addTo(map);
       }
     }
   });
