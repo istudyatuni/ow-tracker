@@ -143,7 +143,7 @@
 
       centers[id] = [x + h / 2, y + w / 2];
 
-      if (HIDE_CURIOSITIES.includes(library[id]?.curiosity)) {
+      if (!TEST_SAVE && HIDE_CURIOSITIES.includes(library[id]?.curiosity)) {
         continue;
       }
       if (TEST_SAVE && !opened_cards.has(id)) {
@@ -162,10 +162,13 @@
     }
 
     for (let [source_id, entry_ids] of Object.entries(sources)) {
-      if (HIDE_CURIOSITIES.includes(library[source_id]?.curiosity)) {
+      if (
+        !TEST_SAVE &&
+        HIDE_CURIOSITIES.includes(library[source_id]?.curiosity)
+      ) {
         continue;
       }
-      if (!opened_cards.has(source_id)) {
+      if (TEST_SAVE && !opened_cards.has(source_id)) {
         continue;
       }
       for (let { entry_id, rumor_id } of entry_ids) {
