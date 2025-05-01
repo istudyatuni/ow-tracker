@@ -1,17 +1,20 @@
-const TEXT_HEIGHT = 100
+const SCALE = 0.85
 
-const IMAGE_WIDTH = 200
+const TEXT_HEIGHT = 100 * SCALE
+const FONT_SIZE_EM = 1.6 * SCALE
+
+const IMAGE_WIDTH = 200 * SCALE
 const IMAGE_HEIGHT = IMAGE_WIDTH
 
 export const CARD_HEIGHT = IMAGE_HEIGHT + TEXT_HEIGHT
 export const CARD_WIDTH = IMAGE_WIDTH
-const CARD_MARGIN = 2
+const CARD_MARGIN = 2 * SCALE
 
 const FULL_CARD_WIDTH = CARD_WIDTH + CARD_MARGIN * 2
 const FULL_CARD_HEIGHT = CARD_HEIGHT + CARD_MARGIN
 
 // todo: vertical-align not work
-const TEXT_STYLE = 'margin: auto; font-family: ui-sans-serif, system-ui, sans-serif; text-align: center; vertical-align: middle;'
+const TEXT_STYLE = 'margin: auto; font-family: ui-sans-serif, system-ui, sans-serif; text-align: center; vertical-align: middle; color: black;'
 
 const SVG_NS = "http://www.w3.org/2000/svg"
 
@@ -34,17 +37,17 @@ export function make_card_svg(id, text, image_url, color, hover_color) {
 
   // foreignObject is used to use <p> to have text auto-wrap
   e.innerHTML = `<style>
-      svg:hover > .c${hover_class} {
+      svg:hover > .${hover_class} {
         fill: ${hover_color};
       }
       rect {
         pointer-events:auto;
       }
     </style>
-    <rect x="0" y="0" id="${id}" width="${FULL_CARD_WIDTH}" height="${FULL_CARD_HEIGHT}" fill="${color}" class="c${hover_class}" />
+    <rect x="0" y="0" id="${id}" width="${FULL_CARD_WIDTH}" height="${FULL_CARD_HEIGHT}" fill="${color}" class="${hover_class}" />
     <switch>
       <foreignObject x="0" y="0" width="${CARD_WIDTH}" height="${TEXT_HEIGHT}">
-        <p xmlns="http://www.w3.org/1999/xhtml" style="font-size: 1.6em; ${TEXT_STYLE}">${text}</p>
+        <p xmlns="http://www.w3.org/1999/xhtml" style="font-size: ${FONT_SIZE_EM}em; ${TEXT_STYLE}">${text}</p>
       </foreignObject>
       <text x="0" y="0" font-size="20" text-anchor="middle" fill="white">svg viewer doesn't support html</text>
     </switch>
