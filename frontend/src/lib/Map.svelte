@@ -30,8 +30,9 @@
     let save_data = (await (await fetch("test-save.json")).json())
       .shipLogFactSaves;
 
-    let is_fact_opened = (fact) =>
-      fact.read || fact.revealOrder >= 0 || fact.newlyRevealed;
+    // todo: not sure if read and newlyRevealed affect showing
+    // || fact.read || fact.newlyRevealed
+    let is_fact_opened = (fact) => fact.revealOrder >= 0;
 
     // which facts in save are opened
     let opened_facts = new Set();
