@@ -118,7 +118,7 @@
 
     map = L.map("map", {
       center: [250, 250],
-      zoom: 0,
+      zoom: -2,
       minZoom: -2,
       maxZoom: 2,
       // not work
