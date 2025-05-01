@@ -6,6 +6,7 @@
 
   import { CARD_HEIGHT, CARD_WIDTH, make_card_svg } from "./card";
   import { detect_language } from "./language";
+  import { to_data_url } from "./dataurl";
 
   const DEFAULT_MULT = 1;
   const SMALL_MULT = 0.5;
@@ -83,18 +84,13 @@
       let bounds = [x - CARD_HEIGHT * mult, y + CARD_WIDTH * mult];
 
       let img = await (await fetch(e.sprite)).blob();
-      const reader = new FileReader();
-      reader.readAsDataURL(img);
-      reader.onloadend = () => {
-        let svg = make_card_svg(
-          tr[id].replaceAll("@@", "<br/>").replaceAll("$$", "-<br/>"),
-          // @ts-ignore
-          reader.result,
-          colors?.color,
-          colors?.highlight,
-        );
-        L.svgOverlay(svg, [c, bounds]).addTo(map);
-      };
+      let svg = make_card_svg(
+        tr[id].replaceAll("@@", "<br/>").replaceAll("$$", "-<br/>"),
+        await to_data_url(img),
+        colors?.color,
+        colors?.highlight,
+      );
+      L.svgOverlay(svg, [c, bounds]).addTo(map);
     }
   });
 </script>
