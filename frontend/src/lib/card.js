@@ -16,13 +16,14 @@ const TEXT_STYLE = 'margin: auto; font-family: ui-sans-serif, system-ui, sans-se
 const SVG_NS = "http://www.w3.org/2000/svg"
 
 /**
+ * @param  {string} id Unique id, used for detecting clicked element
  * @param  {string} text
  * @param  {string} image_url
  * @param  {string} color
  * @param  {string} hover_color
  * @return {SVGElement}
  */
-export function make_card_svg(text, image_url, color, hover_color) {
+export function make_card_svg(id, text, image_url, color, hover_color) {
   let e = document.createElementNS(SVG_NS, "svg")
   e.setAttribute("xmlns", SVG_NS)
   e.setAttribute("viewBox", `0 0 ${FULL_CARD_WIDTH} ${FULL_CARD_HEIGHT}`)
@@ -40,7 +41,7 @@ export function make_card_svg(text, image_url, color, hover_color) {
         pointer-events:auto;
       }
     </style>
-    <rect x="0" y="0" width="${FULL_CARD_WIDTH}" height="${FULL_CARD_HEIGHT}" fill="${color}" class="c${hover_class}" />
+    <rect x="0" y="0" id="${id}" width="${FULL_CARD_WIDTH}" height="${FULL_CARD_HEIGHT}" fill="${color}" class="c${hover_class}" />
     <switch>
       <foreignObject x="0" y="0" width="${CARD_WIDTH}" height="${TEXT_HEIGHT}">
         <p xmlns="http://www.w3.org/1999/xhtml" style="font-size: 1.6em; ${TEXT_STYLE}">${text}</p>

@@ -11,6 +11,7 @@
   const DEFAULT_MULT = 1;
   const SMALL_MULT = 0.5;
 
+  /** @type {import('leaflet').Map} */
   let map;
 
   /** @return {import('leaflet').LatLngTuple} */
@@ -71,6 +72,13 @@
       // y: [-1577, 1707]
       maxBounds: [coord_to_leaflet(-1500, -2200), coord_to_leaflet(4000, 2300)],
     });
+    map.on("click", (e) => {
+      // @ts-ignore
+      let id = e.originalEvent.target.id
+      if (id !== 'map') {
+        alert(`Clicked ${id}`)
+      }
+    });
 
     let neutral_theme = theme.neutral;
     for (let [id, e] of Object.entries(entries)) {
@@ -85,6 +93,7 @@
 
       let img = await (await fetch(e.sprite)).blob();
       let svg = make_card_svg(
+        id,
         tr[id].replaceAll("@@", "<br/>").replaceAll("$$", "-<br/>"),
         await to_data_url(img),
         colors?.color,
