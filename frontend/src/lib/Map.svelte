@@ -9,7 +9,7 @@
   import { to_data_url } from "./dataurl";
 
   const DEFAULT_MULT = 1;
-  const SMALL_MULT = 0.5;
+  const SMALL_MULT = 0.4;
 
   /** @type {import('leaflet').Map} */
   let map;
@@ -21,18 +21,30 @@
   }
 
   onMount(async () => {
-    // load ids data
+    // load ids data and rumors source ids
     let library = {};
+    /**
+     * source id -> [rumor id]
+     * @type {Object.<string, string[]>}
+     */
+    let rumors_ids = {};
     let entries_data = await (await fetch("entries.json")).json();
     function handle_entries(entries, depth = 1) {
-      if (entries === undefined) {
-        return;
-      }
-      for (let e of entries) {
+      for (let e of entries || []) {
         if (e.curiosity !== undefined) {
           library[e.id] = {
             curiosity: e.curiosity,
           };
+        }
+
+        for (let rumor of e?.facts?.rumor || []) {
+          if (rumor.source_id !== undefined) {
+            if (rumors_ids[rumor.source_id] !== undefined) {
+              rumors_ids[rumor.source_id].push(e.id);
+            } else {
+              rumors_ids[rumor.source_id] = [e.id];
+            }
+          }
         }
         handle_entries(e.entries, depth + 1);
       }
@@ -64,6 +76,8 @@
       zoom: 0,
       minZoom: -2,
       maxZoom: 2,
+      // not work
+      zoomDelta: 0.5,
       crs: L.CRS.Simple,
       attributionControl: false,
       zoomControl: false,
@@ -74,11 +88,13 @@
     });
     map.on("click", (e) => {
       // @ts-ignore
-      let id = e.originalEvent.target.id
-      if (id !== 'map') {
-        alert(`Clicked ${id}`)
+      let id = e.originalEvent.target.id;
+      if (id !== "map") {
+        alert(`Clicked ${id}`);
       }
     });
+
+    let centers = {};
 
     let neutral_theme = theme.neutral;
     for (let [id, e] of Object.entries(entries)) {
@@ -89,7 +105,11 @@
 
       let c = e.coordinates;
       let [x, y] = c;
-      let bounds = [x - CARD_HEIGHT * mult, y + CARD_WIDTH * mult];
+      let w = CARD_WIDTH * mult;
+      let h = CARD_HEIGHT * mult;
+      let bounds = [x + h, y + w];
+
+      centers[id] = [x + h / 2, y + w / 2];
 
       let img = await (await fetch(e.sprite)).blob();
       let svg = make_card_svg(
@@ -100,6 +120,12 @@
         colors?.highlight,
       );
       L.svgOverlay(svg, [c, bounds]).addTo(map);
+    }
+
+    for (let [source_id, rumors] of Object.entries(rumors_ids)) {
+      for (let rumor_id of rumors) {
+        L.polyline([centers[rumor_id], centers[source_id]]).addTo(map);
+      }
     }
   });
 </script>
