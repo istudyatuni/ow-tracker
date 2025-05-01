@@ -49,34 +49,43 @@
      */
     let sources = {};
     let entries_data = await (await fetch("entries.json")).json();
+    // opened cards ids
     let opened_cards = new Set();
+    // cards ids where img is opened
+    let opened_card_imgs = new Set();
+
     function handle_entries(entries) {
       for (let e of entries || []) {
         library[e.id] = {
           curiosity: e.curiosity,
         };
 
-        // fill opened_cards
-        for (let fact of [
-          ...(e?.facts?.explore || []),
-          ...(e?.facts?.rumor || []),
-        ]) {
+        // fill opened_cards and opened_card_imgs
+        for (let fact of e?.facts?.explore || []) {
+          if (opened_facts.has(fact.id)) {
+            opened_cards.add(e.id);
+            opened_card_imgs.add(e.id);
+          }
+        }
+        for (let fact of e?.facts?.rumor || []) {
           if (opened_facts.has(fact.id)) {
             opened_cards.add(e.id);
           }
         }
         // fill source_ids
         for (let fact of e?.facts?.rumor || []) {
-          if (fact.source_id !== undefined) {
-            let obj = {
-              entry_id: e.id,
-              rumor_id: fact.id,
-            };
-            if (sources[fact.source_id] !== undefined) {
-              sources[fact.source_id].push(obj);
-            } else {
-              sources[fact.source_id] = [obj];
-            }
+          if (fact.source_id === undefined) {
+            continue;
+          }
+
+          let obj = {
+            entry_id: e.id,
+            rumor_id: fact.id,
+          };
+          if (sources[fact.source_id] !== undefined) {
+            sources[fact.source_id].push(obj);
+          } else {
+            sources[fact.source_id] = [obj];
           }
         }
         handle_entries(e.entries);
@@ -90,7 +99,9 @@
     for (let e of coordinates_data.entries) {
       entries[e.id] = {
         coordinates: coord_to_leaflet(e.cardPosition.x, e.cardPosition.y),
-        sprite: "/sprites/" + e.spritePath.replace("png", "jpg"),
+        sprite: opened_card_imgs.has(e.id)
+          ? "/sprites/" + e.spritePath.replace("png", "jpg")
+          : null,
       };
     }
 
@@ -151,11 +162,17 @@
         continue;
       }
 
-      let img = await (await fetch(e.sprite)).blob();
+      let img = await (async () => {
+        if (e.sprite === null) {
+          return null;
+        }
+        let img = await (await fetch(e.sprite)).blob();
+        return await to_data_url(img);
+      })();
       let svg = make_card_svg(
         id,
         tr[id].replaceAll("@@", "<br/>").replaceAll("$$", "-<br/>"),
-        await to_data_url(img),
+        img,
         colors?.color,
         colors?.highlight,
       );

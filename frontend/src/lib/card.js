@@ -18,6 +18,18 @@ const TEXT_STYLE = 'margin: auto; font-family: ui-sans-serif, system-ui, sans-se
 
 export const SVG_NS = "http://www.w3.org/2000/svg"
 
+const QUESTION = {
+  color: {
+    mark: 'orange',
+    bg: '#02101b',
+  },
+  size: {
+    x: IMAGE_WIDTH / 3,
+    y: TEXT_HEIGHT + IMAGE_HEIGHT / 1.4,
+    font: IMAGE_HEIGHT * 2 / 3,
+  },
+}
+
 /**
  * @param  {string} id Unique id, used for detecting clicked element
  * @param  {string} text
@@ -35,6 +47,15 @@ export function make_card_svg(id, text, image_url, color, hover_color) {
   // todo: probably it's possible to not embed it inside svg
   let hover_class = hover_color.replace('#', 'c')
 
+  let img
+  let img_size = `x="${CARD_MARGIN}" y="${TEXT_HEIGHT}" width="${IMAGE_WIDTH}" height="${IMAGE_HEIGHT}"`
+  if (image_url === null) {
+    img = `<rect ${img_size} fill="${QUESTION.color.bg}" />
+      <text x="${QUESTION.size.x}" y="${QUESTION.size.y}" fill="${QUESTION.color.mark}" style="font-size: ${QUESTION.size.font}px">?</text>`
+  } else {
+    img = `<image href="${image_url}" ${img_size} />`
+  }
+
   // foreignObject is used to use <p> to have text auto-wrap
   e.innerHTML = `<style>
       svg:hover > .${hover_class} {
@@ -51,6 +72,6 @@ export function make_card_svg(id, text, image_url, color, hover_color) {
       </foreignObject>
       <text x="0" y="0" font-size="20" text-anchor="middle" fill="white">svg viewer doesn't support html</text>
     </switch>
-    <image href="${image_url}" x="${CARD_MARGIN}" y="${TEXT_HEIGHT}" width="${IMAGE_WIDTH}" height="${IMAGE_HEIGHT}" />`
+    ${img}`
   return e
 }
