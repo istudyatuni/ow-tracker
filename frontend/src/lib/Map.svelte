@@ -13,6 +13,8 @@
   const SMALL_MULT = 0.4;
 
   const HIDE_CURIOSITIES = [CURIOSITY.INVISIBLE_PLANET];
+  // pretend that save file was loaded
+  const TEST_SAVE = true;
 
   /** @type {import('leaflet').Map} */
   let map;
@@ -24,32 +26,59 @@
   }
 
   onMount(async () => {
+    let save_data = (await (await fetch("test-save.json")).json())
+      .shipLogFactSaves;
+
+    let is_fact_opened = (fact) =>
+      fact.read || fact.revealOrder >= 0 || fact.newlyRevealed;
+
+    // which facts in save are opened
+    let opened_facts = new Set();
+    for (let [id, fact] of Object.entries(save_data)) {
+      if (is_fact_opened(fact)) {
+        opened_facts.add(id);
+      }
+    }
+
     // load ids data and rumors source ids
     let library = {};
     /**
-     * rumor source id -> [entry id]
-     * @type {Object.<string, string[]>}
+     * rumor's source id -> [{entry_id, rumor_id}]
+     * @type {Object.<string, Object.<string, string>[]>}
      */
-    let source_ids = {};
+    let sources = {};
     let entries_data = await (await fetch("entries.json")).json();
-    function handle_entries(entries, depth = 1) {
+    let opened_cards = new Set();
+    function handle_entries(entries) {
       for (let e of entries || []) {
-        if (e.curiosity !== undefined) {
-          library[e.id] = {
-            curiosity: e.curiosity,
-          };
-        }
+        library[e.id] = {
+          curiosity: e.curiosity,
+        };
 
-        for (let rumor of e?.facts?.rumor || []) {
-          if (rumor.source_id !== undefined) {
-            if (source_ids[rumor.source_id] !== undefined) {
-              source_ids[rumor.source_id].push(e.id);
+        // fill opened_cards
+        for (let fact of [
+          ...(e?.facts?.explore || []),
+          ...(e?.facts?.rumor || []),
+        ]) {
+          if (opened_facts.has(fact.id)) {
+            opened_cards.add(e.id);
+          }
+        }
+        // fill source_ids
+        for (let fact of e?.facts?.rumor || []) {
+          if (fact.source_id !== undefined) {
+            let obj = {
+              entry_id: e.id,
+              rumor_id: fact.id,
+            };
+            if (sources[fact.source_id] !== undefined) {
+              sources[fact.source_id].push(obj);
             } else {
-              source_ids[rumor.source_id] = [e.id];
+              sources[fact.source_id] = [obj];
             }
           }
         }
-        handle_entries(e.entries, depth + 1);
+        handle_entries(e.entries);
       }
     }
     handle_entries(entries_data);
@@ -117,6 +146,9 @@
       if (HIDE_CURIOSITIES.includes(library[id]?.curiosity)) {
         continue;
       }
+      if (TEST_SAVE && !opened_cards.has(id)) {
+        continue;
+      }
 
       let img = await (await fetch(e.sprite)).blob();
       let svg = make_card_svg(
@@ -129,11 +161,17 @@
       L.svgOverlay(svg, [c, bounds]).addTo(map);
     }
 
-    for (let [source_id, entry_ids] of Object.entries(source_ids)) {
+    for (let [source_id, entry_ids] of Object.entries(sources)) {
       if (HIDE_CURIOSITIES.includes(library[source_id]?.curiosity)) {
         continue;
       }
-      for (let entry_id of entry_ids) {
+      if (!opened_cards.has(source_id)) {
+        continue;
+      }
+      for (let { entry_id, rumor_id } of entry_ids) {
+        if (TEST_SAVE && !opened_facts.has(rumor_id)) {
+          continue;
+        }
         L.polyline([centers[entry_id], centers[source_id]], {
           color: neutral_theme.color,
           pane: "mapPane",
