@@ -4,6 +4,7 @@
   import "leaflet/dist/leaflet.css";
   import L from "leaflet";
 
+  import { make_rumor_arrow } from "./arrow";
   import { CARD_HEIGHT, CARD_WIDTH, make_card_svg } from "./card";
   import { detect_language } from "./language";
   import { to_data_url } from "./dataurl";
@@ -175,8 +176,12 @@
         if (TEST_SAVE && !opened_facts.has(rumor_id)) {
           continue;
         }
-        L.polyline([centers[entry_id], centers[source_id]], {
-          color: neutral_theme.color,
+        let svg = make_rumor_arrow(
+          rumor_id,
+          centers[source_id],
+          centers[entry_id],
+        );
+        L.svgOverlay(svg, [centers[source_id], centers[entry_id]], {
           pane: "mapPane",
         }).addTo(map);
       }

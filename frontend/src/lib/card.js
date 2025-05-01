@@ -16,7 +16,7 @@ const FULL_CARD_HEIGHT = CARD_HEIGHT + CARD_MARGIN
 // todo: vertical-align not work
 const TEXT_STYLE = 'margin: auto; font-family: ui-sans-serif, system-ui, sans-serif; text-align: center; vertical-align: middle; color: black;'
 
-const SVG_NS = "http://www.w3.org/2000/svg"
+export const SVG_NS = "http://www.w3.org/2000/svg"
 
 /**
  * @param  {string} id Unique id, used for detecting clicked element
