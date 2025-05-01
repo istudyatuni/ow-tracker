@@ -71,16 +71,16 @@
       maxBounds: [coord_to_leaflet(-1500, -2200), coord_to_leaflet(4000, 2300)],
     });
 
-    let neutral_color = theme.neutral.color;
+    let neutral_theme = theme.neutral;
     for (let [id, e] of Object.entries(entries)) {
-      // L.marker(e.coordinates).addTo(map).bindPopup(id);
-      let c = e.coordinates;
-      let [x, y] = c;
-
-      let colors = theme[library[id]?.curiosity];
+      let colors = theme[library[id]?.curiosity] || neutral_theme;
 
       let is_small = id in parents;
       let mult = is_small ? SMALL_MULT : DEFAULT_MULT;
+
+      let c = e.coordinates;
+      let [x, y] = c;
+      let bounds = [x - CARD_HEIGHT * mult, y + CARD_WIDTH * mult];
 
       let img = await (await fetch(e.sprite)).blob();
       const reader = new FileReader();
@@ -90,12 +90,10 @@
           tr[id].replaceAll("@@", "<br/>").replaceAll("$$", "-<br/>"),
           // @ts-ignore
           reader.result,
-          colors?.color || neutral_color,
+          colors?.color,
+          colors?.highlight,
         );
-        L.imageOverlay("data:image/svg+xml;utf8," + encodeURIComponent(svg), [
-          c,
-          [x - CARD_HEIGHT * mult, y + CARD_WIDTH * mult],
-        ]).addTo(map);
+        L.svgOverlay(svg, [c, bounds]).addTo(map);
       };
     }
   });
