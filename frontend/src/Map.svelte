@@ -4,11 +4,11 @@
   import "leaflet/dist/leaflet.css";
   import L from "leaflet";
 
-  import { make_rumor_arrow } from "./arrow";
-  import { CARD_HEIGHT, CARD_WIDTH, make_card_svg } from "./card";
-  import { detect_language } from "./language";
-  import { to_data_url } from "./dataurl";
-  import { CURIOSITY } from "./info";
+  import { make_rumor_arrow } from "./lib/arrow";
+  import { CARD_HEIGHT, CARD_WIDTH, make_card_svg } from "./lib/card";
+  import { detect_language } from "./lib/language";
+  import { to_data_url } from "./lib/dataurl";
+  import { CURIOSITY } from "./lib/info";
 
   const DEFAULT_MULT = 1;
   const SMALL_MULT = 0.4;

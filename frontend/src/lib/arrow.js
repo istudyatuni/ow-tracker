@@ -11,14 +11,16 @@ export function make_rumor_arrow(id, center1, center2, color = 'gray') {
 	let [x1, y1] = center1
 	let [x2, y2] = center2
 
-	let rect_width = Math.max(y1, y2) - Math.min(y1, y2)
-	let rect_height = Math.max(x1, x2) - Math.min(x1, x2)
+	let stroke = 20
+
+	let rect_width = Math.abs(y2 - y1)
+	let rect_height = Math.abs(x2 - x1)
 
 	let dx = x2 - x1
 	let dy = y2 - y1
 
-	// one coordinate increases, other decreases
 	if (dx * dy < 0) {
+		// when `dx * dy < 0` one coordinate increases, other decreases, so `dx` and `dy` has different signs
 		// top left -> bottom right
 		x1 = 0
 		y1 = 0
@@ -37,7 +39,7 @@ export function make_rumor_arrow(id, center1, center2, color = 'gray') {
 	// todo: fix thin lines when rect width or height < stroke width
 	e.setAttribute("viewBox", `0 0 ${rect_width} ${rect_height}`)
 
-	e.innerHTML = `<style>line{pointer-events:auto}</style><line id="${id}" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${color}" stroke-width="20" />`
+	e.innerHTML = `<style>line{pointer-events:auto}</style><line id="${id}" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${color}" stroke-width="${stroke}" />`
 
 	return e
 }

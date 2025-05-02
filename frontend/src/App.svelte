@@ -2,7 +2,7 @@
   // import svelteLogo from './assets/svelte.svg'
   // import viteLogo from '/vite.svg'
 
-  import Map from "./lib/Map.svelte";
+  import Map from "./Map.svelte";
 </script>
 
 <main>
