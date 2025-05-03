@@ -9,7 +9,7 @@ const STROKE = 10
  * @param  {import('leaflet').LatLngTuple} center2
  * @return {SVGElement}
  */
-export function make_rumor_arrow(id, center1, center2, color = 'gray') {
+export function make_rumor_arrow(id, center1, center2, color = 'gray', hover_color = 'lightgray') {
 	let [x1, y1] = center1
 	let [x2, y2] = center2
 
@@ -38,7 +38,8 @@ export function make_rumor_arrow(id, center1, center2, color = 'gray') {
 	e.setAttribute("xmlns", SVG_NS)
 	e.setAttribute("viewBox", `0 0 ${rect_width} ${rect_height}`)
 
-	e.innerHTML = `<style>line{pointer-events:auto}</style><line id="${id}" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${color}" stroke-width="${STROKE}" />`
+	e.innerHTML = `<style>line{pointer-events:auto}line:hover{stroke:${hover_color}}</style>
+		<line id="${id}" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${color}" stroke-width="${STROKE}" />`
 
 	return e
 }
