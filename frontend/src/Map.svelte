@@ -11,8 +11,17 @@
   import { CURIOSITY } from "./lib/info";
 
   const DEFAULT_MULT = 1;
+  const BIG_MULT = 1.4;
   const SMALL_MULT = 0.4;
 
+  const BIG_CARDS = new Set([
+    "COMET_INTERIOR",
+    "DB_VESSEL",
+    "IP_RING_WORLD",
+    "ORBITAL_PROBE_CANNON",
+    "QUANTUM_MOON",
+    "TT_TIME_LOOP_DEVICE",
+  ]);
   const HIDE_CURIOSITIES = [CURIOSITY.INVISIBLE_PLANET];
   // pretend that save file was loaded
   const TEST_SAVE = true;
@@ -96,13 +105,11 @@
 
     // load coordinates and images
     let entries = {};
-    let coordinates_data = await (await fetch("library.json")).json();
-    for (let e of coordinates_data.entries) {
-      entries[e.id] = {
-        coordinates: coord_to_leaflet(e.cardPosition.x, e.cardPosition.y),
-        sprite: opened_card_imgs.has(e.id)
-          ? "/sprites/" + e.spritePath.replace("png", "jpg")
-          : null,
+    let coordinates_data = await (await fetch("coordinates.json")).json();
+    for (let [id, [x, y]] of Object.entries(coordinates_data)) {
+      entries[id] = {
+        coordinates: coord_to_leaflet(x, y),
+        sprite: opened_card_imgs.has(id) ? `/sprites/${id}.jpg` : null,
       };
     }
 
@@ -141,12 +148,19 @@
 
     let centers = {};
 
+    // draw cards
     let neutral_theme = theme.neutral;
     for (let [id, e] of Object.entries(entries)) {
       let colors = theme[library[id]?.curiosity] || neutral_theme;
 
       let is_small = id in parents;
-      let mult = is_small ? SMALL_MULT : DEFAULT_MULT;
+      let is_big = BIG_CARDS.has(id);
+      let mult = DEFAULT_MULT;
+      if (is_small) {
+        mult = SMALL_MULT;
+      } else if (is_big) {
+        mult = BIG_MULT;
+      }
 
       let c = e.coordinates;
       let [x, y] = c;
@@ -180,6 +194,7 @@
       L.svgOverlay(svg, [c, bounds]).addTo(map);
     }
 
+    // draw rumor arrows
     for (let [source_id, entry_ids] of Object.entries(sources)) {
       if (
         !TEST_SAVE &&
