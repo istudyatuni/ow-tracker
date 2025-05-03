@@ -17,12 +17,11 @@ export function get_save_opened_facts(facts_data) {
 
 export function export_save_to_browser_url(keys, opened) {
 	let encoded = encode_save(keys, opened)
-	encoded = encodeURIComponent(encoded)
 	window.location.hash = `save=${encoded}`
 }
 
 export function get_save_from_browser_url(keys) {
-	let encoded = decodeURIComponent(window.location.hash.split('=')[1])
+	let encoded = window.location.hash.split('=')[1]
 	let opened = decode_save(keys, encoded)
 	return opened
 }
@@ -41,7 +40,7 @@ export function encode_save(keys, opened) {
 	}
 
 	let packed = pack_bools(keys.map((id) => opened.has(id)))
-	return btoa(packed.join(','))
+	return btoa(String.fromCharCode(...packed))
 }
 
 /**
@@ -50,7 +49,8 @@ export function encode_save(keys, opened) {
  * @return {Set.<string>|null}
  */
 export function decode_save(keys, encoded) {
-	let unpacked = unpack_bools(atob(encoded).split(',').map((s) => parseInt(s)))
+	let bytes = [...atob(encoded)].map((char) => char.charCodeAt(0))
+	let unpacked = unpack_bools(bytes)
 	keys = keys.sort()
 	let keys_count = keys.length
 	let unpacked_count = unpacked.length
