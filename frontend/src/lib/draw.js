@@ -22,6 +22,11 @@ const BIG_CARDS = new Set([
 	"TT_TIME_LOOP_DEVICE",
 ]);
 
+// names doesn't mean anything here, just panes with increasing z-index
+const RUMOR_PANE = 'mapPane'
+const SMALL_PANE = 'markerPane'
+const NORMAL_PANE = 'overlayPane'
+
 export async function generate_all_svg() {
 	let save_data = (await (await fetch("test-save.json")).json())
 		.shipLogFactSaves;
@@ -115,9 +120,10 @@ export async function generate_all_svg() {
 
 	let centers = {};
 
+	let svgs = []
+
 	// draw cards
 	let neutral_theme = theme.neutral;
-	let cards_svgs = [];
 	for (let [id, e] of Object.entries(entries)) {
 		let colors = theme[library[id]?.curiosity] || neutral_theme;
 
@@ -159,11 +165,10 @@ export async function generate_all_svg() {
 			colors?.color,
 			colors?.highlight,
 		);
-		cards_svgs.push({ svg, coords: [start_bounds, end_bounds] })
+		svgs.push({ svg, coords: [start_bounds, end_bounds], pane: is_small ? SMALL_PANE : NORMAL_PANE })
 	}
 
 	// draw rumor arrows
-	let rumor_svgs = [];
 	for (let [source_id, entry_ids] of Object.entries(sources)) {
 		if (
 			!TEST_SAVE &&
@@ -184,11 +189,11 @@ export async function generate_all_svg() {
 				centers[entry_id],
 			);
 			let coords = expand_thin_bounds([centers[source_id], centers[entry_id]])
-			rumor_svgs.push({ svg, coords })
+			svgs.push({ svg, coords, pane: RUMOR_PANE })
 		}
 	}
 
-	return { cards: cards_svgs, rumors: rumor_svgs }
+	return svgs
 }
 
 /** @return {import('leaflet').LatLngTuple} */

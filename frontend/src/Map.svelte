@@ -43,14 +43,9 @@
       }
     });
 
-    let { cards, rumors } = await generate_all_svg();
-    for (let { svg, coords } of cards) {
-      L.svgOverlay(svg, coords).addTo(map);
-    }
-    for (let { svg, coords } of rumors) {
-      L.svgOverlay(svg, coords, {
-        pane: "mapPane",
-      }).addTo(map);
+    let svgs = await generate_all_svg();
+    for (let { svg, coords, pane } of svgs) {
+      L.svgOverlay(svg, coords, { pane }).addTo(map);
     }
   });
 </script>
