@@ -1,6 +1,6 @@
 import { SVG_NS } from './card'
 
-const STROKE = 10
+const STROKE = 8
 
 /**
  * Make svg arrow from center1 to center2

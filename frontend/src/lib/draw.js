@@ -9,8 +9,8 @@ const HIDE_CURIOSITIES = [CURIOSITY.INVISIBLE_PLANET];
 // pretend that save file was loaded
 const TEST_SAVE = true;
 
-const DEFAULT_MULT = 1;
-const BIG_MULT = 1.4;
+const DEFAULT_MULT = 0.7;
+const BIG_MULT = 1.2;
 const SMALL_MULT = 0.4;
 
 const BIG_CARDS = new Set([
