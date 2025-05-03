@@ -137,8 +137,7 @@
       // x: [-878, 3341.8005]
       // y: [-1577, 1707]
       maxBounds: [coord_to_leaflet(-1500, -2200), coord_to_leaflet(4000, 2300)],
-    });
-    map.on("click", (e) => {
+    }).on("click", (e) => {
       // @ts-ignore
       let id = e.originalEvent.target.id;
       if (id !== "map") {
