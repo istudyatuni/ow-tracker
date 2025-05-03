@@ -5,7 +5,7 @@ import { to_data_url } from './dataurl';
 import { CURIOSITY } from './info';
 import { detect_language } from './language';
 import { get_save_from_browser_url } from './saves';
-import { LOADING } from './stores';
+import { LOADING, SAVE_FOUND } from './stores';
 
 const HIDE_CURIOSITIES = [CURIOSITY.INVISIBLE_PLANET];
 // pretend that save file was loaded
@@ -30,6 +30,12 @@ const NORMAL_PANE = 'overlayPane'
 const SMALL_PANE = 'markerPane'
 
 export async function generate_all_svg() {
+	if (window.location.hash === '') {
+		return []
+	}
+
+	SAVE_FOUND.set(true)
+
 	LOADING.set('defined save keys')
 
 	let save_keys = await (await fetch(import.meta.env.BASE_URL + "/save_keys.json")).json();
