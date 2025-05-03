@@ -1,0 +1,2186 @@
+[
+  {
+    "id": "BRITTLE_HOLLOW",
+    "entries": [
+      {
+        "id": "BH_BLACK_HOLE_FORGE",
+        "curiosity": "TIME_LOOP",
+        "facts": {
+          "explore": [
+            {
+              "id": "BH_BLACK_HOLE_FORGE_X4"
+            },
+            {
+              "id": "BH_BLACK_HOLE_FORGE_X5"
+            },
+            {
+              "id": "BH_BLACK_HOLE_FORGE_X6"
+            },
+            {
+              "id": "BH_BLACK_HOLE_FORGE_X1"
+            },
+            {
+              "id": "BH_BLACK_HOLE_FORGE_X3"
+            }
+          ],
+          "rumor": [
+            {
+              "id": "BH_BLACK_HOLE_FORGE_R1",
+              "source_id": "BH_HANGING_CITY"
+            },
+            {
+              "id": "BH_BLACK_HOLE_FORGE_R2",
+              "source_id": "BH_HANGING_CITY"
+            },
+            {
+              "id": "BH_BLACK_HOLE_FORGE_R3",
+              "source_id": "BH_HANGING_CITY"
+            },
+            {
+              "id": "BH_BLACK_HOLE_FORGE_R4",
+              "source_id": "TT_WARP_TOWERS"
+            }
+          ]
+        },
+        "entries": [
+          {
+            "id": "BH_WARP_ALIGNMENT_MAP",
+            "curiosity": "TIME_LOOP",
+            "facts": {
+              "explore": [
+                {
+                  "id": "BH_WARP_ALIGNMENT_MAP_X1"
+                },
+                {
+                  "id": "BH_WARP_ALIGNMENT_MAP_X2"
+                },
+                {
+                  "id": "BH_WARP_ALIGNMENT_MAP_X3"
+                },
+                {
+                  "id": "BH_WARP_ALIGNMENT_MAP_X4"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": "BH_ESCAPE_POD",
+        "curiosity": "VESSEL",
+        "facts": {
+          "explore": [
+            {
+              "id": "BH_ESCAPE_POD_X1"
+            },
+            {
+              "id": "BH_ESCAPE_POD_X2"
+            }
+          ],
+          "rumor": [
+            {
+              "id": "BH_ESCAPE_POD_R1",
+              "source_id": "BH_MURAL_3"
+            }
+          ]
+        }
+      },
+      {
+        "id": "BH_GRAVITY_CANNON",
+        "curiosity": "QUANTUM_MOON",
+        "facts": {
+          "explore": [
+            {
+              "id": "BH_GRAVITY_CANNON_X1",
+              "ignore_more_to_explore": true
+            },
+            {
+              "id": "BH_GRAVITY_CANNON_X2"
+            }
+          ]
+        }
+      },
+      {
+        "id": "BH_HANGING_CITY",
+        "facts": {
+          "explore": [
+            {
+              "id": "BH_HANGING_CITY_X1"
+            },
+            {
+              "id": "BH_HANGING_CITY_X2"
+            },
+            {
+              "id": "BH_HANGING_CITY_X3"
+            },
+            {
+              "id": "BH_HANGING_CITY_X4"
+            }
+          ],
+          "rumor": [
+            {
+              "id": "BH_HANGING_CITY_R1",
+              "source_id": "BH_OLD_SETTLEMENT"
+            },
+            {
+              "id": "BH_HANGING_CITY_R2"
+            }
+          ]
+        }
+      },
+      {
+        "id": "BH_OBSERVATORY",
+        "curiosity": "SUNKEN_MODULE",
+        "facts": {
+          "explore": [
+            {
+              "id": "BH_OBSERVATORY_X1"
+            },
+            {
+              "id": "BH_OBSERVATORY_X2"
+            },
+            {
+              "id": "BH_OBSERVATORY_X3"
+            },
+            {
+              "id": "BH_OBSERVATORY_X4"
+            }
+          ],
+          "rumor": [
+            {
+              "id": "BH_OBSERVATORY_R1",
+              "source_id": "TM_EYE_LOCATOR"
+            },
+            {
+              "id": "BH_OBSERVATORY_R2",
+              "source_id": "GD_CONSTRUCTION_YARD"
+            },
+            {
+              "id": "BH_OBSERVATORY_R3",
+              "source_id": "BH_RIEBECK"
+            },
+            {
+              "id": "BH_OBSERVATORY_R4"
+            }
+          ]
+        },
+        "entries": [
+          {
+            "id": "BH_TORNADO_SIMULATION",
+            "curiosity": "SUNKEN_MODULE",
+            "facts": {
+              "explore": [
+                {
+                  "id": "BH_TORNADO_SIMULATION_X1"
+                },
+                {
+                  "id": "BH_TORNADO_SIMULATION_X2"
+                }
+              ],
+              "rumor": [
+                {
+                  "id": "BH_TORNADO_SIMULATION_R1",
+                  "source_id": "GD_CONSTRUCTION_YARD"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": "BH_OLD_SETTLEMENT",
+        "curiosity": "VESSEL",
+        "facts": {
+          "explore": [
+            {
+              "id": "BH_OLD_SETTLEMENT_X1"
+            },
+            {
+              "id": "BH_OLD_SETTLEMENT_X2"
+            },
+            {
+              "id": "BH_OLD_SETTLEMENT_X3"
+            },
+            {
+              "id": "BH_OLD_SETTLEMENT_X4",
+              "ignore_more_to_explore": true
+            }
+          ],
+          "rumor": [
+            {
+              "id": "BH_OLD_SETTLEMENT_R1",
+              "source_id": "BH_ESCAPE_POD"
+            }
+          ]
+        },
+        "entries": [
+          {
+            "id": "BH_MURAL_1",
+            "curiosity": "VESSEL",
+            "facts": {
+              "explore": [
+                {
+                  "id": "BH_MURAL_1_X1"
+                }
+              ]
+            }
+          },
+          {
+            "id": "BH_MURAL_2",
+            "curiosity": "VESSEL",
+            "facts": {
+              "explore": [
+                {
+                  "id": "BH_MURAL_2_X1"
+                }
+              ]
+            }
+          },
+          {
+            "id": "BH_MURAL_3",
+            "curiosity": "VESSEL",
+            "facts": {
+              "explore": [
+                {
+                  "id": "BH_MURAL_3_X1"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": "BH_QUANTUM_RESEARCH_TOWER",
+        "curiosity": "QUANTUM_MOON",
+        "facts": {
+          "explore": [
+            {
+              "id": "BH_QUANTUM_RESEARCH_TOWER_X1"
+            },
+            {
+              "id": "BH_QUANTUM_RESEARCH_TOWER_X2",
+              "ignore_more_to_explore": true
+            },
+            {
+              "id": "BH_QUANTUM_RESEARCH_TOWER_X3",
+              "ignore_more_to_explore": true
+            }
+          ],
+          "rumor": [
+            {
+              "id": "BH_QUANTUM_RESEARCH_TOWER_R1"
+            },
+            {
+              "id": "BH_QUANTUM_RESEARCH_TOWER_R2",
+              "source_id": "BH_GRAVITY_CANNON"
+            }
+          ]
+        },
+        "entries": [
+          {
+            "id": "BH_QUANTUM_SHARD",
+            "curiosity": "QUANTUM_MOON",
+            "facts": {
+              "explore": [
+                {
+                  "id": "BH_QUANTUM_SHARD_X1"
+                },
+                {
+                  "id": "BH_QUANTUM_SHARD_X2"
+                },
+                {
+                  "id": "BH_QUANTUM_SHARD_X3"
+                }
+              ],
+              "rumor": [
+                {
+                  "id": "BH_QUANTUM_SHARD_R1"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": "BH_RIEBECK",
+        "facts": {
+          "explore": [
+            {
+              "id": "BH_RIEBECK_X1"
+            },
+            {
+              "id": "BH_RIEBECK_X2",
+              "ignore_more_to_explore": true
+            }
+          ],
+          "rumor": [
+            {
+              "id": "BH_RIEBECK_R1",
+              "source_id": "TM_EYE_LOCATOR"
+            },
+            {
+              "id": "BH_RIEBECK_R2"
+            },
+            {
+              "id": "BH_RIEBECK_R3"
+            },
+            {
+              "id": "BH_RIEBECK_R4"
+            }
+          ]
+        }
+      },
+      {
+        "id": "BH_WARP_RECEIVER",
+        "facts": {
+          "explore": [
+            {
+              "id": "BH_WARP_RECEIVER_X1"
+            },
+            {
+              "id": "BH_WARP_RECEIVER_X2"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "id": "VOLCANIC_MOON",
+    "entries": [
+      {
+        "id": "VM_VOLCANO",
+        "curiosity": "TIME_LOOP",
+        "facts": {
+          "explore": [
+            {
+              "id": "VM_VOLCANO_X1"
+            },
+            {
+              "id": "VM_VOLCANO_X2"
+            },
+            {
+              "id": "VM_VOLCANO_X3"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "id": "WHITE_HOLE",
+    "entries": [
+      {
+        "id": "WHITE_HOLE_STATION",
+        "curiosity": "TIME_LOOP",
+        "facts": {
+          "explore": [
+            {
+              "id": "WHS_X4"
+            },
+            {
+              "id": "WHS_X1"
+            },
+            {
+              "id": "WHS_X2"
+            },
+            {
+              "id": "WHS_X3",
+              "ignore_more_to_explore": true
+            }
+          ],
+          "rumor": [
+            {
+              "id": "WHS_R1",
+              "source_id": "BH_WARP_RECEIVER"
+            },
+            {
+              "id": "WHS_R2",
+              "source_id": "BH_WARP_RECEIVER"
+            },
+            {
+              "id": "WHS_R3",
+              "source_id": "CT_HIGH_ENERGY_LAB"
+            },
+            {
+              "id": "WHS_R4",
+              "source_id": "TT_WARP_TOWERS"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "id": "DARK_BRAMBLE",
+    "entries": [
+      {
+        "id": "DB_ESCAPE_POD",
+        "curiosity": "VESSEL",
+        "facts": {
+          "explore": [
+            {
+              "id": "DB_ESCAPE_POD_X1"
+            },
+            {
+              "id": "DB_ESCAPE_POD_X2"
+            },
+            {
+              "id": "DB_ESCAPE_POD_X3"
+            }
+          ],
+          "rumor": [
+            {
+              "id": "DB_ESCAPE_POD_R1",
+              "source_id": "BH_MURAL_3"
+            }
+          ]
+        }
+      },
+      {
+        "id": "DB_FELDSPAR",
+        "curiosity": "SUNKEN_MODULE",
+        "facts": {
+          "explore": [
+            {
+              "id": "DB_FELDSPAR_X1"
+            },
+            {
+              "id": "DB_FELDSPAR_X2",
+              "ignore_more_to_explore": true
+            },
+            {
+              "id": "DB_FELDSPAR_X3",
+              "ignore_more_to_explore": true
+            }
+          ],
+          "rumor": [
+            {
+              "id": "DB_FELDSPAR_R1",
+              "source_id": "GD_BRAMBLE_ISLAND"
+            },
+            {
+              "id": "DB_FELDSPAR_R2",
+              "source_id": "TH_IMPACT_CRATER"
+            }
+          ]
+        }
+      },
+      {
+        "id": "DB_FROZEN_JELLYFISH",
+        "curiosity": "SUNKEN_MODULE",
+        "facts": {
+          "explore": [
+            {
+              "id": "DB_FROZEN_JELLYFISH_X1"
+            },
+            {
+              "id": "DB_FROZEN_JELLYFISH_X2"
+            },
+            {
+              "id": "DB_FROZEN_JELLYFISH_X3"
+            }
+          ],
+          "rumor": [
+            {
+              "id": "DB_FROZEN_JELLYFISH_R1",
+              "source_id": "DB_FELDSPAR"
+            }
+          ]
+        }
+      },
+      {
+        "id": "DB_NOMAI_GRAVE",
+        "curiosity": "VESSEL",
+        "facts": {
+          "explore": [
+            {
+              "id": "DB_NOMAI_GRAVE_X1"
+            },
+            {
+              "id": "DB_NOMAI_GRAVE_X2"
+            },
+            {
+              "id": "DB_NOMAI_GRAVE_X3"
+            },
+            {
+              "id": "DB_NOMAI_GRAVE_X4"
+            }
+          ],
+          "rumor": [
+            {
+              "id": "DB_NOMAI_GRAVE_R1",
+              "source_id": "DB_ESCAPE_POD"
+            },
+            {
+              "id": "DB_NOMAI_GRAVE_R2",
+              "source_id": "DB_ESCAPE_POD"
+            }
+          ]
+        }
+      },
+      {
+        "id": "DB_VESSEL",
+        "curiosity": "VESSEL",
+        "facts": {
+          "explore": [
+            {
+              "id": "DB_VESSEL_X1"
+            },
+            {
+              "id": "DB_VESSEL_X2"
+            },
+            {
+              "id": "DB_VESSEL_X3"
+            },
+            {
+              "id": "DB_VESSEL_X4"
+            },
+            {
+              "id": "DB_VESSEL_X5"
+            },
+            {
+              "id": "DB_VESSEL_X6",
+              "ignore_more_to_explore": true
+            }
+          ],
+          "rumor": [
+            {
+              "id": "DB_VESSEL_R1"
+            },
+            {
+              "id": "DB_VESSEL_R2",
+              "source_id": "BH_MURAL_3"
+            },
+            {
+              "id": "DB_VESSEL_R3",
+              "source_id": "BH_HANGING_CITY"
+            },
+            {
+              "id": "DB_VESSEL_R4",
+              "source_id": "DB_NOMAI_GRAVE"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "id": "ORBITAL_PROBE_CANNON",
+    "entries": [
+      {
+        "id": "ORBITAL_PROBE_CANNON",
+        "curiosity": "SUNKEN_MODULE",
+        "facts": {
+          "explore": [
+            {
+              "id": "ORBITAL_PROBE_CANNON_X1"
+            },
+            {
+              "id": "ORBITAL_PROBE_CANNON_X2"
+            },
+            {
+              "id": "ORBITAL_PROBE_CANNON_X3"
+            }
+          ],
+          "rumor": [
+            {
+              "id": "ORBITAL_PROBE_CANNON_R1",
+              "source_id": "GD_CONSTRUCTION_YARD"
+            },
+            {
+              "id": "ORBITAL_PROBE_CANNON_R2",
+              "source_id": "GD_CONSTRUCTION_YARD"
+            },
+            {
+              "id": "ORBITAL_PROBE_CANNON_R4",
+              "source_id": "BH_OBSERVATORY"
+            },
+            {
+              "id": "ORBITAL_PROBE_CANNON_R3",
+              "source_id": "GD_GABBRO_ISLAND"
+            }
+          ]
+        },
+        "entries": [
+          {
+            "id": "OPC_BROKEN_MODULE",
+            "curiosity": "SUNKEN_MODULE",
+            "facts": {
+              "explore": [
+                {
+                  "id": "OPC_BROKEN_MODULE_X1"
+                },
+                {
+                  "id": "OPC_BROKEN_MODULE_X2"
+                },
+                {
+                  "id": "OPC_BROKEN_MODULE_X3"
+                }
+              ],
+              "rumor": [
+                {
+                  "id": "OPC_BROKEN_MODULE_R1"
+                },
+                {
+                  "id": "OPC_BROKEN_MODULE_R2"
+                },
+                {
+                  "id": "OPC_BROKEN_MODULE_R3"
+                }
+              ]
+            }
+          },
+          {
+            "id": "OPC_INTACT_MODULE",
+            "curiosity": "SUNKEN_MODULE",
+            "facts": {
+              "explore": [
+                {
+                  "id": "OPC_INTACT_MODULE_X1"
+                },
+                {
+                  "id": "OPC_INTACT_MODULE_X2"
+                }
+              ],
+              "rumor": [
+                {
+                  "id": "OPC_INTACT_MODULE_R1"
+                }
+              ]
+            }
+          },
+          {
+            "id": "OPC_SUNKEN_MODULE",
+            "curiosity": "SUNKEN_MODULE",
+            "facts": {
+              "explore": [
+                {
+                  "id": "OPC_SUNKEN_MODULE_X1"
+                },
+                {
+                  "id": "OPC_SUNKEN_MODULE_X2"
+                },
+                {
+                  "id": "OPC_SUNKEN_MODULE_X3"
+                },
+                {
+                  "id": "OPC_EYE_COORDINATES_X1"
+                }
+              ],
+              "rumor": [
+                {
+                  "id": "OPC_SUNKEN_MODULE_R1"
+                },
+                {
+                  "id": "OPC_SUNKEN_MODULE_R5"
+                },
+                {
+                  "id": "OPC_SUNKEN_MODULE_R4"
+                },
+                {
+                  "id": "OPC_SUNKEN_MODULE_R2"
+                },
+                {
+                  "id": "OPC_SUNKEN_MODULE_R3"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "TIMBER_HEARTH",
+    "entries": [
+      {
+        "id": "TH_IMPACT_CRATER",
+        "facts": {
+          "explore": [
+            {
+              "id": "TH_IMPACT_CRATER_X1"
+            },
+            {
+              "id": "TH_IMPACT_CRATER_X2",
+              "ignore_more_to_explore": true
+            },
+            {
+              "id": "TH_IMPACT_CRATER_X3"
+            }
+          ],
+          "rumor": [
+            {
+              "id": "TH_IMPACT_CRATER_R1",
+              "source_id": "TM_NORTH_POLE"
+            }
+          ]
+        }
+      },
+      {
+        "id": "TH_NOMAI_MINE",
+        "curiosity": "TIME_LOOP",
+        "facts": {
+          "explore": [
+            {
+              "id": "TH_NOMAI_MINE_X1"
+            },
+            {
+              "id": "TH_NOMAI_MINE_X2"
+            },
+            {
+              "id": "TH_NOMAI_MINE_X3",
+              "ignore_more_to_explore": true
+            }
+          ],
+          "rumor": [
+            {
+              "id": "TH_NOMAI_MINE_R1",
+              "source_id": "VM_VOLCANO"
+            }
+          ]
+        }
+      },
+      {
+        "id": "TH_QUANTUM_SHARD",
+        "curiosity": "QUANTUM_MOON",
+        "facts": {
+          "explore": [
+            {
+              "id": "TH_QUANTUM_SHARD_X1"
+            },
+            {
+              "id": "TH_QUANTUM_SHARD_X2",
+              "ignore_more_to_explore": true
+            }
+          ],
+          "rumor": [
+            {
+              "id": "TH_QUANTUM_SHARD_R1"
+            },
+            {
+              "id": "TH_QUANTUM_SHARD_R2",
+              "source_id": "BH_QUANTUM_SHARD"
+            }
+          ]
+        }
+      },
+      {
+        "id": "TH_RADIO_TOWER",
+        "curiosity": "INVISIBLE_PLANET",
+        "facts": {
+          "explore": [
+            {
+              "id": "TH_RADIO_TOWER_X1"
+            }
+          ]
+        }
+      },
+      {
+        "id": "TH_VILLAGE",
+        "facts": {
+          "explore": [
+            {
+              "id": "TH_VILLAGE_X1"
+            },
+            {
+              "id": "TH_VILLAGE_X2"
+            },
+            {
+              "id": "TH_VILLAGE_X3"
+            }
+          ]
+        },
+        "entries": [
+          {
+            "id": "TH_ZERO_G_CAVE",
+            "facts": {
+              "explore": [
+                {
+                  "id": "TH_ZERO_G_CAVE_X1"
+                },
+                {
+                  "id": "TH_ZERO_G_CAVE_X2"
+                }
+              ],
+              "rumor": [
+                {
+                  "id": "TH_ZERO_G_CAVE_R1"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "CAVE_TWIN",
+    "entries": [
+      {
+        "id": "CT_ANGLERFISH_FOSSIL",
+        "curiosity": "VESSEL",
+        "facts": {
+          "explore": [
+            {
+              "id": "CT_ANGLERFISH_FOSSIL_X1"
+            },
+            {
+              "id": "CT_ANGLERFISH_FOSSIL_X2"
+            },
+            {
+              "id": "CT_ANGLERFISH_FOSSIL_X3",
+              "ignore_more_to_explore": true
+            }
+          ],
+          "rumor": [
+            {
+              "id": "CT_ANGLERFISH_FOSSIL_R1",
+              "source_id": "CT_ESCAPE_POD"
+            },
+            {
+              "id": "CT_ANGLERFISH_FOSSIL_R2",
+              "source_id": "BH_HANGING_CITY"
+            },
+            {
+              "id": "CT_ANGLERFISH_FOSSIL_R3",
+              "source_id": "CT_SUNLESS_CITY"
+            },
+            {
+              "id": "CT_ANGLERFISH_FOSSIL_R4",
+              "source_id": "CT_SUNLESS_CITY"
+            }
+          ]
+        }
+      },
+      {
+        "id": "CT_CHERT",
+        "facts": {
+          "explore": [
+            {
+              "id": "CT_CHERT_X1"
+            },
+            {
+              "id": "CT_CHERT_X2",
+              "ignore_more_to_explore": true
+            },
+            {
+              "id": "CT_CHERT_X3",
+              "ignore_more_to_explore": true
+            },
+            {
+              "id": "CT_CHERT_X4",
+              "ignore_more_to_explore": true
+            },
+            {
+              "id": "CT_CHERT_X5",
+              "ignore_more_to_explore": true
+            }
+          ]
+        }
+      },
+      {
+        "id": "CT_ESCAPE_POD",
+        "curiosity": "VESSEL",
+        "facts": {
+          "explore": [
+            {
+              "id": "CT_ESCAPE_POD_X1"
+            },
+            {
+              "id": "CT_ESCAPE_POD_X2"
+            }
+          ],
+          "rumor": [
+            {
+              "id": "CT_ESCAPE_POD_R1",
+              "source_id": "BH_MURAL_3"
+            },
+            {
+              "id": "CT_ESCAPE_POD_R2",
+              "source_id": "CT_CHERT"
+            }
+          ]
+        }
+      },
+      {
+        "id": "CT_GRAVITY_CANNON",
+        "curiosity": "COMET_CORE",
+        "facts": {
+          "explore": [
+            {
+              "id": "CT_GRAVITY_CANNON_X1",
+              "ignore_more_to_explore": true
+            },
+            {
+              "id": "CT_GRAVITY_CANNON_X2"
+            }
+          ],
+          "rumor": [
+            {
+              "id": "CT_GRAVITY_CANNON_R1",
+              "source_id": "COMET_SHUTTLE"
+            }
+          ]
+        }
+      },
+      {
+        "id": "CT_HIGH_ENERGY_LAB",
+        "curiosity": "TIME_LOOP",
+        "facts": {
+          "explore": [
+            {
+              "id": "CT_HIGH_ENERGY_LAB_X1"
+            },
+            {
+              "id": "CT_HIGH_ENERGY_LAB_X2"
+            },
+            {
+              "id": "CT_HIGH_ENERGY_LAB_X3"
+            }
+          ],
+          "rumor": [
+            {
+              "id": "CT_HIGH_ENERGY_LAB_R1",
+              "source_id": "WHITE_HOLE_STATION"
+            },
+            {
+              "id": "CT_HIGH_ENERGY_LAB_R2"
+            },
+            {
+              "id": "CT_HIGH_ENERGY_LAB_R3"
+            }
+          ]
+        },
+        "entries": [
+          {
+            "id": "CT_WARP_TOWER_MAP",
+            "curiosity": "TIME_LOOP",
+            "facts": {
+              "explore": [
+                {
+                  "id": "CT_WARP_TOWER_MAP_X1"
+                },
+                {
+                  "id": "CT_WARP_TOWER_MAP_X4"
+                },
+                {
+                  "id": "CT_WARP_TOWER_MAP_X3"
+                },
+                {
+                  "id": "CT_WARP_TOWER_MAP_X2"
+                }
+              ],
+              "rumor": [
+                {
+                  "id": "CT_WARP_TOWER_MAP_R1",
+                  "source_id": "BH_BLACK_HOLE_FORGE"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": "CT_LAKEBED_CAVERN",
+        "curiosity": "QUANTUM_MOON",
+        "facts": {
+          "explore": [
+            {
+              "id": "CT_LAKEBED_CAVERN_X1"
+            },
+            {
+              "id": "CT_LAKEBED_CAVERN_X2"
+            },
+            {
+              "id": "CT_LAKEBED_CAVERN_X3",
+              "ignore_more_to_explore": true
+            }
+          ],
+          "rumor": [
+            {
+              "id": "CT_LAKEBED_CAVERN_R1",
+              "source_id": "CT_QUANTUM_CAVES"
+            },
+            {
+              "id": "CT_LAKEBED_CAVERN_R2",
+              "source_id": "CT_QUANTUM_CAVES"
+            }
+          ]
+        }
+      },
+      {
+        "id": "CT_QUANTUM_CAVES",
+        "curiosity": "QUANTUM_MOON",
+        "facts": {
+          "explore": [
+            {
+              "id": "CT_QUANTUM_CAVES_X1"
+            },
+            {
+              "id": "CT_QUANTUM_CAVES_X2"
+            }
+          ],
+          "rumor": [
+            {
+              "id": "CT_QUANTUM_CAVES_R1",
+              "source_id": "BH_QUANTUM_SHARD"
+            }
+          ]
+        }
+      },
+      {
+        "id": "CT_QUANTUM_MOON_LOCATOR",
+        "curiosity": "QUANTUM_MOON",
+        "facts": {
+          "explore": [
+            {
+              "id": "CT_QUANTUM_MOON_LOCATOR_X1"
+            },
+            {
+              "id": "CT_QUANTUM_MOON_LOCATOR_X2"
+            },
+            {
+              "id": "CT_QUANTUM_MOON_LOCATOR_X3"
+            }
+          ]
+        }
+      },
+      {
+        "id": "CT_SUNLESS_CITY",
+        "facts": {
+          "explore": [
+            {
+              "id": "CT_SUNLESS_CITY_X1"
+            },
+            {
+              "id": "CT_SUNLESS_CITY_X2"
+            },
+            {
+              "id": "CT_SUNLESS_CITY_X3"
+            }
+          ],
+          "rumor": [
+            {
+              "id": "CT_SUNLESS_CITY_R1",
+              "source_id": "CT_ESCAPE_POD"
+            },
+            {
+              "id": "CT_SUNLESS_CITY_R3",
+              "source_id": "CT_ESCAPE_POD"
+            },
+            {
+              "id": "CT_SUNLESS_CITY_R4",
+              "source_id": "CT_CHERT"
+            },
+            {
+              "id": "CT_SUNLESS_CITY_R5"
+            },
+            {
+              "id": "CT_SUNLESS_CITY_R2"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "id": "SUN_STATION",
+    "entries": [
+      {
+        "id": "S_SUNSTATION",
+        "curiosity": "TIME_LOOP",
+        "facts": {
+          "explore": [
+            {
+              "id": "S_SUNSTATION_X1"
+            },
+            {
+              "id": "S_SUNSTATION_X2"
+            },
+            {
+              "id": "S_SUNSTATION_X3",
+              "ignore_more_to_explore": true
+            },
+            {
+              "id": "S_SUNSTATION_X4"
+            }
+          ],
+          "rumor": [
+            {
+              "id": "S_SUNSTATION_R1",
+              "source_id": "CT_SUNLESS_CITY"
+            },
+            {
+              "id": "S_SUNSTATION_R2",
+              "source_id": "CT_SUNLESS_CITY"
+            },
+            {
+              "id": "S_SUNSTATION_R3",
+              "source_id": "TT_WARP_TOWERS"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "id": "TIMBER_MOON",
+    "entries": [
+      {
+        "id": "TM_ESKER",
+        "facts": {
+          "explore": [
+            {
+              "id": "TM_ESKER_X1"
+            }
+          ],
+          "rumor": [
+            {
+              "id": "TM_ESKER_R1",
+              "source_id": "TH_VILLAGE"
+            }
+          ]
+        }
+      },
+      {
+        "id": "TM_EYE_LOCATOR",
+        "curiosity": "SUNKEN_MODULE",
+        "facts": {
+          "explore": [
+            {
+              "id": "TM_EYE_LOCATOR_X1"
+            },
+            {
+              "id": "TM_EYE_LOCATOR_X2"
+            }
+          ],
+          "rumor": [
+            {
+              "id": "TM_EYE_LOCATOR_R1",
+              "source_id": "TH_VILLAGE"
+            },
+            {
+              "id": "TM_EYE_LOCATOR_R2",
+              "source_id": "TH_VILLAGE"
+            }
+          ]
+        }
+      },
+      {
+        "id": "TM_NORTH_POLE",
+        "facts": {
+          "explore": [
+            {
+              "id": "TM_NORTH_POLE_X1"
+            }
+          ],
+          "rumor": [
+            {
+              "id": "TM_NORTH_POLE_R1",
+              "source_id": "TM_ESKER"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "id": "TOWER_TWIN",
+    "entries": [
+      {
+        "id": "TT_TIME_LOOP_DEVICE",
+        "curiosity": "TIME_LOOP",
+        "facts": {
+          "explore": [
+            {
+              "id": "TT_TIME_LOOP_DEVICE_X1"
+            },
+            {
+              "id": "TT_TIME_LOOP_DEVICE_X2"
+            },
+            {
+              "id": "TT_TIME_LOOP_DEVICE_X3"
+            },
+            {
+              "id": "TT_TIME_LOOP_DEVICE_X4"
+            },
+            {
+              "id": "TT_TIME_LOOP_DEVICE_X5"
+            }
+          ],
+          "rumor": [
+            {
+              "id": "TT_TIME_LOOP_DEVICE_R1",
+              "source_id": "TH_NOMAI_MINE"
+            },
+            {
+              "id": "TT_TIME_LOOP_DEVICE_R2",
+              "source_id": "CT_HIGH_ENERGY_LAB"
+            },
+            {
+              "id": "TT_TIME_LOOP_DEVICE_R3",
+              "source_id": "GD_STATUE_WORKSHOP"
+            },
+            {
+              "id": "TT_TIME_LOOP_DEVICE_R4",
+              "source_id": "BH_BLACK_HOLE_FORGE"
+            }
+          ]
+        }
+      },
+      {
+        "id": "TT_WARP_TOWERS",
+        "curiosity": "TIME_LOOP",
+        "facts": {
+          "explore": [
+            {
+              "id": "TT_WARP_TOWERS_X1"
+            },
+            {
+              "id": "TT_WARP_TOWERS_X2"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "id": "COMET",
+    "entries": [
+      {
+        "id": "COMET_INTERIOR",
+        "curiosity": "COMET_CORE",
+        "facts": {
+          "explore": [
+            {
+              "id": "COMET_INTERIOR_X1"
+            },
+            {
+              "id": "COMET_INTERIOR_X2"
+            },
+            {
+              "id": "COMET_INTERIOR_X3"
+            },
+            {
+              "id": "COMET_INTERIOR_X4"
+            }
+          ],
+          "rumor": [
+            {
+              "id": "COMET_INTERIOR_R1",
+              "source_id": "COMET_SHUTTLE"
+            },
+            {
+              "id": "COMET_INTERIOR_R2",
+              "source_id": "COMET_SHUTTLE"
+            }
+          ]
+        }
+      },
+      {
+        "id": "COMET_SHUTTLE",
+        "curiosity": "COMET_CORE",
+        "facts": {
+          "explore": [
+            {
+              "id": "COMET_SHUTTLE_X1"
+            },
+            {
+              "id": "COMET_SHUTTLE_X2"
+            },
+            {
+              "id": "COMET_SHUTTLE_X3"
+            },
+            {
+              "id": "COMET_SHUTTLE_X4"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "id": "QUANTUM_MOON",
+    "entries": [
+      {
+        "id": "QUANTUM_MOON",
+        "curiosity": "QUANTUM_MOON",
+        "facts": {
+          "explore": [
+            {
+              "id": "QUANTUM_MOON_X1"
+            },
+            {
+              "id": "QUANTUM_MOON_X2",
+              "ignore_more_to_explore": true
+            }
+          ],
+          "rumor": [
+            {
+              "id": "QUANTUM_MOON_R1",
+              "source_id": "BH_WARP_RECEIVER"
+            },
+            {
+              "id": "QUANTUM_MOON_R2",
+              "source_id": "CT_QUANTUM_MOON_LOCATOR"
+            },
+            {
+              "id": "QUANTUM_MOON_R3"
+            },
+            {
+              "id": "QUANTUM_MOON_R4"
+            }
+          ]
+        },
+        "entries": [
+          {
+            "id": "QM_SHRINE",
+            "curiosity": "QUANTUM_MOON",
+            "facts": {
+              "explore": [
+                {
+                  "id": "QM_SHRINE_X1"
+                },
+                {
+                  "id": "QM_SHRINE_X2",
+                  "ignore_more_to_explore": true
+                },
+                {
+                  "id": "QM_SHRINE_X3",
+                  "ignore_more_to_explore": true
+                },
+                {
+                  "id": "QM_SHRINE_X4",
+                  "ignore_more_to_explore": true
+                }
+              ],
+              "rumor": [
+                {
+                  "id": "QM_SHRINE_R1",
+                  "source_id": "BH_QUANTUM_RESEARCH_TOWER"
+                }
+              ]
+            }
+          },
+          {
+            "id": "QM_SHUTTLE",
+            "curiosity": "QUANTUM_MOON",
+            "facts": {
+              "explore": [
+                {
+                  "id": "QM_SHUTTLE_X1"
+                },
+                {
+                  "id": "QM_SHUTTLE_X2"
+                }
+              ]
+            }
+          },
+          {
+            "id": "QM_SIXTH_LOCATION",
+            "curiosity": "QUANTUM_MOON",
+            "facts": {
+              "explore": [
+                {
+                  "id": "QM_SIXTH_LOCATION_X1"
+                },
+                {
+                  "id": "QM_SIXTH_LOCATION_X3",
+                  "ignore_more_to_explore": true
+                },
+                {
+                  "id": "QM_SIXTH_LOCATION_X5",
+                  "ignore_more_to_explore": true
+                },
+                {
+                  "id": "QM_SIXTH_LOCATION_X4",
+                  "ignore_more_to_explore": true
+                },
+                {
+                  "id": "QM_SIXTH_LOCATION_X2"
+                },
+                {
+                  "id": "QM_SIXTH_LOCATION_X6",
+                  "ignore_more_to_explore": true
+                }
+              ],
+              "rumor": [
+                {
+                  "id": "QM_SIXTH_LOCATION_R1",
+                  "source_id": "CT_QUANTUM_MOON_LOCATOR"
+                },
+                {
+                  "id": "QM_SIXTH_LOCATION_R2",
+                  "source_id": "BH_QUANTUM_RESEARCH_TOWER"
+                },
+                {
+                  "id": "QM_SIXTH_LOCATION_R3",
+                  "source_id": "BH_QUANTUM_RESEARCH_TOWER"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "INVISIBLE_PLANET",
+    "entries": [
+      {
+        "id": "IP_DREAM_ZONE_1",
+        "curiosity": "INVISIBLE_PLANET",
+        "facts": {
+          "explore": [
+            {
+              "id": "IP_DREAM_ZONE_1_X1"
+            },
+            {
+              "id": "IP_DREAM_ZONE_1_X2"
+            },
+            {
+              "id": "IP_DREAM_ZONE_1_X3"
+            }
+          ],
+          "rumor": [
+            {
+              "id": "IP_DREAM_ZONE_1_R1"
+            }
+          ]
+        },
+        "entries": [
+          {
+            "id": "IP_DREAM_LIBRARY_1",
+            "curiosity": "INVISIBLE_PLANET",
+            "facts": {
+              "explore": [
+                {
+                  "id": "IP_DREAM_LIBRARY_1_X1"
+                },
+                {
+                  "id": "IP_DREAM_LIBRARY_1_X2"
+                },
+                {
+                  "id": "IP_DREAM_1_STORY_X1"
+                },
+                {
+                  "id": "IP_DREAM_1_STORY_X2"
+                },
+                {
+                  "id": "IP_DREAM_1_RULE_X1"
+                }
+              ],
+              "rumor": [
+                {
+                  "id": "IP_DREAM_LIBRARY_1_R1",
+                  "source_id": "IP_ZONE_1_SECRET"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": "IP_DREAM_ZONE_2",
+        "curiosity": "INVISIBLE_PLANET",
+        "facts": {
+          "explore": [
+            {
+              "id": "IP_DREAM_ZONE_2_X1"
+            },
+            {
+              "id": "IP_DREAM_ZONE_2_X2"
+            },
+            {
+              "id": "IP_DREAM_ZONE_2_X3"
+            },
+            {
+              "id": "IP_DREAM_ZONE_2_X4"
+            }
+          ],
+          "rumor": [
+            {
+              "id": "IP_DREAM_ZONE_2_R1"
+            }
+          ]
+        },
+        "entries": [
+          {
+            "id": "IP_DREAM_LIBRARY_2",
+            "curiosity": "INVISIBLE_PLANET",
+            "facts": {
+              "explore": [
+                {
+                  "id": "IP_DREAM_LIBRARY_2_X1"
+                },
+                {
+                  "id": "IP_DREAM_LIBRARY_2_X2"
+                },
+                {
+                  "id": "IP_DREAM_2_STORY_X1"
+                },
+                {
+                  "id": "IP_DREAM_2_STORY_X2"
+                },
+                {
+                  "id": "IP_DREAM_2_RULE_X1"
+                },
+                {
+                  "id": "IP_DREAM_2_RULE_X2"
+                }
+              ],
+              "rumor": [
+                {
+                  "id": "IP_DREAM_LIBRARY_2_R1",
+                  "source_id": "IP_ZONE_2_SECRET"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": "IP_DREAM_ZONE_3",
+        "curiosity": "INVISIBLE_PLANET",
+        "facts": {
+          "explore": [
+            {
+              "id": "IP_DREAM_ZONE_3_X1"
+            },
+            {
+              "id": "IP_DREAM_ZONE_3_X2"
+            }
+          ],
+          "rumor": [
+            {
+              "id": "IP_DREAM_ZONE_3_R1"
+            }
+          ]
+        },
+        "entries": [
+          {
+            "id": "IP_DREAM_LIBRARY_3",
+            "curiosity": "INVISIBLE_PLANET",
+            "facts": {
+              "explore": [
+                {
+                  "id": "IP_DREAM_LIBRARY_3_X1"
+                },
+                {
+                  "id": "IP_DREAM_LIBRARY_3_X2"
+                },
+                {
+                  "id": "IP_DREAM_3_STORY_X1"
+                },
+                {
+                  "id": "IP_DREAM_3_STORY_X2"
+                },
+                {
+                  "id": "IP_DREAM_3_RULE_X1"
+                }
+              ],
+              "rumor": [
+                {
+                  "id": "IP_DREAM_LIBRARY_3_R1",
+                  "source_id": "IP_ZONE_3_SECRET"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": "IP_PRISON",
+        "curiosity": "INVISIBLE_PLANET",
+        "facts": {
+          "explore": [
+            {
+              "id": "IP_PRISON_X1"
+            },
+            {
+              "id": "IP_PRISON_X2"
+            }
+          ],
+          "rumor": [
+            {
+              "id": "IP_PRISON_R1",
+              "source_id": "IP_ZONE_4_STORY"
+            },
+            {
+              "id": "IP_PRISON_R2",
+              "source_id": "IP_ZONE_4"
+            }
+          ]
+        },
+        "entries": [
+          {
+            "id": "IP_DREAM_LAKE",
+            "curiosity": "INVISIBLE_PLANET",
+            "facts": {
+              "explore": [
+                {
+                  "id": "IP_DREAM_LAKE_X1"
+                },
+                {
+                  "id": "IP_DREAM_LAKE_X2"
+                }
+              ],
+              "rumor": [
+                {
+                  "id": "IP_DREAM_LAKE_R1"
+                },
+                {
+                  "id": "IP_DREAM_LAKE_R2"
+                }
+              ]
+            }
+          },
+          {
+            "id": "IP_SARCOPHAGUS",
+            "curiosity": "INVISIBLE_PLANET",
+            "facts": {
+              "explore": [
+                {
+                  "id": "IP_SARCOPHAGUS_X2"
+                },
+                {
+                  "id": "IP_SARCOPHAGUS_X3"
+                },
+                {
+                  "id": "IP_SARCOPHAGUS_X4"
+                },
+                {
+                  "id": "IP_SARCOPHAGUS_X5",
+                  "ignore_more_to_explore": true
+                }
+              ],
+              "rumor": [
+                {
+                  "id": "IP_SARCOPHAGUS_R4"
+                },
+                {
+                  "id": "IP_SARCOPHAGUS_R1",
+                  "source_id": "IP_ZONE_1"
+                },
+                {
+                  "id": "IP_SARCOPHAGUS_R2",
+                  "source_id": "IP_ZONE_2"
+                },
+                {
+                  "id": "IP_SARCOPHAGUS_R3",
+                  "source_id": "IP_ZONE_3"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": "IP_RING_WORLD",
+        "curiosity": "INVISIBLE_PLANET",
+        "facts": {
+          "explore": [
+            {
+              "id": "IP_RING_WORLD_X1"
+            }
+          ]
+        }
+      },
+      {
+        "id": "IP_ZONE_1",
+        "curiosity": "INVISIBLE_PLANET",
+        "facts": {
+          "explore": [
+            {
+              "id": "IP_ZONE_1_X1"
+            },
+            {
+              "id": "IP_ZONE_1_X2"
+            }
+          ]
+        },
+        "entries": [
+          {
+            "id": "IP_ZONE_1_SECRET",
+            "curiosity": "INVISIBLE_PLANET",
+            "facts": {
+              "explore": [
+                {
+                  "id": "IP_ZONE_1_SECRET_X2"
+                },
+                {
+                  "id": "IP_ZONE_1_SECRET_X1"
+                }
+              ],
+              "rumor": [
+                {
+                  "id": "IP_ZONE_1_SECRET_R1",
+                  "source_id": "IP_MAP_PROJECTION_1"
+                }
+              ]
+            }
+          },
+          {
+            "id": "IP_ZONE_1_STORY",
+            "curiosity": "INVISIBLE_PLANET",
+            "facts": {
+              "explore": [
+                {
+                  "id": "IP_ZONE_1_STORY_X1"
+                },
+                {
+                  "id": "IP_ZONE_1_STORY_X2"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": "IP_ZONE_2",
+        "curiosity": "INVISIBLE_PLANET",
+        "facts": {
+          "explore": [
+            {
+              "id": "IP_ZONE_2_X1"
+            },
+            {
+              "id": "IP_ZONE_2_X2",
+              "ignore_more_to_explore": true
+            }
+          ]
+        },
+        "entries": [
+          {
+            "id": "IP_ZONE_2_SECRET",
+            "curiosity": "INVISIBLE_PLANET",
+            "facts": {
+              "explore": [
+                {
+                  "id": "IP_ZONE_2_SECRET_X2"
+                },
+                {
+                  "id": "IP_ZONE_2_SECRET_X1"
+                }
+              ],
+              "rumor": [
+                {
+                  "id": "IP_ZONE_2_SECRET_R1",
+                  "source_id": "IP_MAP_PROJECTION_2"
+                }
+              ]
+            }
+          },
+          {
+            "id": "IP_ZONE_2_STORY",
+            "curiosity": "INVISIBLE_PLANET",
+            "facts": {
+              "explore": [
+                {
+                  "id": "IP_ZONE_2_STORY_X1"
+                },
+                {
+                  "id": "IP_ZONE_2_STORY_X2"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": "IP_ZONE_2_LIGHTHOUSE",
+        "curiosity": "INVISIBLE_PLANET",
+        "facts": {
+          "explore": [
+            {
+              "id": "IP_ZONE_2_LIGHTHOUSE_X2"
+            },
+            {
+              "id": "IP_ZONE_2_LIGHTHOUSE_X1"
+            }
+          ],
+          "rumor": [
+            {
+              "id": "IP_ZONE_2_LIGHTHOUSE_R1",
+              "source_id": "IP_ZONE_2"
+            }
+          ]
+        },
+        "entries": [
+          {
+            "id": "IP_ZONE_2_CODE",
+            "curiosity": "INVISIBLE_PLANET",
+            "facts": {
+              "explore": [
+                {
+                  "id": "IP_ZONE_2_CODE_X1"
+                },
+                {
+                  "id": "IP_ZONE_2_CODE_X2",
+                  "ignore_more_to_explore": true
+                },
+                {
+                  "id": "IP_ZONE_2_CODE_X3"
+                }
+              ],
+              "rumor": [
+                {
+                  "id": "IP_ZONE_2_CODE_R1",
+                  "source_id": "IP_DREAM_LAKE"
+                },
+                {
+                  "id": "IP_ZONE_2_CODE_R2",
+                  "source_id": "IP_DREAM_LAKE"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": "IP_ZONE_3",
+        "curiosity": "INVISIBLE_PLANET",
+        "facts": {
+          "explore": [
+            {
+              "id": "IP_ZONE_3_X1"
+            }
+          ]
+        },
+        "entries": [
+          {
+            "id": "IP_ZONE_3_ENTRANCE",
+            "curiosity": "INVISIBLE_PLANET",
+            "facts": {
+              "explore": [
+                {
+                  "id": "IP_ZONE_3_ENTRANCE_X1"
+                },
+                {
+                  "id": "IP_ZONE_3_ENTRANCE_X2"
+                },
+                {
+                  "id": "IP_ZONE_3_ENTRANCE_X3"
+                }
+              ],
+              "rumor": [
+                {
+                  "id": "IP_ZONE_3_ENTRANCE_R1"
+                }
+              ]
+            }
+          },
+          {
+            "id": "IP_ZONE_3_SECRET",
+            "curiosity": "INVISIBLE_PLANET",
+            "facts": {
+              "explore": [
+                {
+                  "id": "IP_ZONE_3_SECRET_X2"
+                },
+                {
+                  "id": "IP_ZONE_3_SECRET_X1"
+                }
+              ],
+              "rumor": [
+                {
+                  "id": "IP_ZONE_3_SECRET_R1",
+                  "source_id": "IP_MAP_PROJECTION_3"
+                }
+              ]
+            }
+          },
+          {
+            "id": "IP_ZONE_3_STORY",
+            "curiosity": "INVISIBLE_PLANET",
+            "facts": {
+              "explore": [
+                {
+                  "id": "IP_ZONE_3_STORY_X1"
+                },
+                {
+                  "id": "IP_ZONE_3_STORY_X2"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": "IP_ZONE_3_LAB",
+        "curiosity": "INVISIBLE_PLANET",
+        "facts": {
+          "explore": [
+            {
+              "id": "IP_ZONE_3_LAB_X1"
+            },
+            {
+              "id": "IP_ZONE_3_LAB_X3"
+            },
+            {
+              "id": "IP_ZONE_3_LAB_X4"
+            },
+            {
+              "id": "IP_ZONE_3_LAB_X2"
+            }
+          ],
+          "rumor": [
+            {
+              "id": "IP_ZONE_3_LAB_R1"
+            }
+          ]
+        },
+        "entries": [
+          {
+            "id": "IP_MAP_PROJECTION_1",
+            "curiosity": "INVISIBLE_PLANET",
+            "facts": {
+              "explore": [
+                {
+                  "id": "IP_MAP_PROJECTION_1_X1"
+                }
+              ]
+            }
+          },
+          {
+            "id": "IP_MAP_PROJECTION_2",
+            "curiosity": "INVISIBLE_PLANET",
+            "facts": {
+              "explore": [
+                {
+                  "id": "IP_MAP_PROJECTION_2_X1"
+                }
+              ]
+            }
+          },
+          {
+            "id": "IP_MAP_PROJECTION_3",
+            "curiosity": "INVISIBLE_PLANET",
+            "facts": {
+              "explore": [
+                {
+                  "id": "IP_MAP_PROJECTION_3_X1"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": "IP_ZONE_4",
+        "curiosity": "INVISIBLE_PLANET",
+        "facts": {
+          "explore": [
+            {
+              "id": "IP_ZONE_4_X2"
+            },
+            {
+              "id": "IP_ZONE_4_X3",
+              "ignore_more_to_explore": true
+            },
+            {
+              "id": "IP_ZONE_4_X4",
+              "ignore_more_to_explore": true
+            }
+          ]
+        },
+        "entries": [
+          {
+            "id": "IP_ZONE_4_STORY",
+            "curiosity": "INVISIBLE_PLANET",
+            "facts": {
+              "explore": [
+                {
+                  "id": "IP_ZONE_4_STORY_X1"
+                },
+                {
+                  "id": "IP_ZONE_4_STORY_X2"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "GIANTS_DEEP",
+    "entries": [
+      {
+        "id": "GD_BRAMBLE_ISLAND",
+        "curiosity": "SUNKEN_MODULE",
+        "facts": {
+          "explore": [
+            {
+              "id": "GD_BRAMBLE_ISLAND_X1"
+            }
+          ]
+        }
+      },
+      {
+        "id": "GD_CONSTRUCTION_YARD",
+        "curiosity": "SUNKEN_MODULE",
+        "facts": {
+          "explore": [
+            {
+              "id": "GD_CONSTRUCTION_YARD_X1"
+            },
+            {
+              "id": "GD_CONSTRUCTION_YARD_X2"
+            },
+            {
+              "id": "GD_CONSTRUCTION_YARD_X3"
+            }
+          ],
+          "rumor": [
+            {
+              "id": "GD_CONSTRUCTION_YARD_R1",
+              "source_id": "ORBITAL_PROBE_CANNON"
+            }
+          ]
+        }
+      },
+      {
+        "id": "GD_GABBRO_ISLAND",
+        "facts": {
+          "explore": [
+            {
+              "id": "GD_GABBRO_ISLAND_X0"
+            },
+            {
+              "id": "GD_GABBRO_ISLAND_X1",
+              "ignore_more_to_explore": true
+            },
+            {
+              "id": "GD_GABBRO_ISLAND_X2",
+              "ignore_more_to_explore": true
+            },
+            {
+              "id": "GD_GABBRO_ISLAND_X3",
+              "ignore_more_to_explore": true
+            }
+          ],
+          "rumor": [
+            {
+              "id": "GD_GABBRO_ISLAND_R1",
+              "source_id": "TH_VILLAGE"
+            }
+          ]
+        }
+      },
+      {
+        "id": "GD_OCEAN",
+        "curiosity": "SUNKEN_MODULE",
+        "facts": {
+          "explore": [
+            {
+              "id": "GD_OCEAN_X1"
+            },
+            {
+              "id": "GD_OCEAN_X2",
+              "ignore_more_to_explore": true
+            }
+          ],
+          "rumor": [
+            {
+              "id": "GD_OCEAN_R1",
+              "source_id": "GD_GABBRO_ISLAND"
+            },
+            {
+              "id": "GD_OCEAN_R2",
+              "source_id": "GD_CONSTRUCTION_YARD"
+            },
+            {
+              "id": "GD_OCEAN_R3",
+              "source_id": "GD_BRAMBLE_ISLAND"
+            }
+          ]
+        }
+      },
+      {
+        "id": "GD_QUANTUM_TOWER",
+        "curiosity": "QUANTUM_MOON",
+        "facts": {
+          "explore": [
+            {
+              "id": "GD_QUANTUM_TOWER_X1",
+              "ignore_more_to_explore": true
+            },
+            {
+              "id": "GD_QUANTUM_TOWER_X2"
+            },
+            {
+              "id": "GD_QUANTUM_TOWER_X3"
+            },
+            {
+              "id": "GD_QUANTUM_TOWER_X4",
+              "ignore_more_to_explore": true
+            }
+          ],
+          "rumor": [
+            {
+              "id": "GD_QUANTUM_TOWER_R1",
+              "source_id": "BH_QUANTUM_SHARD"
+            }
+          ]
+        }
+      },
+      {
+        "id": "GD_STATUE_ISLAND",
+        "curiosity": "TIME_LOOP",
+        "facts": {
+          "explore": [
+            {
+              "id": "GD_STATUE_ISLAND_X1"
+            },
+            {
+              "id": "GD_STATUE_ISLAND_X2",
+              "ignore_more_to_explore": true
+            }
+          ],
+          "rumor": [
+            {
+              "id": "GD_STATUE_ISLAND_R1",
+              "source_id": "GD_GABBRO_ISLAND"
+            },
+            {
+              "id": "GD_STATUE_ISLAND_R2",
+              "source_id": "GD_GABBRO_ISLAND"
+            }
+          ]
+        },
+        "entries": [
+          {
+            "id": "GD_STATUE_WORKSHOP",
+            "curiosity": "TIME_LOOP",
+            "facts": {
+              "explore": [
+                {
+                  "id": "GD_STATUE_WORKSHOP_X1"
+                },
+                {
+                  "id": "GD_STATUE_WORKSHOP_X2"
+                },
+                {
+                  "id": "GD_STATUE_WORKSHOP_X3"
+                }
+              ],
+              "rumor": [
+                {
+                  "id": "GD_STATUE_WORKSHOP_R1"
+                },
+                {
+                  "id": "GD_STATUE_WORKSHOP_R2"
+                },
+                {
+                  "id": "GD_STATUE_WORKSHOP_R3"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  }
+]
