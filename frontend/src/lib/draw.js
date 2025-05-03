@@ -130,13 +130,13 @@ export async function generate_all_svg() {
 			mult = BIG_MULT;
 		}
 
-		let c = e.coordinates;
-		let [x, y] = c;
+		centers[id] = e.coordinates;
+
+		let [cx, cy] = e.coordinates;
 		let w = CARD_WIDTH * mult;
 		let h = CARD_HEIGHT * mult;
-		let bounds = [x + h, y + w];
-
-		centers[id] = [x + h / 2, y + w / 2];
+		let start_bounds = [cx - h / 2, cy - w / 2];
+		let end_bounds = [cx + h / 2, cy + w / 2];
 
 		if (!TEST_SAVE && HIDE_CURIOSITIES.includes(library[id]?.curiosity)) {
 			continue;
@@ -159,7 +159,7 @@ export async function generate_all_svg() {
 			colors?.color,
 			colors?.highlight,
 		);
-		cards_svgs.push({ svg, coords: [c, bounds] })
+		cards_svgs.push({ svg, coords: [start_bounds, end_bounds] })
 	}
 
 	// draw rumor arrows
