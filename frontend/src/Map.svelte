@@ -8,12 +8,14 @@
   import { coord_to_leaflet, generate_all_svg } from "./lib/draw";
   import { close_fact, open_fact, OPENED_FACT } from "./lib/stores";
 
+  const MAP_PAD = 3000;
+
   /** @type {import('leaflet').Map} */
   let map;
 
   onMount(async () => {
     map = L.map("map", {
-      center: [250, 250],
+      center: [250, 1000],
       zoom: -2,
       minZoom: -2,
       maxZoom: 2,
@@ -25,7 +27,10 @@
       // max/min in normal coordinates:
       // x: [-878, 3341.8005]
       // y: [-1577, 1707]
-      maxBounds: [coord_to_leaflet(-1500, -2200), coord_to_leaflet(4000, 2300)],
+      maxBounds: [
+        coord_to_leaflet(-900 - MAP_PAD, -1600 - MAP_PAD),
+        coord_to_leaflet(3300 + MAP_PAD, 1700 + MAP_PAD),
+      ],
     }).on("click", (e) => {
       // @ts-ignore
       let id = e.originalEvent.target.id;
