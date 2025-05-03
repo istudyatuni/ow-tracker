@@ -61,11 +61,11 @@ export function make_card_svg(id, text, image_url, color, hover_color) {
       svg:hover > .${hover_class} {
         fill: ${hover_color};
       }
-      rect {
+      rect.outer {
         pointer-events:auto;
       }
     </style>
-    <rect x="0" y="0" id="${id}" width="${FULL_CARD_WIDTH}" height="${FULL_CARD_HEIGHT}" fill="${color}" class="${hover_class}" />
+    <rect x="0" y="0" id="${id}" width="${FULL_CARD_WIDTH}" height="${FULL_CARD_HEIGHT}" fill="${color}" class="outer ${hover_class}" />
     <switch>
       <foreignObject x="0" y="0" width="${CARD_WIDTH}" height="${TEXT_HEIGHT}">
         <p xmlns="http://www.w3.org/1999/xhtml" style="font-size: ${FONT_SIZE_EM}em; ${TEXT_STYLE}">${text}</p>
