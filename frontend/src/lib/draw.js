@@ -5,6 +5,7 @@ import { to_data_url } from './dataurl';
 import { CURIOSITY } from './info';
 import { detect_language } from './language';
 import { get_save_from_browser_url } from './saves';
+import { LOADING } from './stores';
 
 const HIDE_CURIOSITIES = [CURIOSITY.INVISIBLE_PLANET];
 // pretend that save file was loaded
@@ -29,9 +30,13 @@ const NORMAL_PANE = 'overlayPane'
 const SMALL_PANE = 'markerPane'
 
 export async function generate_all_svg() {
+	LOADING.set('defined save keys')
+
 	let save_keys = await (await fetch(import.meta.env.BASE_URL + "/save_keys.json")).json();
 	let opened_facts = get_save_from_browser_url(save_keys)
 	set_opened_facts(opened_facts)
+
+	LOADING.set('connections data')
 
 	// load ids data and rumors source ids
 	let library = {};
@@ -87,6 +92,8 @@ export async function generate_all_svg() {
 
 	set_opened_cards_only_rumors(opened_cards.difference(opened_card_imgs))
 
+	LOADING.set('coordinates')
+
 	// load coordinates and images
 	let entries = {};
 	let coordinates_data = await (await fetch(import.meta.env.BASE_URL + "/coordinates.json")).json();
@@ -97,12 +104,18 @@ export async function generate_all_svg() {
 		};
 	}
 
+	LOADING.set('parents')
+
 	// load parents map
 	let parents = await (await fetch(import.meta.env.BASE_URL + "/parents.json")).json();
 
 	// load translations
 	let lang = detect_language();
+	LOADING.set(`translation for ${lang}`)
+
 	let tr = await load_tr(lang);
+
+	LOADING.set('theme')
 
 	// load theme colors
 	let theme = await (await fetch(import.meta.env.BASE_URL + "/theme.json")).json();
@@ -144,6 +157,7 @@ export async function generate_all_svg() {
 			if (e.sprite === null) {
 				return null;
 			}
+			LOADING.set(`sprite for ${id}`)
 			let img = await (await fetch(e.sprite)).blob();
 			return await to_data_url(img);
 		})();

@@ -6,7 +6,7 @@
   import L from "leaflet";
 
   import { coord_to_leaflet, generate_all_svg } from "./lib/draw";
-  import { close_fact, open_fact, OPENED_FACT } from "./lib/stores";
+  import { close_fact, LOADING, open_fact, OPENED_FACT } from "./lib/stores";
 
   const MAP_PAD = 3000;
 
@@ -52,6 +52,8 @@
     for (let { svg, coords, pane } of svgs) {
       L.svgOverlay(svg, coords, { pane }).addTo(map);
     }
+
+    LOADING.set(null)
   });
 </script>
 

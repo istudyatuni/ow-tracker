@@ -11,6 +11,8 @@
 </script>
 
 <script>
+  import Loading from "./components/Loading.svelte";
+
   let facts = $derived($OPENED_FACT ? get_facts_for($OPENED_FACT) : []);
 </script>
 
@@ -18,6 +20,7 @@
   <Sidebar />
   <Map />
   <FactsPanel {facts} />
+  <Loading />
 </main>
 
 <style>
