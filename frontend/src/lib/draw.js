@@ -1,5 +1,6 @@
 import { expand_thin_bounds, make_rumor_arrow } from './arrow';
 import { CARD_HEIGHT, CARD_WIDTH, make_card_svg } from './card';
+import { load_tr, set_opened_cards_only_rumors, set_opened_facts } from './data';
 import { to_data_url } from './dataurl';
 import { CURIOSITY } from './info';
 import { detect_language } from './language';
@@ -36,6 +37,7 @@ export async function generate_all_svg() {
 			opened_facts.add(id);
 		}
 	}
+	set_opened_facts(opened_facts)
 
 	// load ids data and rumors source ids
 	let library = {};
@@ -89,6 +91,8 @@ export async function generate_all_svg() {
 	}
 	handle_entries(entries_data);
 
+	set_opened_cards_only_rumors(opened_cards.difference(opened_card_imgs))
+
 	// load coordinates and images
 	let entries = {};
 	let coordinates_data = await (await fetch("coordinates.json")).json();
@@ -104,7 +108,7 @@ export async function generate_all_svg() {
 
 	// load translations
 	let lang = detect_language();
-	let tr = await (await fetch(`translations/${lang}.json`)).json();
+	let tr = await load_tr(lang);
 
 	// load theme colors
 	let theme = await (await fetch("theme.json")).json();

@@ -1,10 +1,12 @@
 <script>
   import { onMount } from "svelte";
+  import { get } from "svelte/store";
 
   import "leaflet/dist/leaflet.css";
   import L from "leaflet";
 
   import { coord_to_leaflet, generate_all_svg } from "./lib/draw";
+  import { close_fact, open_fact, OPENED_FACT } from "./lib/stores";
 
   /** @type {import('leaflet').Map} */
   let map;
@@ -27,8 +29,17 @@
     }).on("click", (e) => {
       // @ts-ignore
       let id = e.originalEvent.target.id;
+
+      let cur_id = get(OPENED_FACT);
+      if (id === cur_id) {
+        close_fact();
+        return;
+      }
+
       if (id !== "map") {
-        alert(`Clicked ${id}`);
+        open_fact(id);
+      } else {
+        close_fact();
       }
     });
 
