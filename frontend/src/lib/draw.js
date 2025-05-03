@@ -29,7 +29,7 @@ const NORMAL_PANE = 'overlayPane'
 const SMALL_PANE = 'markerPane'
 
 export async function generate_all_svg() {
-	let save_keys = await (await fetch("save_keys.json")).json();
+	let save_keys = await (await fetch(import.meta.env.BASE_URL + "/save_keys.json")).json();
 	let opened_facts = get_save_from_browser_url(save_keys)
 	set_opened_facts(opened_facts)
 
@@ -40,7 +40,7 @@ export async function generate_all_svg() {
 	 * @type {Object.<string, Object.<string, string>[]>}
 	 */
 	let sources = {};
-	let entries_data = await (await fetch("entries.json")).json();
+	let entries_data = await (await fetch(import.meta.env.BASE_URL + "/entries.json")).json();
 	// opened cards ids
 	let opened_cards = new Set();
 	// cards ids where img is opened
@@ -89,23 +89,23 @@ export async function generate_all_svg() {
 
 	// load coordinates and images
 	let entries = {};
-	let coordinates_data = await (await fetch("coordinates.json")).json();
+	let coordinates_data = await (await fetch(import.meta.env.BASE_URL + "/coordinates.json")).json();
 	for (let [id, [x, y]] of Object.entries(coordinates_data)) {
 		entries[id] = {
 			coordinates: coord_to_leaflet(x, y),
-			sprite: opened_card_imgs.has(id) ? `/sprites/${id}.jpg` : null,
+			sprite: opened_card_imgs.has(id) ? `${import.meta.env.BASE_URL}/sprites/${id}.jpg` : null,
 		};
 	}
 
 	// load parents map
-	let parents = await (await fetch("parents.json")).json();
+	let parents = await (await fetch(import.meta.env.BASE_URL + "/parents.json")).json();
 
 	// load translations
 	let lang = detect_language();
 	let tr = await load_tr(lang);
 
 	// load theme colors
-	let theme = await (await fetch("theme.json")).json();
+	let theme = await (await fetch(import.meta.env.BASE_URL + "/theme.json")).json();
 
 	let centers = {};
 

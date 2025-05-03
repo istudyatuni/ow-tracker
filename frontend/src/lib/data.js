@@ -41,6 +41,6 @@ export function get_facts_for(id) {
 }
 
 export async function load_tr(lang) {
-	tr = await (await fetch(`translations/${lang}.json`)).json()
+	tr = await (await fetch(`${import.meta.env.BASE_URL}/translations/${lang}.json`)).json()
 	return tr
 }
