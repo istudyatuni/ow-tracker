@@ -1,5 +1,7 @@
 import { SVG_NS } from './card'
 
+const STROKE = 10
+
 /**
  * Make svg arrow from center1 to center2
  * @param  {string} id
@@ -10,8 +12,6 @@ import { SVG_NS } from './card'
 export function make_rumor_arrow(id, center1, center2, color = 'gray') {
 	let [x1, y1] = center1
 	let [x2, y2] = center2
-
-	let stroke = 20
 
 	let rect_width = Math.abs(y2 - y1)
 	let rect_height = Math.abs(x2 - x1)
@@ -36,10 +36,39 @@ export function make_rumor_arrow(id, center1, center2, color = 'gray') {
 
 	let e = document.createElementNS(SVG_NS, "svg")
 	e.setAttribute("xmlns", SVG_NS)
-	// todo: fix thin lines when rect width or height < stroke width
 	e.setAttribute("viewBox", `0 0 ${rect_width} ${rect_height}`)
 
-	e.innerHTML = `<style>line{pointer-events:auto}</style><line id="${id}" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${color}" stroke-width="${stroke}" />`
+	e.innerHTML = `<style>line{pointer-events:auto}</style><line id="${id}" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${color}" stroke-width="${STROKE}" />`
 
 	return e
+}
+
+/**
+ * Add padding when bounds forms too thin rectangle
+ * @param  {number[][]} bounds
+ * @return {import('leaflet').LatLngBoundsExpression}
+ */
+export function expand_thin_bounds(bounds) {
+	const PAD = STROKE * 2
+
+	let [[x1, y1], [x2, y2]] = bounds
+	if (Math.abs(x2 - x1) < PAD) {
+		if (x1 < x2) {
+			x1 -= PAD
+			x2 += PAD
+		} else {
+			x1 += PAD
+			x2 -= PAD
+		}
+	} else if (Math.abs(y2 - y1) < PAD) {
+		if (y1 < y2) {
+			y1 -= PAD
+			y2 += PAD
+		} else {
+			y1 += PAD
+			y2 -= PAD
+		}
+	}
+
+	return [[x1, y1], [x2, y2]]
 }

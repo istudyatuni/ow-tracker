@@ -4,7 +4,7 @@
   import "leaflet/dist/leaflet.css";
   import L from "leaflet";
 
-  import { make_rumor_arrow } from "./lib/arrow";
+  import { make_rumor_arrow, expand_thin_bounds } from "./lib/arrow";
   import { CARD_HEIGHT, CARD_WIDTH, make_card_svg } from "./lib/card";
   import { detect_language } from "./lib/language";
   import { to_data_url } from "./lib/dataurl";
@@ -199,9 +199,13 @@
           centers[source_id],
           centers[entry_id],
         );
-        L.svgOverlay(svg, [centers[source_id], centers[entry_id]], {
-          pane: "mapPane",
-        }).addTo(map);
+        L.svgOverlay(
+          svg,
+          expand_thin_bounds([centers[source_id], centers[entry_id]]),
+          {
+            pane: "mapPane",
+          },
+        ).addTo(map);
       }
     }
   });
