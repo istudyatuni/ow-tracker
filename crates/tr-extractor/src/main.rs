@@ -103,7 +103,7 @@ fn main() -> Result<()> {
 
         let output = args.out_dir.join("entries.json");
         info!("writing {}", output.display());
-        serde_json::to_writer(File::create(output)?, &astro_objects)?;
+        serde_json::to_writer_pretty(File::create(output)?, &astro_objects)?;
     }
 
     // names and ids of astro objects for searching in translations
@@ -172,7 +172,7 @@ fn main() -> Result<()> {
 
             let output = output.join(format!("{}.json", lang.file_name()));
             info!("writing {}", output.display());
-            serde_json::to_writer(File::create(output)?, &translation)?;
+            serde_json::to_writer_pretty(File::create(output)?, &translation)?;
         }
 
         translations.insert(lang, translation);
