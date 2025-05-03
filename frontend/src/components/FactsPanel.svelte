@@ -20,11 +20,13 @@
 
     height: auto;
     min-height: 2em;
+    max-height: 60%;
     width: 90%;
 
     border: 2px $color solid;
     background-color: #02101b;
     font-size: 1.3em;
+    overflow-y: auto;
 
     // above map
     z-index: 1000;
@@ -33,7 +35,7 @@
       $m: 0.5em;
 
       list-style: none;
-      margin: $m auto $m -16px;
+      margin: $m 0.5em $m -16px;
     }
 
     & ul li {
