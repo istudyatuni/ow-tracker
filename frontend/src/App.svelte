@@ -3,6 +3,7 @@
   // import viteLogo from '/vite.svg'
 
   import FactsPanel from "./components/FactsPanel.svelte";
+  import Sidebar from "./components/Sidebar.svelte";
   import Map from "./Map.svelte";
 
   import { OPENED_FACT } from "./lib/stores";
@@ -14,6 +15,7 @@
 </script>
 
 <main>
+  <Sidebar />
   <Map />
   <FactsPanel {facts} />
 </main>
