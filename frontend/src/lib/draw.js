@@ -4,6 +4,7 @@ import { load_tr, set_opened_cards_only_rumors, set_opened_facts } from './data'
 import { to_data_url } from './dataurl';
 import { CURIOSITY } from './info';
 import { detect_language } from './language';
+import { get_save_from_browser_url } from './saves';
 
 const HIDE_CURIOSITIES = [CURIOSITY.INVISIBLE_PLANET];
 // pretend that save file was loaded
@@ -28,20 +29,8 @@ const NORMAL_PANE = 'overlayPane'
 const SMALL_PANE = 'markerPane'
 
 export async function generate_all_svg() {
-	let save_data = (await (await fetch("test-save.json")).json())
-		.shipLogFactSaves;
-
-	// todo: not sure if read and newlyRevealed affect showing
-	// || fact.read || fact.newlyRevealed
-	let is_fact_opened = (fact) => fact.revealOrder >= 0;
-
-	// which facts in save are opened
-	let opened_facts = new Set();
-	for (let [id, fact] of Object.entries(save_data)) {
-		if (is_fact_opened(fact)) {
-			opened_facts.add(id);
-		}
-	}
+	let save_keys = await (await fetch("save_keys.json")).json();
+	let opened_facts = get_save_from_browser_url(save_keys)
 	set_opened_facts(opened_facts)
 
 	// load ids data and rumors source ids

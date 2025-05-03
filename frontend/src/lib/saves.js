@@ -1,5 +1,32 @@
 const V15_KEYS_COUNT = 374
 
+export function get_save_opened_facts(facts_data) {
+	// todo: not sure if read and newlyRevealed affect showing
+	// || fact.read || fact.newlyRevealed
+	let is_fact_opened = (fact) => fact.revealOrder >= 0;
+
+	// which facts in save are opened
+	let opened_facts = new Set();
+	for (let [id, fact] of Object.entries(facts_data)) {
+		if (is_fact_opened(fact)) {
+			opened_facts.add(id);
+		}
+	}
+	return opened_facts
+}
+
+export function export_save_to_browser_url(keys, opened) {
+	let encoded = encode_save(keys, opened)
+	encoded = encodeURIComponent(encoded)
+	window.location.hash = `save=${encoded}`
+}
+
+export function get_save_from_browser_url(keys) {
+	let encoded = decodeURIComponent(window.location.hash.split('=')[1])
+	let opened = decode_save(keys, encoded)
+	return opened
+}
+
 /**
  * @param  {string[]} keys
  * @param  {Set.<string>} opened

@@ -1,8 +1,20 @@
 <script>
+    import { export_save_to_browser_url, get_save_opened_facts } from "../lib/saves";
+
   let opened = $state(false);
+  let input;
 
   function toggle_open() {
     opened = !opened;
+  }
+  function on_file_upload_click() {
+    input.click();
+  }
+  async function handle_file_change(e) {
+    let file = await e.target.files[0].text();
+    let data = JSON.parse(file).shipLogFactSaves
+    export_save_to_browser_url(Object.keys(data), get_save_opened_facts(data))
+    window.location.reload()
   }
 </script>
 
@@ -11,7 +23,15 @@
   <div class:hidden={!opened}>
     <button onclick={toggle_open}>Close</button>
     <br />
-    <button>Upload save file</button>
+
+    <button type="button" onclick={on_file_upload_click}>Upload save file</button>
+    <input
+      bind:this={input}
+      id="fileinput"
+      type="file"
+      accept=".owsave"
+      class="hidden"
+      onchange={handle_file_change} />
   </div>
 </div>
 
@@ -40,6 +60,6 @@
     margin-bottom: 5px;
   }
   .hidden {
-  	display: none;
+    display: none;
   }
 </style>
