@@ -22,10 +22,10 @@ const BIG_CARDS = new Set([
 	"TT_TIME_LOOP_DEVICE",
 ]);
 
-// names doesn't mean anything here, just panes with increasing z-index
+// pane names doesn't mean anything here, just panes with increasing z-index
 const RUMOR_PANE = 'mapPane'
-const SMALL_PANE = 'markerPane'
 const NORMAL_PANE = 'overlayPane'
+const SMALL_PANE = 'markerPane'
 
 export async function generate_all_svg() {
 	let save_data = (await (await fetch("test-save.json")).json())
