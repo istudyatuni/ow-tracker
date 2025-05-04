@@ -16,15 +16,9 @@ const FULL_CARD_HEIGHT = CARD_HEIGHT + CARD_MARGIN
 export const SVG_NS = "http://www.w3.org/2000/svg"
 
 const QUESTION = {
-  color: {
-    mark: 'orange',
-    bg: '#02101b',
-  },
-  size: {
-    x: IMAGE_WIDTH / 3,
-    y: TEXT_HEIGHT + IMAGE_HEIGHT / 1.4,
-    font: IMAGE_HEIGHT * 2 / 3,
-  },
+  x: IMAGE_WIDTH / 3,
+  y: TEXT_HEIGHT + IMAGE_HEIGHT / 1.4,
+  font: IMAGE_HEIGHT * 2 / 3,
 }
 
 /**
@@ -41,24 +35,19 @@ export function make_card_svg(id, text, image_url, color, hover_color) {
   e.setAttribute("viewBox", `0 0 ${FULL_CARD_WIDTH} ${FULL_CARD_HEIGHT}`)
 
   // hack to have correct hover colors
-  // todo: probably it's possible to not embed it inside svg
   let hover_class = hover_color.replace('#', 'c')
 
   let img
   let img_size = `x="${CARD_MARGIN}" y="${TEXT_HEIGHT}" width="${IMAGE_WIDTH}" height="${IMAGE_HEIGHT}"`
   if (image_url === null) {
-    img = `<rect ${img_size} fill="${QUESTION.color.bg}" />
-      <text x="${QUESTION.size.x}" y="${QUESTION.size.y}" fill="${QUESTION.color.mark}" style="font-size: ${QUESTION.size.font}px">?</text>`
+    img = `<rect ${img_size} class="img-q-bg" />
+      <text x="${QUESTION.x}" y="${QUESTION.y}" class="img-q-icon" style="font-size: ${QUESTION.font}px">?</text>`
   } else {
     img = `<image href="${image_url}" ${img_size} />`
   }
 
   // foreignObject is used to use <p> to have text auto-wrap
-  e.innerHTML = `<style>
-      svg:hover > .${hover_class} {
-        fill: ${hover_color};
-      }
-    </style>
+  e.innerHTML = `
     <rect x="0" y="0" id="${id}" width="${FULL_CARD_WIDTH}" height="${FULL_CARD_HEIGHT}" fill="${color}" class="card ${hover_class}" />
     <switch>
       <foreignObject x="0" y="0" width="${CARD_WIDTH}" height="${TEXT_HEIGHT}">

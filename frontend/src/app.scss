@@ -102,3 +102,27 @@ line.arrow {
 line.arrow:hover {
   stroke: lightgray;
 }
+
+// hack to have correct hover colors in cards
+$highlight-colors: 'ffa768',
+  'ff6868',
+  '9068ff',
+  '68ffac',
+  '3280ff',
+  'e2e4da';
+
+@each $c in $highlight-colors {
+  svg:hover>.c#{$c} {
+    fill: ##{$c};
+  }
+}
+
+// question sign background
+rect.img-q-bg {
+  fill: #02101b;
+}
+
+// question sign itself
+text.img-q-icon {
+  fill: orange;
+}
