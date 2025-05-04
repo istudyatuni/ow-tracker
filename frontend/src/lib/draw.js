@@ -138,12 +138,15 @@ export async function* generate_all_svg() {
 	// load theme colors
 	let theme = await (await fetch(import.meta.env.BASE_URL + "/theme.json")).json();
 
+	// centers is filled inside of generate_cards
 	let centers = {};
+	yield* generate_cards(entries, theme, library, parents, centers, opened_cards, tr)
+	yield* generate_arrows(sources, library, opened_cards, opened_facts, centers)
+}
 
-	// draw cards
-	let neutral_theme = theme.neutral;
+async function* generate_cards(entries, theme, library, parents, centers, opened_cards, tr) {
 	for (let [id, e] of Object.entries(entries)) {
-		let colors = theme[library[id]?.curiosity] || neutral_theme;
+		let colors = theme[library[id]?.curiosity] || theme.neutral;
 
 		let is_small = id in parents;
 		let is_big = BIG_CARDS.has(id);
@@ -186,13 +189,12 @@ export async function* generate_all_svg() {
 		);
 		yield { svg, coords: [start_bounds, end_bounds], pane: is_small ? SMALL_PANE : NORMAL_PANE }
 	}
+}
 
-	// draw rumor arrows
+function* generate_arrows(sources, library, opened_cards, opened_facts, centers) {
 	for (let [source_id, entry_ids] of Object.entries(sources)) {
-		if (
-			!TEST_SAVE &&
-			HIDE_CURIOSITIES.includes(library[source_id]?.curiosity)
-		) {
+		if (!TEST_SAVE &&
+			HIDE_CURIOSITIES.includes(library[source_id]?.curiosity)) {
 			continue;
 		}
 		if (TEST_SAVE && !opened_cards.has(source_id)) {
