@@ -1,4 +1,5 @@
 const V15_KEYS_COUNT = 374
+const GAME_VERSION = '1.1.15'
 
 export function get_save_opened_facts(facts_data) {
 	// todo: not sure if read and newlyRevealed affect showing
@@ -17,11 +18,17 @@ export function get_save_opened_facts(facts_data) {
 
 export function export_save_to_browser_url(keys, opened) {
 	let encoded = encode_save(keys, opened)
-	window.location.hash = `save=${encoded}`
+	// save version for now
+	window.location.hash = `v=${GAME_VERSION}&save=${encoded}`
 }
 
 export function get_save_from_browser_url(keys) {
-	let encoded = window.location.hash.split('=')[1]
+	let h = window.location.hash
+	let encoded = h.split('&save=')[1]
+	// to not break early links. todo: remove
+	if (h.startsWith('#save')) {
+		encoded = h.split('save=')[1]
+	}
 	let opened = decode_save(keys, encoded)
 	return opened
 }
