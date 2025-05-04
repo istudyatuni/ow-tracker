@@ -13,15 +13,33 @@ const LANGUAGES = {
 	Turkish: 'turkish',
 }
 
+export const LANGUAGE_NAMES = {
+	english: 'English',
+	spanish_la: 'Español',
+	german: 'Deutsch',
+	french: 'Français',
+	italian: 'Italiano',
+	polish: 'Polski',
+	portuguese_br: 'Português',
+	japanese: '日本語',
+	russian: 'Русский',
+	chinese_simple: '简化字',
+	korean: '한국어',
+	turkish: 'Türkçe',
+}
+
 export function detect_language() {
-	let lang = null
-	for (let code of navigator.languages) {
-		lang = code_to_lang(code.split('-')[0])
-		if (lang !== null) {
-			return lang
-		}
-	}
-	return LANGUAGES.English
+	return get_language()
+		|| code_to_lang(navigator.languages.find((code) => code_to_lang(code.split('-')[0])))
+		|| LANGUAGES.English
+}
+
+export function save_language(id) {
+	localStorage.setItem('language', id)
+}
+
+export function get_language() {
+	return localStorage.getItem('language')
 }
 
 function code_to_lang(code) {
