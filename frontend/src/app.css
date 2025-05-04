@@ -13,7 +13,8 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-body, #app {
+body,
+#app {
   width: 100%;
   height: 100vh;
   margin: 0;
@@ -73,4 +74,24 @@ button:focus-visible {
   button {
     background-color: #f9f9f9;
   }
+}
+
+.card-text {
+  font-family: monospace;
+  margin: 0;
+  text-align: center;
+  line-height: 1.2em;
+  color: black;
+}
+
+.card-text-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 0.3em
+}
+
+rect.outer {
+  pointer-events: auto;
 }

@@ -13,8 +13,6 @@ const CARD_MARGIN = 2 * SCALE
 const FULL_CARD_WIDTH = CARD_WIDTH + CARD_MARGIN * 2
 const FULL_CARD_HEIGHT = CARD_HEIGHT + CARD_MARGIN
 
-const TEXT_STYLE = 'margin: 0; font-family: monospace; text-align: center; line-height: 1.2em; color: black;'
-
 export const SVG_NS = "http://www.w3.org/2000/svg"
 
 const QUESTION = {
@@ -60,15 +58,12 @@ export function make_card_svg(id, text, image_url, color, hover_color) {
       svg:hover > .${hover_class} {
         fill: ${hover_color};
       }
-      rect.outer {
-        pointer-events:auto;
-      }
     </style>
     <rect x="0" y="0" id="${id}" width="${FULL_CARD_WIDTH}" height="${FULL_CARD_HEIGHT}" fill="${color}" class="outer ${hover_class}" />
     <switch>
       <foreignObject x="0" y="0" width="${CARD_WIDTH}" height="${TEXT_HEIGHT}">
-        <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: center; justify-content: center; height: 100%; padding: 0.3em">
-          <p style="font-size: ${FONT_SIZE_EM}em; ${TEXT_STYLE}">${text}</p>
+        <div xmlns="http://www.w3.org/1999/xhtml" class="card-text-wrapper">
+          <p class="card-text" style="font-size: ${FONT_SIZE_EM}em">${text}</p>
         </div>
       </foreignObject>
       <text x="0" y="0" font-size="20" text-anchor="middle" fill="white">svg viewer doesn't support html</text>
