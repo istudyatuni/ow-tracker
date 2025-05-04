@@ -44,7 +44,10 @@ export async function* generate_all_svg() {
 
 	LOADING.set('connections data')
 
-	// load ids data and rumors source ids
+	/**
+	 * load ids data and rumors source ids
+	 * @type {Object.<string, { curiosity: string }>}
+	 */
 	let library = {};
 	/**
 	 * rumor's source id -> [{entry_id, rumor_id}]
@@ -56,6 +59,14 @@ export async function* generate_all_svg() {
 	let opened_cards = new Set();
 	// cards ids where img is opened
 	let opened_card_imgs = new Set();
+	//
+	//
+	/**
+	 * facts by entry id
+	 *
+	 * `entry id -> [{ rumor_id, explore_id }]`
+	 * @type {Object.<string, { rumor: string[], explore: string[] }>}
+	 */
 	let entries_facts = {}
 
 	function handle_entries(entries) {
@@ -112,7 +123,10 @@ export async function* generate_all_svg() {
 
 	LOADING.set('coordinates')
 
-	// load coordinates and images
+	/**
+	 * load coordinates and images
+	 * @type {Object.<string, { coordinates: import('leaflet').LatLngTuple, sprite: string | null }>}
+	 */
 	let entries = {};
 	let coordinates_data = await (await fetch(import.meta.env.BASE_URL + "/coordinates.json")).json();
 	for (let [id, [x, y]] of Object.entries(coordinates_data)) {
@@ -124,26 +138,39 @@ export async function* generate_all_svg() {
 
 	LOADING.set('parents')
 
-	// load parents map
+	/** @type {Object.<string, string>} */
 	let parents = await (await fetch(import.meta.env.BASE_URL + "/parents.json")).json();
 
 	// load translations
 	let lang = detect_language();
 	LOADING.set(`translation for ${lang}`)
 
+	/** @type {Object.<string, string>} */
 	let tr = await load_tr(lang);
 
 	LOADING.set('theme')
 
-	// load theme colors
+	/** @type {Object.<string, { color: string, highlight: string }>} */
 	let theme = await (await fetch(import.meta.env.BASE_URL + "/theme.json")).json();
 
 	// centers is filled inside of generate_cards
+	/** @type {Object.<string, import('leaflet').LatLngTuple>} */
 	let centers = {};
 	yield* generate_cards(entries, theme, library, parents, centers, opened_cards, tr, save_loaded)
 	yield* generate_arrows(sources, library, opened_cards, opened_facts, centers, save_loaded)
 }
 
+/**
+ * @param {Object.<string, { coordinates: import('leaflet').LatLngTuple, sprite: string | null }>} entries
+ * @param {Object.<string, { color: string, highlight: string }>} theme
+ * @param {Object.<string, { curiosity: string }>} library
+ * @param {Object.<string, string>} parents
+ * @param {Object.<string, import('leaflet').LatLngTuple>} centers
+ * @param {Set.<string>} opened_cards
+ * @param {Object.<string, string>} tr
+ * @param {boolean} save_loaded
+ * @yield {}
+ */
 async function* generate_cards(entries, theme, library, parents, centers, opened_cards, tr, save_loaded) {
 	for (let [id, e] of Object.entries(entries)) {
 		let colors = theme[library[id]?.curiosity] || theme.neutral;
@@ -191,6 +218,15 @@ async function* generate_cards(entries, theme, library, parents, centers, opened
 	}
 }
 
+/**
+ * @param {Object.<string, Object.<string, string>[]>} sources
+ * @param {Object.<string, { curiosity: string }>} library
+ * @param {Set.<string>} opened_cards
+ * @param {Set.<string>} opened_facts
+ * @param {Object.<string, import('leaflet').LatLngTuple>} centers
+ * @param {boolean} save_loaded
+ * @yield {}
+ */
 function* generate_arrows(sources, library, opened_cards, opened_facts, centers, save_loaded) {
 	for (let [source_id, entry_ids] of Object.entries(sources)) {
 		if (!save_loaded &&

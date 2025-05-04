@@ -6,6 +6,7 @@ let opened_facts_by_id = {}
 let opened_facts = new Set()
 let opened_cards_only_rumors = new Set()
 let entries_facts = {}
+/** @type {Object.<string, string>} */
 let tr = {}
 
 export async function set_opened_facts(data) {
@@ -20,6 +21,10 @@ export async function set_entries_facts(data) {
 	entries_facts = data
 }
 
+/**
+ * @param  {string} id
+ * @return {string[]}
+ */
 export function get_facts_for(id) {
 	let parts = id.split('_')
 	let last = parts[parts.length - 1]
@@ -45,6 +50,9 @@ export function get_facts_for(id) {
 	return opened_facts_by_id[id]
 }
 
+/**
+ * @param  {string} lang
+ */
 export async function load_tr(lang) {
 	tr = await (await fetch(`${import.meta.env.BASE_URL}/translations/${lang}.json`)).json()
 	return tr
