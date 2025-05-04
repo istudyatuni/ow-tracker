@@ -1,4 +1,4 @@
-name: deploy
+name: deploy pages
 
 on:
   push:
@@ -7,16 +7,23 @@ on:
 
 jobs:
   build:
+    # https://vite.dev/guide/static-deploy.html#github-pages
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: read
+      pages: write
+      id-token: write
 
     steps:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-node@v4
         with:
-          node-version: "latest"
+          node-version: "lts/*"
           cache: "yarn"
           cache-dependency-path: frontend/yarn.lock
 
@@ -26,9 +33,11 @@ jobs:
       - name: build
         run: cd frontend && yarn build
 
-      - name: deploy
-        uses: peaceiris/actions-gh-pages@v4
+      - uses: actions/configure-pages@v5
+
+      - name: upload
+        uses: actions/upload-pages-artifact@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./frontend/dist
-          force_orphan: true
+          path: ./frontend/dist
+      - name: deploy
+        uses: actions/deploy-pages@v4
