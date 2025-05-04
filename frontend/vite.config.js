@@ -16,5 +16,8 @@ export default defineConfig({
   base: '/ow-tracker',
   build: {
     sourcemap: true,
+    rollupOptions: {
+      treeshake: true,
+    },
   },
 })
