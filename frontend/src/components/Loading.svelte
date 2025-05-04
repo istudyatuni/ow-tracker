@@ -2,7 +2,7 @@
   import { LOADING } from "../lib/stores";
 </script>
 
-<div class="block" class:hidden={$LOADING === null}>
+<div class="block above-map" class:hidden={$LOADING === null}>
   Loading {$LOADING}
 </div>
 

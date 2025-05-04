@@ -29,7 +29,7 @@ const RUMOR_PANE = 'mapPane'
 const NORMAL_PANE = 'overlayPane'
 const SMALL_PANE = 'markerPane'
 
-export async function generate_all_svg() {
+export async function* generate_all_svg() {
 	if (window.location.hash === '') {
 		return []
 	}
@@ -128,8 +128,6 @@ export async function generate_all_svg() {
 
 	let centers = {};
 
-	let svgs = []
-
 	// draw cards
 	let neutral_theme = theme.neutral;
 	for (let [id, e] of Object.entries(entries)) {
@@ -174,7 +172,7 @@ export async function generate_all_svg() {
 			colors?.color,
 			colors?.highlight,
 		);
-		svgs.push({ svg, coords: [start_bounds, end_bounds], pane: is_small ? SMALL_PANE : NORMAL_PANE })
+		yield { svg, coords: [start_bounds, end_bounds], pane: is_small ? SMALL_PANE : NORMAL_PANE }
 	}
 
 	// draw rumor arrows
@@ -198,11 +196,9 @@ export async function generate_all_svg() {
 				centers[entry_id],
 			);
 			let coords = expand_thin_bounds([centers[source_id], centers[entry_id]])
-			svgs.push({ svg, coords, pane: RUMOR_PANE })
+			yield { svg, coords, pane: RUMOR_PANE }
 		}
 	}
-
-	return svgs
 }
 
 /** @return {import('leaflet').LatLngTuple} */

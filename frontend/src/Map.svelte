@@ -49,8 +49,7 @@
       }
     });
 
-    let svgs = await generate_all_svg();
-    for (let { svg, coords, pane } of svgs) {
+    for await (let { svg, coords, pane } of generate_all_svg()) {
       L.svgOverlay(svg, coords, { pane }).addTo(map);
     }
 
