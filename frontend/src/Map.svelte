@@ -19,8 +19,9 @@
       zoom: -2,
       minZoom: -2,
       maxZoom: 2,
-      // not work
       zoomDelta: 0.5,
+      // fix zoomDelta not work in chrome
+      wheelPxPerZoomLevel: 80,
       crs: L.CRS.Simple,
       attributionControl: false,
       zoomControl: false,
@@ -53,7 +54,7 @@
       L.svgOverlay(svg, coords, { pane }).addTo(map);
     }
 
-    LOADING.set(null)
+    LOADING.set(null);
   });
 </script>
 
