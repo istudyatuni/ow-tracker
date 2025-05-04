@@ -10,6 +10,7 @@ let opened_cards_only_rumors = new Set()
 let entries_facts = {}
 /** @type {Object.<string, string>} */
 let tr = {}
+let joined_rumors = {}
 
 export async function set_opened_facts(data) {
 	opened_facts = data
@@ -23,11 +24,17 @@ export async function set_entries_facts(data) {
 	entries_facts = data
 }
 
+export async function set_joined_rumors(data) {
+	joined_rumors = data
+}
+
 /**
  * @param  {string} id
  * @return {string[]}
  */
 export function get_facts_for(id) {
+	let is_joined = id.includes(',')
+
 	if (id.match(RUMOR_REGEX)) {
 		// clicked on rumor
 		return [tr[id]]
@@ -37,7 +44,14 @@ export function get_facts_for(id) {
 		return opened_facts_by_id[id]
 	}
 
-	let facts = opened_cards_only_rumors.has(id) ? entries_facts[id]?.rumor : entries_facts[id]?.explore
+	let facts
+	if (opened_cards_only_rumors.has(id)) {
+		facts = entries_facts[id]?.rumor
+	} else if (is_joined) {
+		facts = joined_rumors[id]?.rumors
+	} else {
+		facts = entries_facts[id]?.explore
+	}
 
 	// when vite reloads this file in dev mode, site breaks
 	if (import.meta.env.DEV) {

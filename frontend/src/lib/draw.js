@@ -1,6 +1,6 @@
 import { expand_thin_bounds, make_rumor_arrow } from './arrow';
 import { CARD_HEIGHT, CARD_WIDTH, make_card_svg } from './card';
-import { load_tr, set_entries_facts, set_opened_cards_only_rumors, set_opened_facts } from './data';
+import { load_tr, set_entries_facts, set_joined_rumors, set_opened_cards_only_rumors, set_opened_facts } from './data';
 import { to_data_url } from './dataurl';
 import { CURIOSITY } from './info';
 import { detect_language } from './language';
@@ -144,6 +144,7 @@ export async function* generate_all_svg() {
 
 	set_opened_cards_only_rumors(opened_cards.difference(opened_card_imgs))
 	set_entries_facts(entries_facts)
+	set_joined_rumors(joined_rumors)
 
 	LOADING.set('coordinates')
 
