@@ -69,6 +69,10 @@ select {
   appearance: none;
 }
 
+.above-map {
+  z-index: 1000;
+}
+
 .card-text {
   font-family: monospace;
   margin: 0;

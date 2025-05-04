@@ -27,7 +27,7 @@
   }
 </script>
 
-<div class="bar" class:border={opened}>
+<div class="bar above-map" class:border={opened}>
   <button onclick={toggle_open} class:hidden={opened}>Menu</button>
   <div class:hidden={!opened}>
     <button onclick={toggle_open}>Close</button>
@@ -64,9 +64,6 @@
     padding: 1em 1em;
 
     color: white;
-
-    // above map
-    z-index: 1000;
   }
   /*.border {
     border: 1px $color solid;

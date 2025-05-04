@@ -2,7 +2,7 @@
   let { facts = [] } = $props();
 </script>
 
-<div class="facts" class:hidden={facts.length === 0}>
+<div class="facts above-map" class:hidden={facts.length === 0}>
   <ul>
     {#each facts as fact}
       <li>{fact}</li>
@@ -27,9 +27,6 @@
     background-color: #02101b;
     font-size: 1.3em;
     overflow-y: auto;
-
-    // above map
-    z-index: 1000;
 
     & ul {
       $m: 0.5em;
