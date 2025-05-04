@@ -5,10 +5,9 @@
   import FactsPanel from "./components/FactsPanel.svelte";
   import Sidebar from "./components/Sidebar.svelte";
   import Loading from "./components/Loading.svelte";
-  import Popup from "./components/Popup.svelte";
   import Map from "./Map.svelte";
 
-  import { OPENED_FACT, SAVE_FOUND } from "./lib/stores";
+  import { OPENED_FACT } from "./lib/stores";
   import { get_facts_for } from "./lib/data";
 </script>
 
@@ -21,7 +20,6 @@
   <Map />
   <FactsPanel {facts} />
   <Loading />
-  <Popup text="Upload save file from menu" hidden={$SAVE_FOUND} />
 </main>
 
 <style>

@@ -8,8 +8,6 @@ import { get_save_from_browser_url } from './saves';
 import { LOADING, SAVE_FOUND } from './stores';
 
 const HIDE_CURIOSITIES = [CURIOSITY.INVISIBLE_PLANET];
-// pretend that save file was loaded
-const TEST_SAVE = true;
 
 const DEFAULT_MULT = 0.7;
 const BIG_MULT = 1.2;
@@ -30,16 +28,18 @@ const NORMAL_PANE = 'overlayPane'
 const SMALL_PANE = 'markerPane'
 
 export async function* generate_all_svg() {
-	if (window.location.hash === '') {
-		return []
-	}
-
-	SAVE_FOUND.set(true)
+	let save_loaded = window.location.hash !== ''
+	SAVE_FOUND.set(save_loaded)
 
 	LOADING.set('defined save keys')
 
 	let save_keys = await (await fetch(import.meta.env.BASE_URL + "/save_keys.json")).json();
-	let opened_facts = get_save_from_browser_url(save_keys)
+	let opened_facts
+	if (save_loaded) {
+		opened_facts = get_save_from_browser_url(save_keys)
+	} else {
+		opened_facts = new Set(save_keys)
+	}
 	set_opened_facts(opened_facts)
 
 	LOADING.set('connections data')
@@ -140,11 +140,11 @@ export async function* generate_all_svg() {
 
 	// centers is filled inside of generate_cards
 	let centers = {};
-	yield* generate_cards(entries, theme, library, parents, centers, opened_cards, tr)
-	yield* generate_arrows(sources, library, opened_cards, opened_facts, centers)
+	yield* generate_cards(entries, theme, library, parents, centers, opened_cards, tr, save_loaded)
+	yield* generate_arrows(sources, library, opened_cards, opened_facts, centers, save_loaded)
 }
 
-async function* generate_cards(entries, theme, library, parents, centers, opened_cards, tr) {
+async function* generate_cards(entries, theme, library, parents, centers, opened_cards, tr, save_loaded) {
 	for (let [id, e] of Object.entries(entries)) {
 		let colors = theme[library[id]?.curiosity] || theme.neutral;
 
@@ -165,10 +165,10 @@ async function* generate_cards(entries, theme, library, parents, centers, opened
 		let start_bounds = [cx - h / 2, cy - w / 2];
 		let end_bounds = [cx + h / 2, cy + w / 2];
 
-		if (!TEST_SAVE && HIDE_CURIOSITIES.includes(library[id]?.curiosity)) {
+		if (!save_loaded && HIDE_CURIOSITIES.includes(library[id]?.curiosity)) {
 			continue;
 		}
-		if (TEST_SAVE && !opened_cards.has(id)) {
+		if (save_loaded && !opened_cards.has(id)) {
 			continue;
 		}
 
@@ -191,17 +191,17 @@ async function* generate_cards(entries, theme, library, parents, centers, opened
 	}
 }
 
-function* generate_arrows(sources, library, opened_cards, opened_facts, centers) {
+function* generate_arrows(sources, library, opened_cards, opened_facts, centers, save_loaded) {
 	for (let [source_id, entry_ids] of Object.entries(sources)) {
-		if (!TEST_SAVE &&
+		if (!save_loaded &&
 			HIDE_CURIOSITIES.includes(library[source_id]?.curiosity)) {
 			continue;
 		}
-		if (TEST_SAVE && !opened_cards.has(source_id)) {
+		if (save_loaded && !opened_cards.has(source_id)) {
 			continue;
 		}
 		for (let { entry_id, rumor_id } of entry_ids) {
-			if (TEST_SAVE && !opened_facts.has(rumor_id)) {
+			if (save_loaded && !opened_facts.has(rumor_id)) {
 				continue;
 			}
 			let svg = make_rumor_arrow(
