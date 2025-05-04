@@ -97,12 +97,25 @@ line.arrow {
   cursor: pointer;
 }
 
+// arrow line
 line.arrow {
   stroke: gray;
 }
 
+// arrow head
+path.arrow {
+  fill: gray;
+  stroke: var(--bg);
+  stroke-width: 4px;
+  stroke-linejoin: round;
+}
+
 line.arrow:hover {
   stroke: lightgray;
+
+  &+path.arrow {
+    fill: lightgray;
+  }
 }
 
 // hack to have correct hover colors in cards
