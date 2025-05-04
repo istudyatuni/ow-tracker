@@ -1,8 +1,18 @@
 import { defineConfig } from 'vite'
 import { svelte } from '@sveltejs/vite-plugin-svelte'
+import { VitePWA } from 'vite-plugin-pwa'
 
 export default defineConfig({
-  plugins: [svelte()],
+  plugins: [
+    svelte(),
+    VitePWA({
+      registerType: 'autoUpdate',
+      workbox: {
+        globPatterns: ['**/*.{js,css,html}'],
+      },
+      includeAssets: ['*.json', 'translations/*.json', 'sprites/*.jpg'],
+    }),
+  ],
   base: '/ow-tracker',
   build: {
     sourcemap: true,
