@@ -1,6 +1,8 @@
 // i guess global state shouldn't work this way..
 // todo: rewrite
 
+const RUMOR_REGEX = /_R\d+$/
+
 // cache of facts
 let opened_facts_by_id = {}
 let opened_facts = new Set()
@@ -26,9 +28,7 @@ export async function set_entries_facts(data) {
  * @return {string[]}
  */
 export function get_facts_for(id) {
-	let parts = id.split('_')
-	let last = parts[parts.length - 1]
-	if (last.startsWith('R')) {
+	if (id.match(RUMOR_REGEX)) {
 		// clicked on rumor
 		return [tr[id]]
 	}
