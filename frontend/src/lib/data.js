@@ -32,7 +32,15 @@ export function get_facts_for(id) {
 		return opened_facts_by_id[id]
 	}
 
-	let facts = opened_cards_only_rumors.has(id) ? entries_facts[id].rumor : entries_facts[id].explore
+	let facts = opened_cards_only_rumors.has(id) ? entries_facts[id]?.rumor : entries_facts[id]?.explore
+
+	// when vite reloads this file in dev mode, site breaks
+	if (import.meta.env.DEV) {
+		if (facts === undefined) {
+			return []
+		}
+	}
+
 	opened_facts_by_id[id] = facts.filter((f) => opened_facts.has(f)).map((f) => tr[f])
 	return opened_facts_by_id[id]
 }
