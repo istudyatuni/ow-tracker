@@ -89,6 +89,16 @@ select {
   padding: 0.3em
 }
 
-rect.outer {
+rect.card,
+line.arrow {
   pointer-events: auto;
+  cursor: pointer;
+}
+
+line.arrow {
+  stroke: gray;
+}
+
+line.arrow:hover {
+  stroke: lightgray;
 }

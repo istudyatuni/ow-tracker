@@ -59,7 +59,7 @@ export function make_card_svg(id, text, image_url, color, hover_color) {
         fill: ${hover_color};
       }
     </style>
-    <rect x="0" y="0" id="${id}" width="${FULL_CARD_WIDTH}" height="${FULL_CARD_HEIGHT}" fill="${color}" class="outer ${hover_class}" />
+    <rect x="0" y="0" id="${id}" width="${FULL_CARD_WIDTH}" height="${FULL_CARD_HEIGHT}" fill="${color}" class="card ${hover_class}" />
     <switch>
       <foreignObject x="0" y="0" width="${CARD_WIDTH}" height="${TEXT_HEIGHT}">
         <div xmlns="http://www.w3.org/1999/xhtml" class="card-text-wrapper">
