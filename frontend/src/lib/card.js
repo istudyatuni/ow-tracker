@@ -1,7 +1,7 @@
-const SCALE = 0.85
+const SCALE = 0.95
 
 const TEXT_HEIGHT = 100 * SCALE
-const FONT_SIZE_EM = 1.6 * SCALE
+const FONT_SIZE_EM = 1.8 * SCALE
 
 const IMAGE_WIDTH = 200 * SCALE
 const IMAGE_HEIGHT = IMAGE_WIDTH
@@ -13,8 +13,7 @@ const CARD_MARGIN = 2 * SCALE
 const FULL_CARD_WIDTH = CARD_WIDTH + CARD_MARGIN * 2
 const FULL_CARD_HEIGHT = CARD_HEIGHT + CARD_MARGIN
 
-// todo: vertical-align not work
-const TEXT_STYLE = 'margin: auto; font-family: ui-sans-serif, system-ui, sans-serif; text-align: center; vertical-align: middle; color: black;'
+const TEXT_STYLE = 'margin: 0; font-family: monospace; text-align: center; line-height: 1.2em; color: black;'
 
 export const SVG_NS = "http://www.w3.org/2000/svg"
 
@@ -68,7 +67,9 @@ export function make_card_svg(id, text, image_url, color, hover_color) {
     <rect x="0" y="0" id="${id}" width="${FULL_CARD_WIDTH}" height="${FULL_CARD_HEIGHT}" fill="${color}" class="outer ${hover_class}" />
     <switch>
       <foreignObject x="0" y="0" width="${CARD_WIDTH}" height="${TEXT_HEIGHT}">
-        <p xmlns="http://www.w3.org/1999/xhtml" style="font-size: ${FONT_SIZE_EM}em; ${TEXT_STYLE}">${text}</p>
+        <div xmlns="http://www.w3.org/1999/xhtml" style="display: flex; align-items: center; justify-content: center; height: 100%; padding: 0.3em">
+          <p style="font-size: ${FONT_SIZE_EM}em; ${TEXT_STYLE}">${text}</p>
+        </div>
       </foreignObject>
       <text x="0" y="0" font-size="20" text-anchor="middle" fill="white">svg viewer doesn't support html</text>
     </switch>
