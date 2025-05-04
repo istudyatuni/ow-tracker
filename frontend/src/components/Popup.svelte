@@ -18,7 +18,7 @@
     height: auto;
 
     border: 2px $color solid;
-    background-color: #02101b;
+    background-color: var(--bg);
     font-size: 1.3em;
     padding: 1em;
     text-align: center;

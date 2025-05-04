@@ -24,7 +24,7 @@
     width: 90%;
 
     border: 2px $color solid;
-    background-color: #02101b;
+    background-color: var(--bg);
     font-size: 1.3em;
     overflow-y: auto;
 

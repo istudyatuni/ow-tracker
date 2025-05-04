@@ -1,4 +1,6 @@
 :root {
+  --bg: #02101b;
+
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
@@ -119,7 +121,7 @@ $highlight-colors: 'ffa768',
 
 // question sign background
 rect.img-q-bg {
-  fill: #02101b;
+  fill: var(--bg);
 }
 
 // question sign itself
