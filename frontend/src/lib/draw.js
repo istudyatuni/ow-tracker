@@ -31,6 +31,11 @@ export async function* generate_all_svg() {
 	let save_loaded = window.location.hash !== ''
 	SAVE_FOUND.set(save_loaded)
 
+	// hiding while some features not ready
+	if (!save_loaded) {
+		return []
+	}
+
 	LOADING.set('defined save keys')
 
 	let save_keys = await (await fetch(import.meta.env.BASE_URL + "/save_keys.json")).json();
