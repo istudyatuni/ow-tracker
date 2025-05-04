@@ -69,6 +69,10 @@ export async function* generate_all_svg() {
 	 */
 	let entries_facts = {}
 
+	// rumors which should be shown on the same arrow
+	// [entry1_id, entry2_id] -> [rumor id]
+	let joined_rumors = {}
+
 	function handle_entries(entries) {
 		for (let e of entries || []) {
 			library[e.id] = {
@@ -89,6 +93,19 @@ export async function* generate_all_svg() {
 			for (let fact of e?.facts?.rumor || []) {
 				if (opened_facts.has(fact.id)) {
 					opened_cards.add(e.id);
+
+					// remember rumors on same arrow
+					if (fact.source_id !== undefined) {
+						let key = [e.id, fact.source_id].sort()
+						if (joined_rumors[key] !== undefined) {
+							joined_rumors[key].rumors.push(fact.id);
+						} else {
+							joined_rumors[key] = {
+								entries: key,
+								rumors: [fact.id],
+							}
+						}
+					}
 				}
 				rumor_facts.push(fact.id)
 			}
@@ -117,6 +134,13 @@ export async function* generate_all_svg() {
 		}
 	}
 	handle_entries(entries_data);
+
+	// leave only when >= 2 rumors on same arrow
+	for (let [key, value] of Object.entries(joined_rumors)) {
+		if (value.rumors.length <= 1) {
+			delete joined_rumors[key]
+		}
+	}
 
 	set_opened_cards_only_rumors(opened_cards.difference(opened_card_imgs))
 	set_entries_facts(entries_facts)
@@ -157,7 +181,7 @@ export async function* generate_all_svg() {
 	/** @type {Object.<string, import('leaflet').LatLngTuple>} */
 	let centers = {};
 	yield* generate_cards(entries, theme, library, parents, centers, opened_cards, tr, save_loaded)
-	yield* generate_arrows(sources, library, opened_cards, opened_facts, centers, save_loaded)
+	yield* generate_arrows(sources, library, opened_cards, opened_facts, centers, joined_rumors, save_loaded)
 }
 
 /**
@@ -227,7 +251,7 @@ async function* generate_cards(entries, theme, library, parents, centers, opened
  * @param {boolean} save_loaded
  * @yield {}
  */
-function* generate_arrows(sources, library, opened_cards, opened_facts, centers, save_loaded) {
+function* generate_arrows(sources, library, opened_cards, opened_facts, centers, joined_rumors, save_loaded) {
 	for (let [source_id, entry_ids] of Object.entries(sources)) {
 		if (!save_loaded &&
 			HIDE_CURIOSITIES.includes(library[source_id]?.curiosity)) {
@@ -237,11 +261,21 @@ function* generate_arrows(sources, library, opened_cards, opened_facts, centers,
 			continue;
 		}
 		for (let { entry_id, rumor_id } of entry_ids) {
+			let key = [source_id, entry_id].sort()
+			// @ts-ignore
+			let rumors = joined_rumors[key]?.rumors
+			let should_join = rumors !== undefined
+			let is_not_first_rumor = should_join && rumor_id !== rumors[0]
+			// draw line only for first rumor
+			if (is_not_first_rumor) {
+				continue;
+			}
+
 			if (save_loaded && !opened_facts.has(rumor_id)) {
 				continue;
 			}
 			let svg = make_rumor_arrow(
-				rumor_id,
+				should_join ? key.join(',') : rumor_id,
 				centers[source_id],
 				centers[entry_id],
 			);
