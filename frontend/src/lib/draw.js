@@ -1,6 +1,6 @@
 import { expand_thin_bounds, make_rumor_arrow } from './arrow';
 import { CARD_HEIGHT, CARD_WIDTH, make_card_svg } from './card';
-import { load_tr, set_opened_cards_only_rumors, set_opened_facts } from './data';
+import { load_tr, set_entries_facts, set_opened_cards_only_rumors, set_opened_facts } from './data';
 import { to_data_url } from './dataurl';
 import { CURIOSITY } from './info';
 import { detect_language } from './language';
@@ -56,6 +56,7 @@ export async function* generate_all_svg() {
 	let opened_cards = new Set();
 	// cards ids where img is opened
 	let opened_card_imgs = new Set();
+	let entries_facts = {}
 
 	function handle_entries(entries) {
 		for (let e of entries || []) {
@@ -63,18 +64,28 @@ export async function* generate_all_svg() {
 				curiosity: e.curiosity,
 			};
 
+			let rumor_facts = []
+			let explore_facts = []
+
 			// fill opened_cards and opened_card_imgs
 			for (let fact of e?.facts?.explore || []) {
 				if (opened_facts.has(fact.id)) {
 					opened_cards.add(e.id);
 					opened_card_imgs.add(e.id);
 				}
+				explore_facts.push(fact.id)
 			}
 			for (let fact of e?.facts?.rumor || []) {
 				if (opened_facts.has(fact.id)) {
 					opened_cards.add(e.id);
 				}
+				rumor_facts.push(fact.id)
 			}
+			entries_facts[e.id] = {
+				rumor: rumor_facts,
+				explore: explore_facts,
+			}
+
 			// fill source_ids
 			for (let fact of e?.facts?.rumor || []) {
 				if (fact.source_id === undefined) {
@@ -97,6 +108,7 @@ export async function* generate_all_svg() {
 	handle_entries(entries_data);
 
 	set_opened_cards_only_rumors(opened_cards.difference(opened_card_imgs))
+	set_entries_facts(entries_facts)
 
 	LOADING.set('coordinates')
 

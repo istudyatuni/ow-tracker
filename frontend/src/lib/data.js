@@ -5,6 +5,7 @@
 let opened_facts_by_id = {}
 let opened_facts = new Set()
 let opened_cards_only_rumors = new Set()
+let entries_facts = {}
 let tr = {}
 
 export async function set_opened_facts(data) {
@@ -13,6 +14,10 @@ export async function set_opened_facts(data) {
 
 export async function set_opened_cards_only_rumors(data) {
 	opened_cards_only_rumors = data
+}
+
+export async function set_entries_facts(data) {
+	entries_facts = data
 }
 
 export function get_facts_for(id) {
@@ -27,16 +32,8 @@ export function get_facts_for(id) {
 		return opened_facts_by_id[id]
 	}
 
-	let search_postfix_marker = opened_cards_only_rumors.has(id) ? 'R' : 'X'
-
-	let facts = []
-	let id_len = id.length
-	for (let f of opened_facts) {
-		if (f.startsWith(id) && f[id_len + 1] === search_postfix_marker) {
-			facts.push(f)
-		}
-	}
-	opened_facts_by_id[id] = facts.sort().map((f) => tr[f])
+	let facts = opened_cards_only_rumors.has(id) ? entries_facts[id].rumor : entries_facts[id].explore
+	opened_facts_by_id[id] = facts.filter((f) => opened_facts.has(f)).map((f) => tr[f])
 	return opened_facts_by_id[id]
 }
 
