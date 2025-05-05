@@ -107,15 +107,20 @@ pub struct RumorFact {
     #[cfg_attr(test, builder(default))]
     pub ignore_more_to_explore: bool,
 
-    /// Name of card when only this rumor is opened
+    /// Alternative name of card when only this rumor is opened. When
+    /// serializing, this is replaced by id
     #[serde(
-        rename(deserialize = "RumorName"),
+        rename(deserialize = "RumorName", serialize = "name_id"),
         skip_serializing_if = "Option::is_none"
     )]
     pub name: Option<String>,
 
-    // #[serde(rename(deserialize = "RumorNamePriority"))]
-    // pub name_priority: Option<u32>,
+    /// Priority of alternative name. Bigger wins
+    #[serde(
+        rename(deserialize = "RumorNamePriority"),
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub name_priority: Option<u32>,
 
     // serializing skipped because value should be taken by id from translation
     #[serde(skip_serializing)]
