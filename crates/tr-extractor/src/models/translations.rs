@@ -2,7 +2,7 @@ use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
 pub struct Translations {
-    #[serde(rename(deserialize = "TranslationTableEntry"))]
+    #[serde(rename(deserialize = "TranslationTableEntry"), alias = "TranslationTableEntryUI")]
     pub entries: Vec<Translation>,
 }
 

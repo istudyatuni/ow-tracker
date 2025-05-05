@@ -29,7 +29,13 @@ const V15_SHARED_OFFSET: u64 = 930000000;
 
 const TR_SHIPLOG_START: &[u8] = b"<table_shipLog>";
 const TR_SHIPLOG_END: &[u8] = b"</table_shipLog>";
+const TR_UI_START: &[u8] = b"<table_ui>";
+const TR_UI_END: &[u8] = b"</table_ui>";
 const RES_FILE: &str = "resources.assets";
+
+/// Key for translation of "There's more to explore"
+const MORE_TO_EXPLORE_EXTRACT_KEY: &str = "973";
+const MORE_TO_EXPLORE_TR_KEY: &str = "MORE_TO_EXPLORE";
 
 /// Order of `TranslationTable_XML`s in `resources.assets` for game version 1.1.15
 const V15_LANG_ORDER: &[Lang] = &[
@@ -86,10 +92,7 @@ fn main() -> Result<()> {
             .map(|a| count_entries(&a.entries))
             .sum::<u32>()
     );
-    debug!(
-        "count of translation entries: {}",
-        tr_objects[0].entries.len()
-    );
+    debug!("count of translation entries: {}", tr_objects[0].len());
 
     // save info about astro objects
     if args.write {
@@ -158,6 +161,12 @@ fn main() -> Result<()> {
                 );
             }
         }
+        translation.insert(
+            MORE_TO_EXPLORE_TR_KEY.to_owned(),
+            tr.get(MORE_TO_EXPLORE_EXTRACT_KEY)
+                .expect("should have MORE_TO_EXPLORE key")
+                .to_owned(),
+        );
         debug!(
             "count of keys in {} translation: {}",
             lang.file_name(),
@@ -236,7 +245,7 @@ fn count_entries(entries: &[JsonEntry]) -> u32 {
 /// names, e.g "VillageThe one and only Hearthian village, ...". Find them
 /// and trim
 fn clean_translations(
-    tr_objects: Vec<Translations>,
+    tr_objects: Vec<Vec<Translation>>,
     astro_names: Vec<String>,
 ) -> Result<HashMap<Lang, HashMap<String, String>>> {
     let mut last_prefix = astro_names
@@ -246,16 +255,26 @@ fn clean_translations(
 
     let mut lang_order = V15_LANG_ORDER.iter();
     let mut translations = HashMap::new();
-    for tr in tr_objects {
+    for tr_entries in tr_objects {
         let mut translation = HashMap::new();
         for Translation {
             key: original,
             value: translated,
-        } in tr.entries
+        } in tr_entries
         {
             // todo: fix this case ("Escape Pod 3" detected as prefix)
             if original == "Escape Pod 3 Survivors" {
                 translation.insert(original, translated);
+                continue;
+            }
+            if original == MORE_TO_EXPLORE_EXTRACT_KEY {
+                translation.insert(
+                    original,
+                    translated
+                        .trim_start_matches("<color=orange>")
+                        .trim_end_matches("</color>")
+                        .to_owned(),
+                );
                 continue;
             }
 
@@ -317,24 +336,45 @@ fn load_astro_objects(file: File) -> Result<Vec<AstroObject<JsonEntry>>> {
     Ok(astro_objects)
 }
 
-/// Extract translations
-fn load_tr_objects(file: File) -> Result<Vec<Translations>> {
+/// Extract translations. Currently search all shiplog translations and for
+/// [`MORE_TO_EXPLORE_KEY`]
+fn load_tr_objects(file: File) -> Result<Vec<Vec<Translation>>> {
     let mmap = unsafe { Mmap::map(&file)? };
 
     let mut offset = 0;
-    let mut tr_objects: Vec<Translations> = Vec::with_capacity(100);
+    let mut tr_objects: Vec<Vec<Translation>> = Vec::with_capacity(100);
+    let mut is_ui_table = false;
+    let mut objects = vec![];
     loop {
-        let tr_object = match extract_shiplog_tr_object(&mmap, offset) {
+        let extracted = if is_ui_table {
+            extract_ui_tr_object(&mmap, offset)
+        } else {
+            extract_shiplog_tr_object(&mmap, offset)
+        };
+        let tr_object = match extracted {
             Ok((tr_object, next_offset)) => {
                 offset = next_offset;
-                parse_tr_object(tr_object)?
+                parse_tr_object(tr_object).context("parsing tr object")?
             }
             Err(e) => match e {
                 FindError::NotFound => break,
                 FindError::Utf8Error(e) => return Err(e.into()),
             },
         };
-        tr_objects.push(tr_object);
+        if is_ui_table {
+            objects.extend(
+                tr_object
+                    .entries
+                    .into_iter()
+                    .filter(|t| t.key == MORE_TO_EXPLORE_EXTRACT_KEY),
+            );
+            tr_objects.push(objects);
+            objects = vec![];
+        } else {
+            objects = tr_object.entries;
+        }
+
+        is_ui_table = !is_ui_table;
     }
 
     Ok(tr_objects)
@@ -379,6 +419,10 @@ fn parse_astro_object(data: &str) -> Result<AstroObject<XmlEntry>> {
 
 fn extract_shiplog_tr_object(mmap: &Mmap, offset: usize) -> Result<(&str, usize), FindError> {
     extract_utf8(mmap, offset, TR_SHIPLOG_START, TR_SHIPLOG_END)
+}
+
+fn extract_ui_tr_object(mmap: &Mmap, offset: usize) -> Result<(&str, usize), FindError> {
+    extract_utf8(mmap, offset, TR_UI_START, TR_UI_END)
 }
 
 fn extract_astro_object(mmap: &Mmap, offset: usize) -> Result<(&str, usize), FindError> {
