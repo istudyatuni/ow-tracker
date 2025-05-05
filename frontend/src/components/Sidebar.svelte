@@ -3,6 +3,7 @@
   import MenuIcon from "~icons/tabler/menu-2";
   import LanguageIcon from "~icons/tabler/language-hiragana";
   import QuestionIcon from "~icons/tabler/question-mark";
+  import GithubIcon from "~icons/tabler/brand-github";
 
   import { LANGUAGE_NAMES, save_language } from "../lib/language";
   import {
@@ -91,6 +92,10 @@
     <span class="icon">
       <LanguageIcon width="25" height="25" />
     </span>
+    <br />
+
+    <a href="https://github.com/istudyatuni/ow-tracker" class="brand-icon"
+      ><GithubIcon width="35" height="35" /></a>
   </div>
 </div>
 
@@ -121,6 +126,9 @@
     border-radius: 10px;
     padding: 0 10px;
     max-width: 25em;
+  }
+  .brand-icon {
+    color: white;
   }
   /*.border {
     border: 1px $color solid;
