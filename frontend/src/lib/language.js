@@ -1,4 +1,4 @@
-const LANGUAGES = {
+export const LANGUAGES = {
 	English: 'english',
 	SpanishLa: 'spanish_la',
 	German: 'german',
@@ -56,6 +56,25 @@ function code_to_lang(code) {
 		case 'zh': return LANGUAGES.ChineseSimple
 		case 'ko': return LANGUAGES.Korean
 		case 'tr': return LANGUAGES.Turkish
+		default: return null
+	}
+}
+
+// uncomment when supported
+export function language_to_code(lang) {
+	switch (lang) {
+		case LANGUAGES.English: return 'en'
+		// case LANGUAGES.SpanishLa: return 'es'
+		// case LANGUAGES.German: return 'de'
+		// case LANGUAGES.French: return 'fr'
+		// case LANGUAGES.Italian: return 'it'
+		// case LANGUAGES.Polish: return 'pl'
+		// case LANGUAGES.PortugueseBr: return 'pt'
+		// case LANGUAGES.Japanese: return 'ja'
+		case LANGUAGES.Russian: return 'ru'
+		// case LANGUAGES.ChineseSimple: return 'zh'
+		// case LANGUAGES.Korean: return 'ko'
+		// case LANGUAGES.Turkish: return 'tr'
 		default: return null
 	}
 }

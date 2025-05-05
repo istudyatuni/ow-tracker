@@ -1,9 +1,11 @@
 <script module>
+  import { t } from "../lib/i18n";
   import { LOADING } from "../lib/stores";
 </script>
 
 <div class="block above-map" class:hidden={$LOADING === null}>
-  Loading {$LOADING}
+  {$t("loading-prefix")}
+  {$LOADING}
 </div>
 
 <style lang="scss">

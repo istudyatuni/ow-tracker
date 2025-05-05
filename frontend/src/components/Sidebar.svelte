@@ -1,11 +1,14 @@
-<script>
+<script module>
   import { LANGUAGE_NAMES, save_language } from "../lib/language";
   import {
     export_save_to_browser_url,
     get_save_opened_facts,
   } from "../lib/saves";
   import { LANGUAGE } from "../lib/stores";
+  import { t } from "../lib/i18n";
+</script>
 
+<script>
   let opened = $state(false);
   let input;
 
@@ -28,13 +31,14 @@
 </script>
 
 <div class="bar above-map" class:border={opened}>
-  <button onclick={toggle_open} class:hidden={opened}>Menu</button>
+  <button onclick={toggle_open} class:hidden={opened}
+    >{$t("menu-button")}</button>
   <div class:hidden={!opened}>
-    <button onclick={toggle_open}>Close</button>
+    <button onclick={toggle_open}>{$t("menu-close-button")}</button>
     <br />
 
     <button type="button" onclick={on_file_upload_click}
-      >Upload save file</button>
+      >{$t("upload-save-file-button")}</button>
     <input
       bind:this={input}
       id="fileinput"

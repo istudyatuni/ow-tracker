@@ -10,7 +10,7 @@ export default defineConfig({
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico}'],
       },
-      includeAssets: ['*.json', 'translations/*.json', 'sprites/*.jpg'],
+      includeAssets: ['*.json', 'translations/*.json', 'translations/ui/*.ftl', 'sprites/*.jpg'],
     }),
   ],
   base: '/ow-tracker',

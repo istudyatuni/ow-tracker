@@ -6,6 +6,8 @@ import { CURIOSITY } from './info';
 import { detect_language } from './language';
 import { get_save_from_browser_url } from './saves';
 import { LOADING, SAVE_FOUND } from './stores';
+import { t as i18n } from './i18n';
+import { get } from 'svelte/store';
 
 const HIDE_CURIOSITIES = [CURIOSITY.INVISIBLE_PLANET];
 
@@ -36,7 +38,9 @@ export async function* generate_all_svg() {
 		return []
 	}
 
-	LOADING.set('defined save keys')
+	let t = get(i18n)
+
+	LOADING.set(t('loading-stage-save-keys'))
 
 	let save_keys = await (await fetch(import.meta.env.BASE_URL + "/save_keys.json")).json();
 	let opened_facts
@@ -47,7 +51,7 @@ export async function* generate_all_svg() {
 	}
 	set_opened_facts(opened_facts)
 
-	LOADING.set('connections data')
+	LOADING.set(t('loading-stage-connections-data'))
 
 	/**
 	 * load ids data and rumors source ids
@@ -185,7 +189,7 @@ export async function* generate_all_svg() {
 
 	cards_alt_names = Object.fromEntries(Object.entries(cards_alt_names).filter(([id, _]) => !opened_card_imgs.has(id)))
 
-	LOADING.set('coordinates')
+	LOADING.set(t('loading-stage-coordinates'))
 
 	/**
 	 * load coordinates and images
@@ -200,19 +204,19 @@ export async function* generate_all_svg() {
 		};
 	}
 
-	LOADING.set('parents')
+	LOADING.set(t('loading-stage-parents'))
 
 	/** @type {Object.<string, string>} */
 	let parents = await (await fetch(import.meta.env.BASE_URL + "/parents.json")).json();
 
 	// load translations
 	let lang = detect_language();
-	LOADING.set(`translation for ${lang}`)
+	LOADING.set(t('loading-stage-translation', { lang }))
 
 	/** @type {Object.<string, string>} */
 	let tr = await load_tr(lang);
 
-	LOADING.set('theme')
+	LOADING.set(t('loading-stage-theme'))
 
 	/** @type {Object.<string, { color: string, highlight: string }>} */
 	let theme = await (await fetch(import.meta.env.BASE_URL + "/theme.json")).json();
@@ -237,6 +241,8 @@ export async function* generate_all_svg() {
  * @yield {}
  */
 async function* generate_cards(entries, theme, library, parents, centers, opened_cards, tr, cards_alt_names, save_loaded) {
+	let t = get(i18n)
+
 	for (let [id, e] of Object.entries(entries)) {
 		let colors = theme[library[id]?.curiosity] || theme.neutral;
 
@@ -268,7 +274,7 @@ async function* generate_cards(entries, theme, library, parents, centers, opened
 			if (e.sprite === null) {
 				return null;
 			}
-			LOADING.set(`sprite for ${id}`)
+			LOADING.set(t('loading-stage-sprite', { sprite: id }))
 			let img = await (await fetch(e.sprite)).blob();
 			return await to_data_url(img);
 		})();
