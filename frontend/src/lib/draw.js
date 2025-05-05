@@ -81,6 +81,14 @@ export async function* generate_all_svg() {
 	// cards where not all explore facts are opened, excluding ignore_more_to_explore
 	let has_unexplored_cards = new Set()
 
+	/**
+	 * cards alternative names
+	 *
+	 * entry_id -> alt_name_id
+	 * @type {Object.<string, string>}
+	 */
+	let cards_alt_names = {}
+
 	function handle_entries(entries) {
 		for (let e of entries || []) {
 			library[e.id] = {
@@ -102,6 +110,8 @@ export async function* generate_all_svg() {
 				}
 				explore_facts.push(fact.id)
 			}
+
+			let last_name_priority = -1
 			for (let fact of e?.facts?.rumor || []) {
 				if (opened_facts.has(fact.id)) {
 					opened_cards.add(e.id);
@@ -117,6 +127,14 @@ export async function* generate_all_svg() {
 								rumors: [fact.id],
 							}
 						}
+					}
+
+					// not all facts with name_id has name priority, so use 0 in this case
+					let name_priority = fact.name_priority || 0
+					// remember card alternative name
+					if (fact.name_id !== undefined && name_priority > last_name_priority) {
+						cards_alt_names[e.id] = fact.name_id
+						last_name_priority = name_priority
 					}
 				} else if (!fact.ignore_more_to_explore) {
 					// todo: not sure about !fact.ignore_more_to_explore
@@ -165,6 +183,8 @@ export async function* generate_all_svg() {
 	set_joined_rumors(joined_rumors)
 	set_has_unexplored_cards(has_unexplored_cards)
 
+	cards_alt_names = Object.fromEntries(Object.entries(cards_alt_names).filter(([id, _]) => !opened_card_imgs.has(id)))
+
 	LOADING.set('coordinates')
 
 	/**
@@ -200,7 +220,7 @@ export async function* generate_all_svg() {
 	// centers is filled inside of generate_cards
 	/** @type {Object.<string, import('leaflet').LatLngTuple>} */
 	let centers = {};
-	yield* generate_cards(entries, theme, library, parents, centers, opened_cards, tr, save_loaded)
+	yield* generate_cards(entries, theme, library, parents, centers, opened_cards, tr, cards_alt_names, save_loaded)
 	yield* generate_arrows(sources, library, opened_cards, opened_facts, centers, joined_rumors, save_loaded)
 }
 
@@ -212,10 +232,11 @@ export async function* generate_all_svg() {
  * @param {Object.<string, import('leaflet').LatLngTuple>} centers
  * @param {Set.<string>} opened_cards
  * @param {Object.<string, string>} tr
+ * @param {Object.<string, string>} cards_alt_names
  * @param {boolean} save_loaded
  * @yield {}
  */
-async function* generate_cards(entries, theme, library, parents, centers, opened_cards, tr, save_loaded) {
+async function* generate_cards(entries, theme, library, parents, centers, opened_cards, tr, cards_alt_names, save_loaded) {
 	for (let [id, e] of Object.entries(entries)) {
 		let colors = theme[library[id]?.curiosity] || theme.neutral;
 
@@ -251,9 +272,10 @@ async function* generate_cards(entries, theme, library, parents, centers, opened
 			let img = await (await fetch(e.sprite)).blob();
 			return await to_data_url(img);
 		})();
+		let tr_id = cards_alt_names[id] || id
 		let svg = make_card_svg(
 			id,
-			tr[id].replaceAll("@@", "<br/>").replaceAll("$$", "-<br/>"),
+			tr[tr_id].replaceAll("@@", "<br/>").replaceAll("$$", "-<br/>"),
 			img,
 			colors?.color,
 			colors?.highlight,
