@@ -61,7 +61,7 @@ fn main() -> Result<()> {
         1 => Level::INFO,
         2 => Level::DEBUG,
         3 => Level::TRACE,
-        _ => bail!("to high log verbosity"),
+        _ => bail!("too high log verbosity"),
     };
     tracing::subscriber::set_global_default(
         FmtSubscriber::builder()
