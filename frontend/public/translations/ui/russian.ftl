@@ -1,5 +1,3 @@
-menu-button = Меню
-menu-close-button = Закрыть
 upload-save-file-button = Загрузить файл сохранения
 upload-save-file-popup = Загрузите файл сохранения из меню
 

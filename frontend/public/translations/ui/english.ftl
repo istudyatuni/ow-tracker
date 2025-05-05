@@ -1,5 +1,3 @@
-menu-button = Menu
-menu-close-button = Close
 upload-save-file-button = Upload save file
 upload-save-file-popup = Upload save file from menu
 

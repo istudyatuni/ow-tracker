@@ -1,4 +1,8 @@
 <script module>
+  import CloseIcon from "~icons/tabler/x";
+  import MenuIcon from "~icons/tabler/menu-2";
+  import LanguageIcon from "~icons/tabler/language-hiragana";
+
   import { LANGUAGE_NAMES, save_language } from "../lib/language";
   import {
     export_save_to_browser_url,
@@ -31,10 +35,9 @@
 </script>
 
 <div class="bar above-map" class:border={opened}>
-  <button onclick={toggle_open} class:hidden={opened}
-    >{$t("menu-button")}</button>
+  <button onclick={toggle_open} class:hidden={opened}><MenuIcon /></button>
   <div class:hidden={!opened}>
-    <button onclick={toggle_open}>{$t("menu-close-button")}</button>
+    <button onclick={toggle_open}><CloseIcon /></button>
     <br />
 
     <button type="button" onclick={on_file_upload_click}
@@ -53,6 +56,9 @@
         <option value={key} selected={$LANGUAGE === key}>{name}</option>
       {/each}
     </select>
+    <span class="icon">
+      <LanguageIcon width="25" height="25" />
+    </span>
   </div>
 </div>
 
@@ -68,6 +74,11 @@
     padding: 1em 1em;
 
     color: white;
+  }
+  .icon {
+    padding-top: 5px;
+    vertical-align: middle;
+    margin-left: 4px;
   }
   /*.border {
     border: 1px $color solid;
