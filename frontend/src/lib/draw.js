@@ -1,6 +1,6 @@
 import { expand_thin_bounds, make_rumor_arrow } from './arrow';
 import { CARD_HEIGHT, CARD_WIDTH, make_card_svg } from './card';
-import { load_tr, set_entries_facts, set_joined_rumors, set_opened_cards_only_rumors, set_opened_facts } from './data';
+import { load_tr, set_entries_facts, set_joined_rumors, set_has_unexplored_cards, set_opened_cards_only_rumors, set_opened_facts } from './data';
 import { to_data_url } from './dataurl';
 import { CURIOSITY } from './info';
 import { detect_language } from './language';
@@ -78,6 +78,9 @@ export async function* generate_all_svg() {
 	// [entry1_id, entry2_id] -> [rumor id]
 	let joined_rumors = {}
 
+	// cards where not all explore facts are opened, excluding ignore_more_to_explore
+	let has_unexplored_cards = new Set()
+
 	function handle_entries(entries) {
 		for (let e of entries || []) {
 			library[e.id] = {
@@ -87,14 +90,22 @@ export async function* generate_all_svg() {
 			let rumor_facts = []
 			let explore_facts = []
 
+			let has_explore_more = false
+
 			// fill opened_cards and opened_card_imgs
 			for (let fact of e?.facts?.explore || []) {
 				if (opened_facts.has(fact.id)) {
 					opened_cards.add(e.id);
 					opened_card_imgs.add(e.id);
+				} else if (!e.ignore_more_to_explore && !fact.ignore_more_to_explore) {
+					has_explore_more = true
 				}
 				explore_facts.push(fact.id)
 			}
+			if (has_explore_more) {
+				has_unexplored_cards.add(e.id)
+			}
+
 			for (let fact of e?.facts?.rumor || []) {
 				if (opened_facts.has(fact.id)) {
 					opened_cards.add(e.id);
@@ -150,6 +161,7 @@ export async function* generate_all_svg() {
 	set_opened_cards_only_rumors(opened_cards.difference(opened_card_imgs))
 	set_entries_facts(entries_facts)
 	set_joined_rumors(joined_rumors)
+	set_has_unexplored_cards(has_unexplored_cards)
 
 	LOADING.set('coordinates')
 

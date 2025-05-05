@@ -1,5 +1,9 @@
+<script module>
+  import { get_more_to_explore_tr } from "../lib/data";
+</script>
+
 <script>
-  let { facts = [] } = $props();
+  let { facts = [], more_to_explore = false } = $props();
 </script>
 
 <div class="facts above-map" class:hidden={facts.length === 0}>
@@ -7,6 +11,10 @@
     {#each facts as fact}
       <li>{fact}</li>
     {/each}
+
+    {#if more_to_explore}
+      <li class="more-to-explore">{get_more_to_explore_tr()}</li>
+    {/if}
   </ul>
 </div>
 

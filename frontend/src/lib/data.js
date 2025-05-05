@@ -3,10 +3,13 @@
 
 const RUMOR_REGEX = /_R\d+$/
 
+const MORE_TO_EXPLORE_TR = 'MORE_TO_EXPLORE'
+
 // cache of facts
 let opened_facts_by_id = {}
 let opened_facts = new Set()
 let opened_cards_only_rumors = new Set()
+let has_unexplored_cards = new Set()
 let entries_facts = {}
 /** @type {Object.<string, string>} */
 let tr = {}
@@ -18,6 +21,10 @@ export async function set_opened_facts(data) {
 
 export async function set_opened_cards_only_rumors(data) {
 	opened_cards_only_rumors = data
+}
+
+export async function set_has_unexplored_cards(data) {
+	has_unexplored_cards = data
 }
 
 export async function set_entries_facts(data) {
@@ -62,6 +69,14 @@ export function get_facts_for(id) {
 
 	opened_facts_by_id[id] = facts.filter((f) => opened_facts.has(f)).map((f) => tr[f])
 	return opened_facts_by_id[id]
+}
+
+export function has_more_to_explore(id) {
+	return !opened_cards_only_rumors.has(id) && has_unexplored_cards.has(id)
+}
+
+export function get_more_to_explore_tr() {
+	return tr[MORE_TO_EXPLORE_TR]
 }
 
 /**
