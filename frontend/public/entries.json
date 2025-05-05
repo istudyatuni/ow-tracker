@@ -1662,15 +1662,18 @@
                 },
                 {
                   "id": "IP_SARCOPHAGUS_R1",
-                  "source_id": "IP_ZONE_1"
+                  "source_id": "IP_ZONE_1",
+                  "ignore_more_to_explore": true
                 },
                 {
                   "id": "IP_SARCOPHAGUS_R2",
-                  "source_id": "IP_ZONE_2"
+                  "source_id": "IP_ZONE_2",
+                  "ignore_more_to_explore": true
                 },
                 {
                   "id": "IP_SARCOPHAGUS_R3",
-                  "source_id": "IP_ZONE_3"
+                  "source_id": "IP_ZONE_3",
+                  "ignore_more_to_explore": true
                 }
               ]
             }
@@ -1832,7 +1835,8 @@
                 },
                 {
                   "id": "IP_ZONE_2_CODE_R2",
-                  "source_id": "IP_DREAM_LAKE"
+                  "source_id": "IP_DREAM_LAKE",
+                  "ignore_more_to_explore": true
                 }
               ]
             }

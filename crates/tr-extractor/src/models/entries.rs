@@ -98,6 +98,15 @@ pub struct RumorFact {
     )]
     pub source_id: Option<String>,
 
+    // Used in DLC only
+    #[serde(
+        default,
+        deserialize_with = "bool_when_present",
+        skip_serializing_if = "std::ops::Not::not"
+    )]
+    #[cfg_attr(test, builder(default))]
+    pub ignore_more_to_explore: bool,
+
     // #[serde(rename(deserialize = "RumorName"))]
     // pub name: Option<String>,
 
@@ -117,6 +126,8 @@ pub struct ExploreFact {
     pub id: String,
 
     // pub clue_type: Option<String>,
+
+    //
     /// Ignore fact when deciding that card has more to explore
     #[serde(
         default,
