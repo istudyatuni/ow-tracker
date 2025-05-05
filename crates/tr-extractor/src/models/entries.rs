@@ -107,8 +107,12 @@ pub struct RumorFact {
     #[cfg_attr(test, builder(default))]
     pub ignore_more_to_explore: bool,
 
-    // #[serde(rename(deserialize = "RumorName"))]
-    // pub name: Option<String>,
+    /// Name of card when only this rumor is opened
+    #[serde(
+        rename(deserialize = "RumorName"),
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub name: Option<String>,
 
     // #[serde(rename(deserialize = "RumorNamePriority"))]
     // pub name_priority: Option<u32>,

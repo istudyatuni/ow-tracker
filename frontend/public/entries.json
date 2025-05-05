@@ -120,10 +120,12 @@
           "rumor": [
             {
               "id": "BH_HANGING_CITY_R1",
-              "source_id": "BH_OLD_SETTLEMENT"
+              "source_id": "BH_OLD_SETTLEMENT",
+              "name": "NORTHERN_SETTLEMENT"
             },
             {
-              "id": "BH_HANGING_CITY_R2"
+              "id": "BH_HANGING_CITY_R2",
+              "name": "THE_HANGING_CITY"
             }
           ]
         }
@@ -180,7 +182,8 @@
               "rumor": [
                 {
                   "id": "BH_TORNADO_SIMULATION_R1",
-                  "source_id": "GD_CONSTRUCTION_YARD"
+                  "source_id": "GD_CONSTRUCTION_YARD",
+                  "name": "OCEAN_CURRENT_DISCOVERY"
                 }
               ]
             }
@@ -209,7 +212,8 @@
           "rumor": [
             {
               "id": "BH_OLD_SETTLEMENT_R1",
-              "source_id": "BH_ESCAPE_POD"
+              "source_id": "BH_ESCAPE_POD",
+              "name": "SHELTER_SITE"
             }
           ]
         },
@@ -316,16 +320,20 @@
           "rumor": [
             {
               "id": "BH_RIEBECK_R1",
-              "source_id": "TM_EYE_LOCATOR"
+              "source_id": "TM_EYE_LOCATOR",
+              "name": "RIEBECK"
             },
             {
-              "id": "BH_RIEBECK_R2"
+              "id": "BH_RIEBECK_R2",
+              "name": "RIEBECK"
             },
             {
-              "id": "BH_RIEBECK_R3"
+              "id": "BH_RIEBECK_R3",
+              "name": "RIEBECK"
             },
             {
-              "id": "BH_RIEBECK_R4"
+              "id": "BH_RIEBECK_R4",
+              "name": "RIEBECK"
             }
           ]
         }
@@ -457,11 +465,13 @@
           "rumor": [
             {
               "id": "DB_FELDSPAR_R1",
-              "source_id": "GD_BRAMBLE_ISLAND"
+              "source_id": "GD_BRAMBLE_ISLAND",
+              "name": "FELDSPAR"
             },
             {
               "id": "DB_FELDSPAR_R2",
-              "source_id": "TH_IMPACT_CRATER"
+              "source_id": "TH_IMPACT_CRATER",
+              "name": "INSIDE_THE_SEED"
             }
           ]
         }
@@ -484,7 +494,8 @@
           "rumor": [
             {
               "id": "DB_FROZEN_JELLYFISH_R1",
-              "source_id": "DB_FELDSPAR"
+              "source_id": "DB_FELDSPAR",
+              "name": "HOLLOW_VINE"
             }
           ]
         }
@@ -510,11 +521,13 @@
           "rumor": [
             {
               "id": "DB_NOMAI_GRAVE_R1",
-              "source_id": "DB_ESCAPE_POD"
+              "source_id": "DB_ESCAPE_POD",
+              "name": "ESCAPE_POD_3_SURVIVORS"
             },
             {
               "id": "DB_NOMAI_GRAVE_R2",
-              "source_id": "DB_ESCAPE_POD"
+              "source_id": "DB_ESCAPE_POD",
+              "name": "ESCAPE_POD_3_SURVIVORS"
             }
           ]
         }
@@ -586,19 +599,23 @@
           "rumor": [
             {
               "id": "ORBITAL_PROBE_CANNON_R1",
-              "source_id": "GD_CONSTRUCTION_YARD"
+              "source_id": "GD_CONSTRUCTION_YARD",
+              "name": "ORBITAL_PROBE_CANNON"
             },
             {
               "id": "ORBITAL_PROBE_CANNON_R2",
-              "source_id": "GD_CONSTRUCTION_YARD"
+              "source_id": "GD_CONSTRUCTION_YARD",
+              "name": "ORBITAL_PROBE_CANNON"
             },
             {
               "id": "ORBITAL_PROBE_CANNON_R4",
-              "source_id": "BH_OBSERVATORY"
+              "source_id": "BH_OBSERVATORY",
+              "name": "ORBITAL_PROBE_CANNON"
             },
             {
               "id": "ORBITAL_PROBE_CANNON_R3",
-              "source_id": "GD_GABBRO_ISLAND"
+              "source_id": "GD_GABBRO_ISLAND",
+              "name": "ORBITAL_FLASH"
             }
           ]
         },
@@ -712,7 +729,8 @@
           "rumor": [
             {
               "id": "TH_IMPACT_CRATER_R1",
-              "source_id": "TM_NORTH_POLE"
+              "source_id": "TM_NORTH_POLE",
+              "name": "HARMONICA_SIGNAL"
             }
           ]
         }
@@ -756,11 +774,13 @@
           ],
           "rumor": [
             {
-              "id": "TH_QUANTUM_SHARD_R1"
+              "id": "TH_QUANTUM_SHARD_R1",
+              "name": "QUANTUM_SIGNAL"
             },
             {
               "id": "TH_QUANTUM_SHARD_R2",
-              "source_id": "BH_QUANTUM_SHARD"
+              "source_id": "BH_QUANTUM_SHARD",
+              "name": "QUANTUM_SIGNAL"
             }
           ]
         }
@@ -837,19 +857,23 @@
           "rumor": [
             {
               "id": "CT_ANGLERFISH_FOSSIL_R1",
-              "source_id": "CT_ESCAPE_POD"
+              "source_id": "CT_ESCAPE_POD",
+              "name": "ANGLERFISH_FOSSIL"
             },
             {
               "id": "CT_ANGLERFISH_FOSSIL_R2",
-              "source_id": "BH_HANGING_CITY"
+              "source_id": "BH_HANGING_CITY",
+              "name": "ANGLERFISH_FOSSIL"
             },
             {
               "id": "CT_ANGLERFISH_FOSSIL_R3",
-              "source_id": "CT_SUNLESS_CITY"
+              "source_id": "CT_SUNLESS_CITY",
+              "name": "FOSSIL_FISH_CAVE"
             },
             {
               "id": "CT_ANGLERFISH_FOSSIL_R4",
-              "source_id": "CT_SUNLESS_CITY"
+              "source_id": "CT_SUNLESS_CITY",
+              "name": "FOSSIL_FISH_CAVE"
             }
           ]
         }
@@ -895,11 +919,13 @@
           "rumor": [
             {
               "id": "CT_ESCAPE_POD_R1",
-              "source_id": "BH_MURAL_3"
+              "source_id": "BH_MURAL_3",
+              "name": "ESCAPE_POD"
             },
             {
               "id": "CT_ESCAPE_POD_R2",
-              "source_id": "CT_CHERT"
+              "source_id": "CT_CHERT",
+              "name": "NOMAI_SHIPWRECK"
             }
           ]
         }
@@ -1025,7 +1051,8 @@
           "rumor": [
             {
               "id": "CT_QUANTUM_CAVES_R1",
-              "source_id": "BH_QUANTUM_SHARD"
+              "source_id": "BH_QUANTUM_SHARD",
+              "name": "QUANTUM_SIGNAL"
             }
           ]
         }
@@ -1064,21 +1091,26 @@
           "rumor": [
             {
               "id": "CT_SUNLESS_CITY_R1",
-              "source_id": "CT_ESCAPE_POD"
+              "source_id": "CT_ESCAPE_POD",
+              "name": "SHELTER_SITE"
             },
             {
               "id": "CT_SUNLESS_CITY_R3",
-              "source_id": "CT_ESCAPE_POD"
+              "source_id": "CT_ESCAPE_POD",
+              "name": "SHELTER_SITE"
             },
             {
               "id": "CT_SUNLESS_CITY_R4",
-              "source_id": "CT_CHERT"
+              "source_id": "CT_CHERT",
+              "name": "UNDERGROUND_SETTLEMENT"
             },
             {
-              "id": "CT_SUNLESS_CITY_R5"
+              "id": "CT_SUNLESS_CITY_R5",
+              "name": "THE_SUNLESS_CITY"
             },
             {
-              "id": "CT_SUNLESS_CITY_R2"
+              "id": "CT_SUNLESS_CITY_R2",
+              "name": "THE_SUNLESS_CITY"
             }
           ]
         }
@@ -1159,11 +1191,13 @@
           "rumor": [
             {
               "id": "TM_EYE_LOCATOR_R1",
-              "source_id": "TH_VILLAGE"
+              "source_id": "TH_VILLAGE",
+              "name": "LUNAR_RUINS"
             },
             {
               "id": "TM_EYE_LOCATOR_R2",
-              "source_id": "TH_VILLAGE"
+              "source_id": "TH_VILLAGE",
+              "name": "LUNAR_RUINS"
             }
           ]
         }
@@ -1270,11 +1304,13 @@
           "rumor": [
             {
               "id": "COMET_INTERIOR_R1",
-              "source_id": "COMET_SHUTTLE"
+              "source_id": "COMET_SHUTTLE",
+              "name": "SUBSURFACE_ENERGY_READINGS"
             },
             {
               "id": "COMET_INTERIOR_R2",
-              "source_id": "COMET_SHUTTLE"
+              "source_id": "COMET_SHUTTLE",
+              "name": "SUBSURFACE_ENERGY_READINGS"
             }
           ]
         }
@@ -1475,7 +1511,8 @@
               "rumor": [
                 {
                   "id": "IP_DREAM_LIBRARY_1_R1",
-                  "source_id": "IP_ZONE_1_SECRET"
+                  "source_id": "IP_ZONE_1_SECRET",
+                  "name": "SECRET_FIREPLACE"
                 }
               ]
             }
@@ -1502,7 +1539,8 @@
           ],
           "rumor": [
             {
-              "id": "IP_DREAM_ZONE_2_R1"
+              "id": "IP_DREAM_ZONE_2_R1",
+              "name": "CANDLELIT_TOWER"
             }
           ]
         },
@@ -1534,7 +1572,8 @@
               "rumor": [
                 {
                   "id": "IP_DREAM_LIBRARY_2_R1",
-                  "source_id": "IP_ZONE_2_SECRET"
+                  "source_id": "IP_ZONE_2_SECRET",
+                  "name": "SECRET_WELL"
                 }
               ]
             }
@@ -1584,7 +1623,8 @@
               "rumor": [
                 {
                   "id": "IP_DREAM_LIBRARY_3_R1",
-                  "source_id": "IP_ZONE_3_SECRET"
+                  "source_id": "IP_ZONE_3_SECRET",
+                  "name": "SECRET_MURAL"
                 }
               ]
             }
@@ -1606,11 +1646,13 @@
           "rumor": [
             {
               "id": "IP_PRISON_R1",
-              "source_id": "IP_ZONE_4_STORY"
+              "source_id": "IP_ZONE_4_STORY",
+              "name": "SUBMERGED_STRUCTURE"
             },
             {
               "id": "IP_PRISON_R2",
-              "source_id": "IP_ZONE_4"
+              "source_id": "IP_ZONE_4",
+              "name": "HOLLOW_STRUCTURE"
             }
           ]
         },
@@ -1629,10 +1671,12 @@
               ],
               "rumor": [
                 {
-                  "id": "IP_DREAM_LAKE_R1"
+                  "id": "IP_DREAM_LAKE_R1",
+                  "name": "ENCLOSED_FIRE"
                 },
                 {
-                  "id": "IP_DREAM_LAKE_R2"
+                  "id": "IP_DREAM_LAKE_R2",
+                  "name": "VAULT_ROOM_FIRE"
                 }
               ]
             }
@@ -1720,7 +1764,8 @@
               "rumor": [
                 {
                   "id": "IP_ZONE_1_SECRET_R1",
-                  "source_id": "IP_MAP_PROJECTION_1"
+                  "source_id": "IP_MAP_PROJECTION_1",
+                  "name": "SECRET_LOCATION"
                 }
               ]
             }
@@ -1771,7 +1816,8 @@
               "rumor": [
                 {
                   "id": "IP_ZONE_2_SECRET_R1",
-                  "source_id": "IP_MAP_PROJECTION_2"
+                  "source_id": "IP_MAP_PROJECTION_2",
+                  "name": "SECRET_LOCATION"
                 }
               ]
             }
@@ -1807,7 +1853,8 @@
           "rumor": [
             {
               "id": "IP_ZONE_2_LIGHTHOUSE_R1",
-              "source_id": "IP_ZONE_2"
+              "source_id": "IP_ZONE_2",
+              "name": "ISLAND_CAVE"
             }
           ]
         },
@@ -1831,12 +1878,14 @@
               "rumor": [
                 {
                   "id": "IP_ZONE_2_CODE_R1",
-                  "source_id": "IP_DREAM_LAKE"
+                  "source_id": "IP_DREAM_LAKE",
+                  "name": "HIDDEN_VAULT_SEALS"
                 },
                 {
                   "id": "IP_ZONE_2_CODE_R2",
                   "source_id": "IP_DREAM_LAKE",
-                  "ignore_more_to_explore": true
+                  "ignore_more_to_explore": true,
+                  "name": "HIDDEN_VAULT_SEALS"
                 }
               ]
             }
@@ -1871,7 +1920,8 @@
               ],
               "rumor": [
                 {
-                  "id": "IP_ZONE_3_ENTRANCE_R1"
+                  "id": "IP_ZONE_3_ENTRANCE_R1",
+                  "name": "HULL_BREACH"
                 }
               ]
             }
@@ -1891,7 +1941,8 @@
               "rumor": [
                 {
                   "id": "IP_ZONE_3_SECRET_R1",
-                  "source_id": "IP_MAP_PROJECTION_3"
+                  "source_id": "IP_MAP_PROJECTION_3",
+                  "name": "SECRET_LOCATION"
                 }
               ]
             }
@@ -1932,7 +1983,8 @@
           ],
           "rumor": [
             {
-              "id": "IP_ZONE_3_LAB_R1"
+              "id": "IP_ZONE_3_LAB_R1",
+              "name": "CLIFFSIDE_BUILDING"
             }
           ]
         },
@@ -2069,7 +2121,8 @@
           "rumor": [
             {
               "id": "GD_GABBRO_ISLAND_R1",
-              "source_id": "TH_VILLAGE"
+              "source_id": "TH_VILLAGE",
+              "name": "GABBRO"
             }
           ]
         }
@@ -2126,7 +2179,8 @@
           "rumor": [
             {
               "id": "GD_QUANTUM_TOWER_R1",
-              "source_id": "BH_QUANTUM_SHARD"
+              "source_id": "BH_QUANTUM_SHARD",
+              "name": "QUANTUM_SIGNAL"
             }
           ]
         }
@@ -2173,13 +2227,16 @@
               ],
               "rumor": [
                 {
-                  "id": "GD_STATUE_WORKSHOP_R1"
+                  "id": "GD_STATUE_WORKSHOP_R1",
+                  "name": "STATUE_WORKSHOP"
                 },
                 {
-                  "id": "GD_STATUE_WORKSHOP_R2"
+                  "id": "GD_STATUE_WORKSHOP_R2",
+                  "name": "STATUE_WORKSHOP"
                 },
                 {
-                  "id": "GD_STATUE_WORKSHOP_R3"
+                  "id": "GD_STATUE_WORKSHOP_R3",
+                  "name": "ISLAND_INTERIOR"
                 }
               ]
             }

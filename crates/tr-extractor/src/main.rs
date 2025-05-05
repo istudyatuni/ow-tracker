@@ -6,8 +6,9 @@ use std::{
 
 use anyhow::{Context, Result, anyhow, bail};
 use clap::Parser;
+use heck::ToShoutySnakeCase;
 use memmap2::{Mmap, MmapOptions};
-use tracing::{Level, debug, info, warn};
+use tracing::{Level, debug, error, info, warn};
 use tracing_subscriber::FmtSubscriber;
 
 use info::Lang;
@@ -94,23 +95,10 @@ fn main() -> Result<()> {
     );
     debug!("count of translation entries: {}", tr_objects[0].len());
 
-    // save info about astro objects
-    if args.write {
-        if !args.out_dir.exists() {
-            std::fs::create_dir(&args.out_dir).context("creating output directory")?;
-        }
-
-        for a in &mut astro_objects {
-            sort_entries(&mut a.entries);
-        }
-
-        let output = args.out_dir.join("entries.json");
-        info!("writing {}", output.display());
-        serde_json::to_writer_pretty(File::create(output)?, &astro_objects)?;
-    }
-
     // names and ids of astro objects for searching in translations
     let mut astro_names_keys = HashMap::<String, Vec<String>>::with_capacity(100);
+    // alternate names for cards
+    let mut rumor_alt_names = HashMap::new();
     for a in &astro_objects {
         // different ids can have same name
         for (name, id) in collect_astro_names(&a.entries) {
@@ -119,8 +107,25 @@ fn main() -> Result<()> {
                 .and_modify(|ids| ids.push(id.clone()))
                 .or_insert_with(|| vec![id]);
         }
+        rumor_alt_names.extend(collect_rumor_alt_names(&a.entries));
     }
     debug!("count of astro names: {}", astro_names_keys.len());
+
+    // save info about astro objects
+    if args.write {
+        if !args.out_dir.exists() {
+            std::fs::create_dir(&args.out_dir).context("creating output directory")?;
+        }
+
+        for a in &mut astro_objects {
+            sort_entries(&mut a.entries);
+            replace_rumor_alt_names(&mut a.entries, &rumor_alt_names);
+        }
+
+        let output = args.out_dir.join("entries.json");
+        info!("writing {}", output.display());
+        serde_json::to_writer_pretty(File::create(output)?, &astro_objects)?;
+    }
 
     // keys for texts
     let mut astro_facts = HashMap::<String, Vec<String>>::with_capacity(400);
@@ -160,6 +165,19 @@ fn main() -> Result<()> {
                         .to_owned(),
                 );
             }
+        }
+        for (text, generated_id) in rumor_alt_names.iter() {
+            let translated = tr
+                .get(text)
+                .expect("should have translation for rumor alt name")
+                .to_owned();
+            if translation
+                .get(generated_id)
+                .is_some_and(|t| *t != translated)
+            {
+                error!("rumor alt name {generated_id} clashes with regular translation");
+            }
+            translation.insert(generated_id.to_owned(), translated);
         }
         translation.insert(
             MORE_TO_EXPLORE_TR_KEY.to_owned(),
@@ -224,6 +242,20 @@ fn sort_entries(entries: &mut [JsonEntry]) {
     entries.sort_unstable_by_key(|e| e.id.clone());
     for e in entries {
         sort_entries(&mut e.entries);
+    }
+}
+
+fn replace_rumor_alt_names(entries: &mut [JsonEntry], name_to_key: &HashMap<String, String>) {
+    for e in entries {
+        for rumor in &mut e.facts.rumor {
+            if let Some(name) = &mut rumor.name {
+                *name = name_to_key
+                    .get(name)
+                    .expect("should have alt rumor name to key")
+                    .to_owned();
+            }
+        }
+        replace_rumor_alt_names(&mut e.entries, name_to_key);
     }
 }
 
@@ -378,6 +410,22 @@ fn load_tr_objects(file: File) -> Result<Vec<Vec<Translation>>> {
     }
 
     Ok(tr_objects)
+}
+
+/// Returns map of `"Rumor alt name" -> "RUMOR_ALT_NAME"`
+fn collect_rumor_alt_names(entries: &[JsonEntry]) -> HashMap<String, String> {
+    let mut tr = HashMap::new();
+    for e in entries {
+        for rumor in &e.facts.rumor {
+            if let Some(name) = &rumor.name {
+                tr.insert(name.to_owned(), name.to_shouty_snake_case());
+            }
+        }
+        if !e.entries.is_empty() {
+            tr.extend(collect_rumor_alt_names(&e.entries));
+        }
+    }
+    tr
 }
 
 /// Returns Vec of (text, id)

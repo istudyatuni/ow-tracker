@@ -10,6 +10,7 @@ bon.workspace = true
 clap.workspace = true
 derive_builder.workspace = true
 dirs.workspace = true
+heck.workspace = true
 memmap2.workspace = true
 serde.workspace = true
 serde-xml-rs.workspace = true

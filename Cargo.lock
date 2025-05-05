@@ -587,6 +587,7 @@ dependencies = [
  "clap",
  "derive_builder",
  "dirs",
+ "heck",
  "memmap2",
  "serde",
  "serde-xml-rs",
