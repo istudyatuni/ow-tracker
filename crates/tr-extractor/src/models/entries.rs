@@ -35,6 +35,11 @@ pub struct XmlEntry {
     #[cfg_attr(test, builder(default))]
     pub is_curiosity: bool,
 
+    /// Ignore facts in this entry when deciding that card has more to explore
+    #[serde(default, deserialize_with = "bool_when_present")]
+    #[cfg_attr(test, builder(default))]
+    pub ignore_more_to_explore: bool,
+
     #[serde(default, rename(deserialize = "RumorFact"))]
     #[cfg_attr(test, builder(default))]
     pub rumor_facts: Vec<RumorFact>,
@@ -60,6 +65,10 @@ pub struct JsonEntry {
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub curiosity: Option<String>,
+
+    /// Ignore facts in this entry when deciding that card has more to explore
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub ignore_more_to_explore: bool,
 
     pub facts: JsonEntryFacts,
 
@@ -108,8 +117,7 @@ pub struct ExploreFact {
     pub id: String,
 
     // pub clue_type: Option<String>,
-
-    //
+    /// Ignore fact when deciding that card has more to explore
     #[serde(
         default,
         deserialize_with = "bool_when_present",
@@ -139,6 +147,7 @@ impl From<XmlEntry> for JsonEntry {
             name: value.name,
             curiosity: value.curiosity,
             is_curiosity: value.is_curiosity,
+            ignore_more_to_explore: value.ignore_more_to_explore,
             facts: JsonEntryFacts {
                 rumor: value.rumor_facts,
                 explore: value.explore_facts,
