@@ -9,3 +9,5 @@ loading-stage-parents = parents
 loading-stage-translation = translation for { $lang }
 loading-stage-theme = theme
 loading-stage-sprite = sprite for { $sprite }
+
+file-upload-help-header = Where are the save files located

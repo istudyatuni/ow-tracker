@@ -2,6 +2,7 @@
   import CloseIcon from "~icons/tabler/x";
   import MenuIcon from "~icons/tabler/menu-2";
   import LanguageIcon from "~icons/tabler/language-hiragana";
+  import QuestionIcon from "~icons/tabler/question-mark";
 
   import { LANGUAGE_NAMES, save_language } from "../lib/language";
   import {
@@ -10,10 +11,24 @@
   } from "../lib/saves";
   import { LANGUAGE } from "../lib/stores";
   import { t } from "../lib/i18n";
+
+  // todo: more
+  const SAVE_LOCATIONS = [
+    [
+      "Steam, Windows",
+      "%USERPROFILE%/AppData/LocalLow/Mobius Digital/Outer Wilds/SteamSaves",
+    ],
+    [
+      "Steam, Linux",
+      "$HOME/.local/share/Steam/steamapps/compatdata/753640/pfx/drive_c/users/steamuser/AppData/LocalLow/Mobius Digital/Outer Wilds/SteamSaves",
+    ],
+  ];
+  const ZWS = "&#8203;";
 </script>
 
 <script>
   let opened = $state(false);
+  let file_upload_help_opened = $state(false);
   let input;
 
   function toggle_open() {
@@ -42,6 +57,11 @@
 
     <button type="button" onclick={on_file_upload_click}
       >{$t("upload-save-file-button")}</button>
+    <button
+      type="button"
+      class="icon-button"
+      onclick={() => (file_upload_help_opened = !file_upload_help_opened)}
+      ><QuestionIcon /></button>
     <input
       bind:this={input}
       id="fileinput"
@@ -50,6 +70,18 @@
       class="hidden"
       onchange={handle_file_change} />
     <br />
+
+    {#if file_upload_help_opened}
+      <div class="block-wrapper">
+        <h3>{$t("file-upload-help-header")}</h3>
+        {#each SAVE_LOCATIONS as [platform, path]}
+          <p>
+            <b>{platform}:</b>
+            <code>{@html path.replaceAll("/", "/" + ZWS)}</code>
+          </p>
+        {/each}
+      </div>
+    {/if}
 
     <select onchange={handle_select_lang}>
       {#each Object.entries(LANGUAGE_NAMES) as [key, name]}
@@ -79,6 +111,16 @@
     padding-top: 5px;
     vertical-align: middle;
     margin-left: 4px;
+  }
+  .icon-button {
+    padding: 7px 10px;
+    background-color: unset;
+  }
+  .block-wrapper {
+    background-color: var(--bg);
+    border-radius: 10px;
+    padding: 0 10px;
+    max-width: 25em;
   }
   /*.border {
     border: 1px $color solid;
