@@ -102,10 +102,6 @@ export async function* generate_all_svg() {
 				}
 				explore_facts.push(fact.id)
 			}
-			if (has_explore_more) {
-				has_unexplored_cards.add(e.id)
-			}
-
 			for (let fact of e?.facts?.rumor || []) {
 				if (opened_facts.has(fact.id)) {
 					opened_cards.add(e.id);
@@ -122,12 +118,18 @@ export async function* generate_all_svg() {
 							}
 						}
 					}
+				} else if (!fact.ignore_more_to_explore) {
+					// todo: not sure about !fact.ignore_more_to_explore
+					has_explore_more = true
 				}
 				rumor_facts.push(fact.id)
 			}
 			entries_facts[e.id] = {
 				rumor: rumor_facts,
 				explore: explore_facts,
+			}
+			if (has_explore_more) {
+				has_unexplored_cards.add(e.id)
 			}
 
 			// fill source_ids
