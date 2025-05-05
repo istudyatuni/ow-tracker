@@ -9,4 +9,8 @@ Some examples (**SPOILERS!!**):
 
 ## Contributing
 
-If you notice that your save not rendered correctly, please leave a comment in [this issue](https://github.com/istudyatuni/ow-tracker/issues/1)
+If you notice that your save is not rendered correctly, please leave a comment in [this issue](https://github.com/istudyatuni/ow-tracker/issues/1)
+
+## Acknowledgements
+
+- Images and cards positions are taken from [outerwilds.ventures](https://outerwilds.ventures)
