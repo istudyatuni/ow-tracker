@@ -2,7 +2,6 @@
   import CloseIcon from "~icons/tabler/x";
   import MenuIcon from "~icons/tabler/menu-2";
   import LanguageIcon from "~icons/tabler/language-hiragana";
-  import QuestionIcon from "~icons/tabler/question-mark";
   import GithubIcon from "~icons/tabler/brand-github";
 
   import { LANGUAGE_NAMES, save_language } from "../lib/language";
@@ -60,9 +59,9 @@
       >{$t("upload-save-file-button")}</button>
     <button
       type="button"
-      class="icon-button"
+      class="question-button"
       onclick={() => (file_upload_help_opened = !file_upload_help_opened)}
-      ><QuestionIcon /></button>
+      >?</button>
     <input
       bind:this={input}
       id="fileinput"
@@ -117,9 +116,8 @@
     vertical-align: middle;
     margin-left: 4px;
   }
-  .icon-button {
-    padding: 7px 10px;
-    background-color: unset;
+  .question-button {
+    font-weight: 700;
   }
   .block-wrapper {
     background-color: var(--bg);
