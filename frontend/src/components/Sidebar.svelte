@@ -30,9 +30,6 @@
   let file_upload_help_opened = $state(false);
   let input;
 
-  function toggle_open() {
-    opened = !opened;
-  }
   function on_file_upload_click() {
     input.click();
   }
@@ -49,11 +46,15 @@
 </script>
 
 <div class="bar above-map" class:border={opened}>
-  <button onclick={toggle_open} class:hidden={opened}><MenuIcon /></button>
-  <div class:hidden={!opened}>
-    <button onclick={toggle_open}><CloseIcon /></button>
-    <br />
+  <button onclick={() => (opened = !opened)}>
+    {#if opened}
+      <CloseIcon />
+    {:else}
+      <MenuIcon />
+    {/if}
+  </button>
 
+  <div class:hidden={!opened}>
     <button type="button" onclick={on_file_upload_click}
       >{$t("upload-save-file-button")}</button>
     <button
