@@ -48,7 +48,13 @@
 </script>
 
 <div class="bar above-map" class:border={opened}>
-  <button onclick={() => (opened = !opened)}>
+  <button
+    onclick={() => {
+      if (opened) {
+        file_upload_help_opened = false;
+      }
+      opened = !opened;
+    }}>
     {#if opened}
       <CloseIcon />
     {:else}
