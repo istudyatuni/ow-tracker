@@ -11,6 +11,11 @@ export const SAVE_FOUND = writable(false)
 export const LANGUAGE = writable(detect_language())
 export const SELECTED_CATEGORIES = localStore('show-categories', default_categories())
 
+// max/min in normal coordinates:
+// x: [-878, 3341.8005]
+// y: [-1577, 1707]
+export const MAP_SIZE = writable([[-900, -1600], [3300, 1700]])
+
 /**
  * @type {import("svelte/store").Writable.<import("@fluent/bundle").FluentBundle> | null}
  */

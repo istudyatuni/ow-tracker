@@ -6,16 +6,42 @@
   import L from "leaflet";
 
   import { coord_to_leaflet, generate_all_svg } from "./lib/draw";
-  import { close_fact, LOADING, open_fact, OPENED_FACT } from "./lib/stores";
+  import {
+    close_fact,
+    LOADING,
+    MAP_SIZE,
+    open_fact,
+    OPENED_FACT,
+  } from "./lib/stores";
 
   const MAP_PAD = 3000;
 
   /** @type {import('leaflet').Map} */
   let map;
 
+  function map_bounds_to_leaflet(bounds) {
+    return [
+      coord_to_leaflet(bounds[0][0] - MAP_PAD, bounds[0][1] - MAP_PAD),
+      coord_to_leaflet(bounds[1][0] + MAP_PAD, bounds[1][1] + MAP_PAD),
+    ];
+  }
+  /**
+   * @param  {number[][]} bounds
+   * @return {import('leaflet').LatLngTuple}
+   */
+  function bounds_center(bounds) {
+    let b = [
+      coord_to_leaflet(bounds[0][0], bounds[0][1]),
+      coord_to_leaflet(bounds[1][0], bounds[1][1]),
+    ];
+    return [b[0][0] / 2 + b[1][0] / 2, b[0][1] / 2 + b[1][1] / 2];
+  }
+
   onMount(async () => {
+    let bounds = get(MAP_SIZE);
+
     map = L.map("map", {
-      center: [250, 1000],
+      center: bounds_center(bounds),
       zoom: -2,
       minZoom: -2,
       maxZoom: 2,
@@ -25,13 +51,7 @@
       crs: L.CRS.Simple,
       attributionControl: false,
       zoomControl: false,
-      // max/min in normal coordinates:
-      // x: [-878, 3341.8005]
-      // y: [-1577, 1707]
-      maxBounds: [
-        coord_to_leaflet(-900 - MAP_PAD, -1600 - MAP_PAD),
-        coord_to_leaflet(3300 + MAP_PAD, 1700 + MAP_PAD),
-      ],
+      maxBounds: map_bounds_to_leaflet(bounds),
     }).on("click", (e) => {
       // @ts-ignore
       let id = e.originalEvent.target.id;
