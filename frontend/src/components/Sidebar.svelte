@@ -23,7 +23,6 @@
       "$HOME/.local/share/Steam/steamapps/compatdata/753640/pfx/drive_c/users/steamuser/AppData/LocalLow/Mobius Digital/Outer Wilds/SteamSaves",
     ],
   ];
-  const ZWS = "&#8203;";
 </script>
 
 <script>
@@ -77,7 +76,7 @@
         {#each SAVE_LOCATIONS as [platform, path]}
           <p>
             <b>{platform}:</b>
-            <code>{@html path.replaceAll("/", "/" + ZWS)}</code>
+            <code>{@html path.replaceAll("/", "/<wbr />")}</code>
           </p>
         {/each}
       </div>
@@ -136,6 +135,9 @@
     background: #082638;
     cursor: pointer;
     margin-bottom: 5px;
+  }
+  code {
+    word-break: break-word;
   }
   .hidden {
     display: none;
