@@ -22,7 +22,7 @@ export const translator = derived(tr_bundle, (bundle) => (id, args = {}) => {
 		return bundle.formatPattern(msg.value, args)
 	}
 	console.warn('no value for message with id', id)
-	return ''
+	return id
 })
 
 export function open_fact(id) {
