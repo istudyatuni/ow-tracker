@@ -80,6 +80,31 @@ select {
   appearance: none;
 }
 
+input[type="checkbox"] {
+  appearance: none;
+
+  width: 1.2em;
+  height: 1.2em;
+  border-radius: 4px;
+  cursor: pointer;
+  position: relative;
+  vertical-align: middle;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+// checkmark, created using transformations on white border
+input[type="checkbox"]:checked::after {
+  content: '';
+  position: absolute;
+  top: 0.11em;
+  left: 0.38em;
+  width: 0.25em;
+  height: 0.6em;
+  border: solid white;
+  border-width: 0 0.15em 0.15em 0;
+  transform: rotate(45deg);
+}
+
 .above-map {
   z-index: 1000;
 }
@@ -142,11 +167,17 @@ $categories-colors: (
 );
 
 @each $name, $colors in $categories-colors {
-  $c: list.nth($colors, 1);
+  $c: ##{list.nth($colors, 1)};
   $highlight: list.nth($colors, 2);
 
   input[type="checkbox"].#{$name} {
-    background-color: ##{$c};
+    border: 0.1px solid $c;
+    background-color: #{$c}44;
+
+    &:checked {
+      background-color: $c;
+      border-color: $c;
+    }
   }
 
   // hack to have correct hover colors in cards

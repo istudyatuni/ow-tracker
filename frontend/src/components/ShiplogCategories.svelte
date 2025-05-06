@@ -12,17 +12,18 @@
   <h4>{$t("shiplog-categories-header")}</h4>
   {#each Object.entries(CATEGORIES) as [i, id] (id)}
     <div>
-      <input
-        type="checkbox"
-        name={id}
-        id="category-${id}"
-        class="id"
-        checked={$SELECTED_CATEGORIES[id]}
-        onchange={(e) => {
-          changed = true;
-          SELECTED_CATEGORIES.set(id, e.target.checked);
-        }} />
-      <label for="category-${id}">{$t(`shiplog-category-${id}`)}</label>
+      <label>
+        <input
+          type="checkbox"
+          name={id}
+          class={id}
+          checked={$SELECTED_CATEGORIES[id]}
+          onchange={(e) => {
+            changed = true;
+            SELECTED_CATEGORIES.set(id, e.target.checked);
+          }} />
+        {$t(`shiplog-category-${id}`)}
+      </label>
     </div>
   {/each}
   <button onclick={() => window.location.reload()} disabled={!changed}
