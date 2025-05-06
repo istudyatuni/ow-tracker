@@ -14,6 +14,7 @@ export default defineConfig({
       includeAssets: ['*.json', 'translations/*.json', 'translations/ui/*.ftl', 'sprites/*.jpg'],
     }),
     Icons({ compiler: 'svelte' }),
+    injectMetrikaPlugin('101631901'),
   ],
   base: '/ow-tracker',
   build: {
@@ -23,3 +24,46 @@ export default defineConfig({
     },
   },
 })
+
+/**
+ * @param  {string} id
+ * @return {import('vite').Plugin}
+ */
+function injectMetrikaPlugin(id) {
+  return {
+    name: 'inject-yandex-metrika',
+    // not in dev mode
+    apply: 'build',
+    transformIndexHtml(html, ctx) {
+      return {
+        html,
+        tags: [
+          {
+            tag: 'raw',
+            children: gen_ya_metrica(id),
+            injectTo: 'head',
+          },
+        ],
+      }
+    },
+  }
+}
+
+function gen_ya_metrica(id) {
+  return `<!-- Yandex.Metrika counter -->
+<script type="text/javascript" >
+   (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+   m[i].l=1*new Date();
+   for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+   k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+   (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+
+   ym(${id}, "init", {
+        clickmap:true,
+        trackLinks:true,
+        accurateTrackBounce:true
+   });
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/${id}" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->`
+}
