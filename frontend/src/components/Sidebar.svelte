@@ -121,8 +121,13 @@
   .block-wrapper {
     background-color: var(--bg);
     border-radius: 10px;
-    padding: 0 10px;
+    padding: 1px 10px;
+    margin-bottom: 5px;
     max-width: 25em;
+
+    & > h3 {
+      margin-top: 10px;
+    }
   }
   .brand-icon {
     color: white;
