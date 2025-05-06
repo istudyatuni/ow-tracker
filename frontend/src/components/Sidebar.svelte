@@ -4,6 +4,8 @@
   import LanguageIcon from "~icons/tabler/language-hiragana";
   import GithubIcon from "~icons/tabler/brand-github";
 
+  import ShiplogCategories from "./ShiplogCategories.svelte";
+
   import { LANGUAGE_NAMES, save_language } from "../lib/language";
   import {
     export_save_to_browser_url,
@@ -83,6 +85,8 @@
       </div>
     {/if}
 
+    <ShiplogCategories />
+
     <select onchange={handle_select_lang}>
       {#each Object.entries(LANGUAGE_NAMES) as [key, name]}
         <option value={key} selected={$LANGUAGE === key}>{name}</option>
@@ -138,7 +142,6 @@
   }*/
   button,
   select {
-    background: #082638;
     cursor: pointer;
     margin-bottom: 5px;
   }

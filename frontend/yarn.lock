@@ -2921,6 +2921,11 @@ supports-preserve-symlinks-flag@^1.0.0:
   resolved "https://registry.yarnpkg.com/supports-preserve-symlinks-flag/-/supports-preserve-symlinks-flag-1.0.0.tgz#6eda4bd344a3c94aea376d4cc31bc77311039e09"
   integrity sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==
 
+svelte-storages@^0.0.2:
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/svelte-storages/-/svelte-storages-0.0.2.tgz#b114f7d0e17ee5153ce15a32ece0327f0bce95b9"
+  integrity sha512-pGJwNewBhxqcOBy4V4dnSvsoHLFgw5qX5AJ/Q/C9u4kci8QdeczQ9XD0HcgdmVSpRPOX65oUwTikW0l4HCegmQ==
+
 svelte@^5.23.1:
   version "5.28.2"
   resolved "https://registry.yarnpkg.com/svelte/-/svelte-5.28.2.tgz#b0c4a6ad14e1562cc2255baac479fa16d75b9c0d"

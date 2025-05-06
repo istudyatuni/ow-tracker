@@ -1,15 +1,13 @@
 import { expand_thin_bounds, make_rumor_arrow } from './arrow';
 import { CARD_HEIGHT, CARD_WIDTH, make_card_svg } from './card';
+import { category_to_curiosity, CURIOSITY, should_show_curiosity } from './categories';
 import { load_tr, set_entries_facts, set_joined_rumors, set_has_unexplored_cards, set_opened_cards_only_rumors, set_opened_facts } from './data';
 import { to_data_url } from './dataurl';
-import { CURIOSITY } from './info';
 import { detect_language } from './language';
 import { get_save_from_browser_url } from './saves';
-import { LOADING, SAVE_FOUND } from './stores';
+import { LOADING, SAVE_FOUND, SELECTED_CATEGORIES } from './stores';
 import { t as i18n } from './i18n';
 import { get } from 'svelte/store';
-
-const HIDE_CURIOSITIES = [CURIOSITY.INVISIBLE_PLANET];
 
 const DEFAULT_MULT = 0.7;
 const BIG_MULT = 1.2;
@@ -39,6 +37,9 @@ export async function* generate_all_svg() {
 	}
 
 	let t = get(i18n)
+	let hide_curiosities = new Set(Object.entries(get(SELECTED_CATEGORIES))
+		.filter(([_, enabled]) => !enabled)
+		.map(([category, _]) => category_to_curiosity(category)))
 
 	LOADING.set(t('loading-stage-save-keys'))
 
@@ -224,8 +225,8 @@ export async function* generate_all_svg() {
 	// centers is filled inside of generate_cards
 	/** @type {Object.<string, import('leaflet').LatLngTuple>} */
 	let centers = {};
-	yield* generate_cards(entries, theme, library, parents, centers, opened_cards, tr, cards_alt_names, save_loaded)
-	yield* generate_arrows(sources, library, opened_cards, opened_facts, centers, joined_rumors, save_loaded)
+	yield* generate_cards(entries, theme, library, parents, centers, opened_cards, tr, cards_alt_names, hide_curiosities, save_loaded)
+	yield* generate_arrows(sources, library, opened_cards, opened_facts, centers, joined_rumors, hide_curiosities, save_loaded)
 }
 
 /**
@@ -237,10 +238,11 @@ export async function* generate_all_svg() {
  * @param {Set.<string>} opened_cards
  * @param {Object.<string, string>} tr
  * @param {Object.<string, string>} cards_alt_names
+ * @param {Set.<string>} hide_curiosities
  * @param {boolean} save_loaded
  * @yield {}
  */
-async function* generate_cards(entries, theme, library, parents, centers, opened_cards, tr, cards_alt_names, save_loaded) {
+async function* generate_cards(entries, theme, library, parents, centers, opened_cards, tr, cards_alt_names, hide_curiosities, save_loaded) {
 	let t = get(i18n)
 
 	for (let [id, e] of Object.entries(entries)) {
@@ -263,7 +265,7 @@ async function* generate_cards(entries, theme, library, parents, centers, opened
 		let start_bounds = [cx - h / 2, cy - w / 2];
 		let end_bounds = [cx + h / 2, cy + w / 2];
 
-		if (!save_loaded && HIDE_CURIOSITIES.includes(library[id]?.curiosity)) {
+		if (should_show_curiosity(hide_curiosities, library[id]?.curiosity)) {
 			continue;
 		}
 		if (save_loaded && !opened_cards.has(id)) {
@@ -296,19 +298,23 @@ async function* generate_cards(entries, theme, library, parents, centers, opened
  * @param {Set.<string>} opened_cards
  * @param {Set.<string>} opened_facts
  * @param {Object.<string, import('leaflet').LatLngTuple>} centers
+ * @param {Set.<string>} hide_curiosities
  * @param {boolean} save_loaded
  * @yield {}
  */
-function* generate_arrows(sources, library, opened_cards, opened_facts, centers, joined_rumors, save_loaded) {
+function* generate_arrows(sources, library, opened_cards, opened_facts, centers, joined_rumors, hide_curiosities, save_loaded) {
 	for (let [source_id, entry_ids] of Object.entries(sources)) {
-		if (!save_loaded &&
-			HIDE_CURIOSITIES.includes(library[source_id]?.curiosity)) {
+		if (should_show_curiosity(hide_curiosities, library[source_id]?.curiosity)) {
 			continue;
 		}
 		if (save_loaded && !opened_cards.has(source_id)) {
 			continue;
 		}
 		for (let { entry_id, rumor_id } of entry_ids) {
+			if (should_show_curiosity(hide_curiosities, library[entry_id]?.curiosity)) {
+				continue;
+			}
+
 			let key = [source_id, entry_id].sort()
 			// @ts-ignore
 			let rumors = joined_rumors[key]?.rumors

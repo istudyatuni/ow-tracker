@@ -11,3 +11,12 @@ loading-stage-theme = цветовой темы
 loading-stage-sprite = спрайта { $sprite }
 
 file-upload-help-header = Где находятся файлы сохранений
+
+shiplog-categories-header = Категории бортжурнала
+shiplog-categories-apply-button = Применить
+shiplog-category-orbital-canon = Орбитальная зондовая пушка и Око Вселенной
+shiplog-category-quantum-moon = Квантовая луна и связанные феномены
+shiplog-category-vessel = Звездолёт и прибытие номаи
+shiplog-category-ash-twin-project = Проект "Час Пепла"
+shiplog-category-stranger = Незнакомец
+shiplog-category-other = Другое, включая Чужака и судьбу номаи
