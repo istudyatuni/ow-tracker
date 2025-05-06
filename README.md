@@ -7,9 +7,36 @@ Some examples (**SPOILERS!!**):
 - [Ship log after completing tutorial](https://istudyatuni.github.io/ow-tracker/#save=AAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPxAAAAA=)
 - [Full base game ship log](https://istudyatuni.github.io/ow-tracker/#v=1.1.15&save=/////////////////////////////8AAAAAAAAAAAAAAAf//////////v/////w=)
 
+## Develop
+
+### Extract translations and entries data
+
+You need Rust [installed](https://rustup.rs)
+
+```sh
+just extract-translations
+```
+
+### Run frontend
+
+```sh
+# optional, to get yarn and nodejs
+nix develop 
+
+cd frontend && yarn install
+just dev
+```
+
 ## Contributing
 
 If you notice that your save is not rendered correctly, please leave a comment in [this issue](https://github.com/istudyatuni/ow-tracker/issues/1)
+
+### UI translation
+
+You can help translate the project's UI into your language. English file is located in [`frontend/public/translations/ui/english.ftl`](frontend/public/translations/ui/english.ftl). For more info about the file format see [projectfluent.org](https://projectfluent.org)
+
+1. Copy `english.ftl` to the file with id of your language. Currently the same id's are used as in the game. See list of ids in [`frontend/src/lib/language.js`](./frontend/src/lib/language.js)
+2. After translation, comment out the line with your language in the `frontend/src/lib/language.js` in the `language_to_code()` function
 
 ## Acknowledgements
 
