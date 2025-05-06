@@ -5,7 +5,7 @@ import { load_tr, set_entries_facts, set_joined_rumors, set_has_unexplored_cards
 import { to_data_url } from './dataurl';
 import { detect_language } from './language';
 import { get_save_from_browser_url } from './saves';
-import { LOADING, SAVE_FOUND, SELECTED_CATEGORIES } from './stores';
+import { LOADING, MAP_SIZE, SAVE_FOUND, SELECTED_CATEGORIES } from './stores';
 import { t as i18n } from './i18n';
 import { get } from 'svelte/store';
 
@@ -197,13 +197,21 @@ export async function* generate_all_svg() {
 	 * @type {Object.<string, { coordinates: import('leaflet').LatLngTuple, sprite: string | null }>}
 	 */
 	let entries = {};
+	let [minX, maxX, minY, maxY] = [4000, -1000, 2000, -2000]
 	let coordinates_data = await (await fetch(import.meta.env.BASE_URL + "/coordinates.json")).json();
 	for (let [id, [x, y]] of Object.entries(coordinates_data)) {
+		if (opened_cards.has(id)) {
+			minX = Math.min(minX, x)
+			minY = Math.min(minY, y)
+			maxX = Math.max(maxX, x)
+			maxY = Math.max(maxY, y)
+		}
 		entries[id] = {
 			coordinates: coord_to_leaflet(x, y),
 			sprite: opened_card_imgs.has(id) ? `${import.meta.env.BASE_URL}/sprites/${id}.jpg` : null,
 		};
 	}
+	MAP_SIZE.set([[minX, minY], [maxX, maxY]])
 
 	LOADING.set(t('loading-stage-parents'))
 

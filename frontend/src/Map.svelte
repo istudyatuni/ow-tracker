@@ -20,6 +20,7 @@
   let map;
 
   function map_bounds_to_leaflet(bounds) {
+    // todo: scale MAP_PAD if number of cards is small
     return [
       coord_to_leaflet(bounds[0][0] - MAP_PAD, bounds[0][1] - MAP_PAD),
       coord_to_leaflet(bounds[1][0] + MAP_PAD, bounds[1][1] + MAP_PAD),
@@ -67,6 +68,12 @@
       } else {
         close_fact();
       }
+    });
+
+    MAP_SIZE.subscribe((bounds) => {
+      map
+        .setView(bounds_center(bounds), -2)
+        .fitBounds(map_bounds_to_leaflet(bounds));
     });
 
     for await (let { svg, coords, pane } of generate_all_svg()) {
