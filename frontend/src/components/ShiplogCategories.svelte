@@ -31,6 +31,7 @@
 <style lang="scss">
   h4 {
     margin: 5px auto;
+    margin-top: 0;
   }
   button {
     margin-top: 5px;

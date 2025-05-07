@@ -145,12 +145,17 @@
   .block-wrapper {
     background-color: var(--bg);
     border-radius: 10px;
-    padding: 1px 10px;
+    padding: 10px 10px;
     margin-bottom: 10px;
     max-width: 25em;
 
-    & > h3 {
+    & p {
       margin-top: 10px;
+      margin-bottom: 0;
+    }
+
+    & > h3 {
+      margin: 0px;
     }
 
     &.categories {
