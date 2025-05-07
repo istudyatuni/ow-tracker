@@ -3,6 +3,7 @@
     export_save_to_browser_url,
     get_save_opened_facts,
   } from "../../lib/saves";
+  import { SETTINGS } from "../../lib/stores";
   import { t } from "../../lib/i18n";
 
   // todo: more
@@ -29,6 +30,7 @@
     let file = await e.target.files[0].text();
     let data = JSON.parse(file).shipLogFactSaves;
     export_save_to_browser_url(Object.keys(data), get_save_opened_facts(data));
+    SETTINGS.set("welcome_popup_done", true);
     window.location.reload();
   }
 </script>

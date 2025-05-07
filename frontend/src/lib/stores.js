@@ -1,4 +1,4 @@
-import { derived, writable } from "svelte/store";
+import { derived, get, writable } from "svelte/store";
 
 import { localStore } from 'svelte-storages'
 
@@ -9,11 +9,13 @@ export const OPENED_FACT = writable(null)
 export const LOADING = writable('base')
 export const LANGUAGE = writable(detect_language())
 export const SELECTED_CATEGORIES = localStore('show-categories', default_categories())
-export const SETTINGS = localStore('ow-settings', {
-	version: 1,
+
+const DEFAULT_SETTINGS = {
+	version: 2,
 	hide_spoilers: true,
 	welcome_popup_done: false,
-})
+}
+export const SETTINGS = localStore('ow-settings', DEFAULT_SETTINGS)
 
 // max/min in normal coordinates:
 // x: [-878, 3341.8005]
@@ -63,3 +65,11 @@ SETTINGS.subscribe(({ hide_spoilers }) => {
 		c.remove(CLASS)
 	}
 })
+
+export function check_settings_version() {
+	let s = get(SETTINGS)
+	if (s.version < DEFAULT_SETTINGS.version) {
+		Object.keys(s).forEach((k) => SETTINGS.delete(k))
+		Object.entries(DEFAULT_SETTINGS).forEach(([k, v]) => SETTINGS.set(k, v))
+	}
+}

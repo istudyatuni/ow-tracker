@@ -5,13 +5,14 @@
   import WelcomePopup from "./components/WelcomePopup.svelte";
   import Map from "./Map.svelte";
 
-  import { OPENED_FACT, SETTINGS } from "./lib/stores";
+  import { check_settings_version, OPENED_FACT, SETTINGS } from "./lib/stores";
   import { get_facts_for, has_more_to_explore } from "./lib/data";
   import { init_i18n } from "./lib/i18n";
 </script>
 
 <script>
   init_i18n();
+  check_settings_version();
 
   let facts = $derived($OPENED_FACT ? get_facts_for($OPENED_FACT) : []);
   let more_to_explore = $derived(
