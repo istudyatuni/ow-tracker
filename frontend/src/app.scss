@@ -200,6 +200,10 @@ $categories-colors: (
   svg:hover>.c#{$highlight} {
     fill: ##{$highlight};
   }
+
+  button.#{$name} {
+    background: ##{$highlight}77;
+  }
 }
 
 // question sign background

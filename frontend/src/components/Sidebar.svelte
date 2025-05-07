@@ -8,8 +8,8 @@
   import ShiplogCategories from "./ShiplogCategories.svelte";
 
   import { LANGUAGE_NAMES, save_language } from "../lib/language";
-  import { LANGUAGE, SETTINGS } from "../lib/stores";
-  import { t } from "../lib/i18n";
+  import { LANGUAGE } from "../lib/stores";
+  import HideSpoilers from "./atoms/HideSpoilers.svelte";
 </script>
 
 <script>
@@ -37,14 +37,7 @@
     </div>
 
     <div class="block-wrapper">
-      <label>
-        <input
-          type="checkbox"
-          name="show-spoilers"
-          class="other"
-          bind:checked={$SETTINGS.hide_spoilers} />
-        {$t("hide-spoilers-checkbox")}
-      </label>
+      <HideSpoilers />
     </div>
 
     <select onchange={handle_select_lang}>

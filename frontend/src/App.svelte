@@ -2,12 +2,12 @@
   import FactsPanel from "./components/FactsPanel.svelte";
   import Sidebar from "./components/Sidebar.svelte";
   import Loading from "./components/Loading.svelte";
-  import Popup from "./components/Popup.svelte";
+  import WelcomePopup from "./components/WelcomePopup.svelte";
   import Map from "./Map.svelte";
 
-  import { OPENED_FACT, SAVE_FOUND } from "./lib/stores";
+  import { OPENED_FACT, SETTINGS } from "./lib/stores";
   import { get_facts_for, has_more_to_explore } from "./lib/data";
-  import { init_i18n, t } from "./lib/i18n";
+  import { init_i18n } from "./lib/i18n";
 </script>
 
 <script>
@@ -24,7 +24,9 @@
   <Map />
   <FactsPanel {facts} {more_to_explore} />
   <Loading />
-  <Popup text={$t("upload-save-file-popup")} hidden={$SAVE_FOUND} />
+  {#if !$SETTINGS.welcome_popup_done}
+    <WelcomePopup />
+  {/if}
 </main>
 
 <style>

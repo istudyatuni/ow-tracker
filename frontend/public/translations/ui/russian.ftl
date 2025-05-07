@@ -1,7 +1,12 @@
+welcome-popup-header = Просматривайте и делитесь своим прогрессом в { $game }
+welcome-popup-upload-save-file = Вы можете загрузить своё сохранение
+welcome-popup-launch-map = Или запустить полную карту
+welcome-popup-launch-button = Запуск
+
 upload-save-file-button = Загрузить файл сохранения
-upload-save-file-popup = Загрузите файл сохранения из меню
 
 hide-spoilers-checkbox = Скрыть спойлеры
+hide-dlc-checkbox = Скрыть DLC
 
 loading-prefix = Загрузка
 loading-stage-save-keys = доступных ключей сохранения

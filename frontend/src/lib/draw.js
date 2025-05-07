@@ -5,7 +5,7 @@ import { load_tr, set_entries_facts, set_joined_rumors, set_has_unexplored_cards
 import { to_data_url } from './dataurl';
 import { detect_language } from './language';
 import { get_save_from_browser_url } from './saves';
-import { LOADING, MAP_SIZE, SAVE_FOUND, SELECTED_CATEGORIES } from './stores';
+import { LOADING, MAP_SIZE, SELECTED_CATEGORIES, SETTINGS } from './stores';
 import { t as i18n } from './i18n';
 import { get } from 'svelte/store';
 
@@ -40,11 +40,8 @@ function flatten_entries(entries, result) {
 }
 
 export async function* generate_all_svg() {
-	let save_loaded = window.location.hash !== ''
-	SAVE_FOUND.set(save_loaded)
-
 	// hiding while some features not ready
-	if (!save_loaded) {
+	if (!get(SETTINGS).welcome_popup_done) {
 		return []
 	}
 
@@ -55,6 +52,7 @@ export async function* generate_all_svg() {
 
 	LOADING.set(t('loading-stage-save-keys'))
 
+	let save_loaded = window.location.hash !== ''
 	let save_keys = await (await fetch(import.meta.env.BASE_URL + "/save_keys.json")).json();
 	let opened_facts
 	if (save_loaded) {

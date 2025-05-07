@@ -7,12 +7,12 @@ import { detect_language } from "./language";
 
 export const OPENED_FACT = writable(null)
 export const LOADING = writable('base')
-export const SAVE_FOUND = writable(false)
 export const LANGUAGE = writable(detect_language())
 export const SELECTED_CATEGORIES = localStore('show-categories', default_categories())
 export const SETTINGS = localStore('ow-settings', {
 	version: 1,
-	hide_spoilers: false,
+	hide_spoilers: true,
+	welcome_popup_done: false,
 })
 
 // max/min in normal coordinates:

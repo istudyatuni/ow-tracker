@@ -63,6 +63,8 @@
 
 <style lang="scss">
   .block-wrapper {
+    max-width: 25em;
+
     & p {
       margin-top: 10px;
       margin-bottom: 0;
