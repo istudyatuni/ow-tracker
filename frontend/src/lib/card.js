@@ -52,7 +52,7 @@ export function make_card_svg(id, text, image_url, color, hover_color) {
 		<switch>
 			<foreignObject x="0" y="0" width="${CARD_WIDTH}" height="${TEXT_HEIGHT}">
 				<div xmlns="http://www.w3.org/1999/xhtml" class="card-text-wrapper">
-					<p class="card-text" style="font-size: ${FONT_SIZE_EM}em">${text}</p>
+					<p class="card-text mono spoiler" style="font-size: ${FONT_SIZE_EM}em">${text}</p>
 				</div>
 			</foreignObject>
 			<text x="0" y="0" font-size="20" text-anchor="middle" fill="white">svg viewer doesn't support html</text>

@@ -11,7 +11,7 @@
 <div class="wrapper">
   <h4>{$t("shiplog-categories-header")}</h4>
   {#each Object.entries(CATEGORIES) as [i, id] (id)}
-    <div>
+    <div class="spoiler">
       <label>
         <input
           type="checkbox"
@@ -36,7 +36,6 @@
   }
   button {
     margin-top: 5px;
-    margin-bottom: 10px;
   }
   .wrapper {
     background-color: var(--bg);

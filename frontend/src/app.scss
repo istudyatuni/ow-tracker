@@ -1,9 +1,12 @@
 @use 'sass:list';
 @use 'sass:map';
 
+@import url('https://fonts.googleapis.com/css2?family=Flow+Circular&display=swap');
+
 :root {
   --bg: #02101b;
   --button-bg: #082638;
+  --spoilers-font: 'Flow Circular';
 
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -113,8 +116,17 @@ input[type="checkbox"]:checked::after {
   color: orange;
 }
 
-.card-text {
+.mono {
   font-family: monospace;
+}
+
+.hide-spoilers .spoiler {
+  font-family: var(--spoilers-font);
+  font-size: 19px;
+  line-height: 0.93em;
+}
+
+.card-text {
   font-weight: 600;
   margin: 0;
   text-align: center;

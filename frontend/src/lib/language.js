@@ -38,7 +38,7 @@ export function save_language(id) {
 	localStorage.setItem('language', id)
 }
 
-export function get_language() {
+function get_language() {
 	return localStorage.getItem('language')
 }
 

@@ -10,6 +10,10 @@ export const LOADING = writable('base')
 export const SAVE_FOUND = writable(false)
 export const LANGUAGE = writable(detect_language())
 export const SELECTED_CATEGORIES = localStore('show-categories', default_categories())
+export const SETTINGS = localStore('ow-settings', {
+	version: 1,
+	hide_spoilers: false,
+})
 
 // max/min in normal coordinates:
 // x: [-878, 3341.8005]
@@ -48,3 +52,14 @@ export function close_fact() {
 export function set_tr_bundle(bundle) {
 	tr_bundle.set(bundle)
 }
+
+SETTINGS.subscribe(({ hide_spoilers }) => {
+	const CLASS = 'hide-spoilers'
+
+	let c = document.body.classList
+	if (hide_spoilers) {
+		c.add(CLASS)
+	} else {
+		c.remove(CLASS)
+	}
+})

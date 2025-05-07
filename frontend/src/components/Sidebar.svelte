@@ -11,7 +11,7 @@
     export_save_to_browser_url,
     get_save_opened_facts,
   } from "../lib/saves";
-  import { LANGUAGE } from "../lib/stores";
+  import { LANGUAGE, SETTINGS } from "../lib/stores";
   import { t } from "../lib/i18n";
 
   // todo: more
@@ -93,6 +93,17 @@
 
     <ShiplogCategories />
 
+    <div class="block-wrapper">
+      <label>
+        <input
+          type="checkbox"
+          name="show-spoilers"
+          class="other"
+          bind:checked={$SETTINGS.hide_spoilers} />
+        Hide spoilers
+      </label>
+    </div>
+
     <select onchange={handle_select_lang}>
       {#each Object.entries(LANGUAGE_NAMES) as [key, name]}
         <option value={key} selected={$LANGUAGE === key}>{name}</option>
@@ -133,7 +144,7 @@
     background-color: var(--bg);
     border-radius: 10px;
     padding: 1px 10px;
-    margin-bottom: 5px;
+    margin-bottom: 10px;
     max-width: 25em;
 
     & > h3 {

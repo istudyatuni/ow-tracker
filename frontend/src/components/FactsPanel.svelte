@@ -1,5 +1,6 @@
 <script module>
   import { get_more_to_explore_tr } from "../lib/data";
+  import { SETTINGS } from "../lib/stores";
 </script>
 
 <script>
@@ -9,11 +10,11 @@
 <div class="facts above-map" class:hidden={facts.length === 0}>
   <ul>
     {#each facts as fact}
-      <li>{fact}</li>
+      <li class="mono spoiler">{fact}</li>
     {/each}
 
-    {#if more_to_explore}
-      <li class="more-to-explore">{get_more_to_explore_tr()}</li>
+    {#if more_to_explore && !$SETTINGS.hide_spoilers}
+      <li class="more-to-explore mono">{get_more_to_explore_tr()}</li>
     {/if}
   </ul>
 </div>
@@ -41,10 +42,6 @@
 
       list-style: none;
       margin: $m 0.5em $m -16px;
-    }
-
-    & ul li {
-      font-family: monospace;
     }
 
     & ul li:before {
