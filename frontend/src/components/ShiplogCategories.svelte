@@ -8,27 +8,25 @@
   let changed = $state(false);
 </script>
 
-<div class="wrapper">
-  <h4>{$t("shiplog-categories-header")}</h4>
-  {#each Object.entries(CATEGORIES) as [i, id] (id)}
-    <div class="spoiler">
-      <label>
-        <input
-          type="checkbox"
-          name={id}
-          class={id}
-          checked={$SELECTED_CATEGORIES[id]}
-          onchange={(e) => {
-            changed = true;
-            SELECTED_CATEGORIES.set(id, e.target.checked);
-          }} />
-        {$t(`shiplog-category-${id}`)}
-      </label>
-    </div>
-  {/each}
-  <button onclick={() => window.location.reload()} disabled={!changed}
-    >{$t("shiplog-categories-apply-button")}</button>
-</div>
+<h4>{$t("shiplog-categories-header")}</h4>
+{#each Object.entries(CATEGORIES) as [i, id] (id)}
+  <div class="spoiler">
+    <label>
+      <input
+        type="checkbox"
+        name={id}
+        class={id}
+        checked={$SELECTED_CATEGORIES[id]}
+        onchange={(e) => {
+          changed = true;
+          SELECTED_CATEGORIES.set(id, e.target.checked);
+        }} />
+      {$t(`shiplog-category-${id}`)}
+    </label>
+  </div>
+{/each}
+<button onclick={() => window.location.reload()} disabled={!changed}
+  >{$t("shiplog-categories-apply-button")}</button>
 
 <style lang="scss">
   h4 {
@@ -36,12 +34,5 @@
   }
   button {
     margin-top: 5px;
-  }
-  .wrapper {
-    background-color: var(--bg);
-    border-radius: 10px;
-    padding: 1px 10px;
-    margin-bottom: 5px;
-    max-width: 35em;
   }
 </style>

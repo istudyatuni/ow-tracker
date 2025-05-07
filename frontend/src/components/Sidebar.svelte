@@ -91,7 +91,9 @@
       </div>
     {/if}
 
-    <ShiplogCategories />
+    <div class="block-wrapper categories">
+      <ShiplogCategories />
+    </div>
 
     <div class="block-wrapper">
       <label>
@@ -149,6 +151,10 @@
 
     & > h3 {
       margin-top: 10px;
+    }
+
+    &.categories {
+      max-width: 35em;
     }
   }
   .brand-icon {
