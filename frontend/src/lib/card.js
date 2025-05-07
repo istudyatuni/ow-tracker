@@ -52,13 +52,12 @@ export function make_card_svg(id, text, image_url, has_unexplored, color, hover_
 	let hover_class = hover_color.replace('#', 'c')
 
 	let star = ''
-	let img
 	let img_size = `x="${CARD_MARGIN + left_shift}" y="${TEXT_HEIGHT}" width="${IMAGE_WIDTH}" height="${IMAGE_HEIGHT}"`
-	if (image_url === null) {
-		img = `<rect ${img_size} class="img-q-bg" />
-			<text x="${QUESTION.x + left_shift}" y="${QUESTION.y}" class="img-q-icon" style="font-size: ${QUESTION.font}px">?</text>`
-	} else {
-		img = `<image href="${image_url}" ${img_size} />`
+	// draw question sign always so it's simple to toggle image on/off with css
+	let img = `<rect ${img_size} class="img-q-bg" />
+		<text x="${QUESTION.x + left_shift}" y="${QUESTION.y}" class="img-q-icon" style="font-size: ${QUESTION.font}px">?</text>`
+	if (image_url !== null) {
+		img += `<image href="${image_url}" ${img_size} class="spoiler" />`
 
 		if (has_unexplored) {
 			star = STAR
@@ -67,7 +66,7 @@ export function make_card_svg(id, text, image_url, has_unexplored, color, hover_
 
 	// foreignObject is used to use <p> to have text auto-wrap
 	e.innerHTML = `
-		<rect x="${left_shift}" y="0" id="${id}" width="${FULL_CARD_WIDTH}" height="${FULL_CARD_HEIGHT}" fill="${color}" class="card ${hover_class}" />
+		<rect x="${left_shift}" y="0" id="${id}" width="${FULL_CARD_WIDTH}" height="${FULL_CARD_HEIGHT}" class="card ${hover_class}" />
 		<switch>
 			<foreignObject x="${left_shift}" y="0" width="${CARD_WIDTH}" height="${TEXT_HEIGHT}">
 				<div xmlns="http://www.w3.org/1999/xhtml" class="card-text-wrapper">
