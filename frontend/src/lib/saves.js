@@ -1,5 +1,6 @@
 const V15_KEYS_COUNT = 374
-const GAME_VERSION = '1.1.15'
+const V16_KEYS_COUNT = 374
+const GAME_VERSION = '1.1.16'
 
 export function get_save_opened_facts(facts_data) {
 	// todo: not sure if read and newlyRevealed affect showing
@@ -41,8 +42,8 @@ export function get_save_from_browser_url(keys) {
 export function encode_save(keys, opened) {
 	keys = keys.sort()
 	let keys_count = keys.length
-	if (keys_count != V15_KEYS_COUNT) {
-		console.error('trying to load save with wrong number of keys:', keys_count, 'expected', V15_KEYS_COUNT)
+	if (keys_count != V16_KEYS_COUNT) {
+		console.error('trying to load save with wrong number of keys:', keys_count, 'expected', V16_KEYS_COUNT)
 		return null
 	}
 

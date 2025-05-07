@@ -24,9 +24,9 @@ mod models;
 const ASTRO_OBJECT_START: &[u8] = b"<AstroObjectEntry>";
 const ASTRO_OBJECT_END: &[u8] = b"</AstroObjectEntry>";
 const SHARED_FILE: &str = "sharedassets1.assets";
-/// Offset in file `sharedassets1.assets` for game version 1.1.15. Probably
+/// Offset in file `sharedassets1.assets` for game version 1.1.16. Probably
 /// unnecessary since search seems to be pretty fast
-const V15_SHARED_OFFSET: u64 = 930000000;
+const V16_SHARED_OFFSET: u64 = 930000000;
 
 const TR_SHIPLOG_START: &[u8] = b"<table_shipLog>";
 const TR_SHIPLOG_END: &[u8] = b"</table_shipLog>";
@@ -38,8 +38,8 @@ const RES_FILE: &str = "resources.assets";
 const MORE_TO_EXPLORE_EXTRACT_KEY: &str = "973";
 const MORE_TO_EXPLORE_TR_KEY: &str = "MORE_TO_EXPLORE";
 
-/// Order of `TranslationTable_XML`s in `resources.assets` for game version 1.1.15
-const V15_LANG_ORDER: &[Lang] = &[
+/// Order of `TranslationTable_XML`s in `resources.assets` for game version 1.1.16
+const V16_LANG_ORDER: &[Lang] = &[
     Lang::SpanishLa,
     Lang::English,
     Lang::Turkish,
@@ -285,7 +285,7 @@ fn clean_translations(
         .ok_or_else(|| anyhow!("bug: astro_names can't be empty"))?
         .to_owned();
 
-    let mut lang_order = V15_LANG_ORDER.iter();
+    let mut lang_order = V16_LANG_ORDER.iter();
     let mut translations = HashMap::new();
     for tr_entries in tr_objects {
         let mut translation = HashMap::new();
@@ -346,7 +346,7 @@ fn clean_translations(
 
 /// Extract info about astro objects
 fn load_astro_objects(file: File) -> Result<Vec<AstroObject<JsonEntry>>> {
-    let mmap = unsafe { MmapOptions::new().offset(V15_SHARED_OFFSET).map(&file)? };
+    let mmap = unsafe { MmapOptions::new().offset(V16_SHARED_OFFSET).map(&file)? };
 
     let mut offset = 0;
     let mut astro_objects: Vec<AstroObject<JsonEntry>> = Vec::with_capacity(100);
