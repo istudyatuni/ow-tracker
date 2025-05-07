@@ -102,7 +102,7 @@
           name="show-spoilers"
           class="other"
           bind:checked={$SETTINGS.hide_spoilers} />
-        Hide spoilers
+        {$t("hide-spoilers-checkbox")}
       </label>
     </div>
 

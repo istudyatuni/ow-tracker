@@ -1,6 +1,8 @@
 upload-save-file-button = Загрузить файл сохранения
 upload-save-file-popup = Загрузите файл сохранения из меню
 
+hide-spoilers-checkbox = Скрыть спойлеры
+
 loading-prefix = Загрузка
 loading-stage-save-keys = доступных ключей сохранения
 loading-stage-connections-data = данных о связях

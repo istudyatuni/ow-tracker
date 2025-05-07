@@ -1,6 +1,8 @@
 upload-save-file-button = Upload save file
 upload-save-file-popup = Upload save file from menu
 
+hide-spoilers-checkbox = Hide spoilers
+
 loading-prefix = Loading
 loading-stage-save-keys = available save keys
 loading-stage-connections-data = connections data
