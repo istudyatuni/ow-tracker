@@ -30,11 +30,10 @@ const QUESTION = {
  * @param  {string} text
  * @param  {string} image_url
  * @param  {boolean} has_unexplored
- * @param  {string} color
- * @param  {string} hover_color
+ * @param  {string} category_class
  * @return {SVGElement}
  */
-export function make_card_svg(id, text, image_url, has_unexplored, color, hover_color) {
+export function make_card_svg(id, text, image_url, has_unexplored, category_class) {
 	let left_shift = 0
 	let svg_width = FULL_CARD_WIDTH
 	// increase card width for star
@@ -47,9 +46,6 @@ export function make_card_svg(id, text, image_url, has_unexplored, color, hover_
 	let e = document.createElementNS(SVG_NS, "svg")
 	e.setAttribute("xmlns", SVG_NS)
 	e.setAttribute("viewBox", `0 0 ${svg_width} ${FULL_CARD_HEIGHT}`)
-
-	// hack to have correct hover colors
-	let hover_class = hover_color.replace('#', 'c')
 
 	let star = ''
 	let img_size = `x="${CARD_MARGIN + left_shift}" y="${TEXT_HEIGHT}" width="${IMAGE_WIDTH}" height="${IMAGE_HEIGHT}"`
@@ -66,7 +62,7 @@ export function make_card_svg(id, text, image_url, has_unexplored, color, hover_
 
 	// foreignObject is used to use <p> to have text auto-wrap
 	e.innerHTML = `
-		<rect x="${left_shift}" y="0" id="${id}" width="${FULL_CARD_WIDTH}" height="${FULL_CARD_HEIGHT}" class="card ${hover_class}" />
+		<rect x="${left_shift}" y="0" id="${id}" width="${FULL_CARD_WIDTH}" height="${FULL_CARD_HEIGHT}" class="card ${category_class}" />
 		<switch>
 			<foreignObject x="${left_shift}" y="0" width="${CARD_WIDTH}" height="${TEXT_HEIGHT}">
 				<div xmlns="http://www.w3.org/1999/xhtml" class="card-text-wrapper">

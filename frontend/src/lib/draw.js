@@ -1,6 +1,6 @@
 import { expand_thin_bounds, make_rumor_arrow } from './arrow';
 import { CARD_HEIGHT, CARD_WIDTH, make_card_svg, STAR_SIZE } from './card';
-import { category_to_curiosity, should_show_curiosity } from './categories';
+import { category_to_curiosity, curiosity_to_category, should_show_curiosity } from './categories';
 import { load_tr, set_entries_facts, set_joined_rumors, set_has_unexplored_cards, set_opened_cards_only_rumors, set_opened_facts } from './data';
 import { to_data_url } from './dataurl';
 import { detect_language } from './language';
@@ -227,21 +227,15 @@ export async function* generate_all_svg() {
 	/** @type {Object.<string, string>} */
 	let tr = await load_tr(lang);
 
-	LOADING.set(t('loading-stage-theme'))
-
-	/** @type {Object.<string, { color: string, highlight: string }>} */
-	let theme = await (await fetch(import.meta.env.BASE_URL + "/theme.json")).json();
-
 	// centers is filled inside of generate_cards
 	/** @type {Object.<string, import('leaflet').LatLngTuple>} */
 	let centers = {};
-	yield* generate_cards(cards, theme, library, parents, centers, opened_cards, has_unexplored_cards, tr, cards_alt_names, hide_curiosities, save_loaded)
+	yield* generate_cards(cards, library, parents, centers, opened_cards, has_unexplored_cards, tr, cards_alt_names, hide_curiosities, save_loaded)
 	yield* generate_arrows(sources, library, opened_cards, opened_facts, centers, joined_rumors, hide_curiosities, save_loaded)
 }
 
 /**
  * @param {Object.<string, { coordinates: import('leaflet').LatLngTuple, sprite: string | null }>} cards
- * @param {Object.<string, { color: string, highlight: string }>} theme
  * @param {Object.<string, { curiosity: string }>} library
  * @param {Object.<string, string>} parents
  * @param {Object.<string, import('leaflet').LatLngTuple>} centers
@@ -255,7 +249,6 @@ export async function* generate_all_svg() {
  */
 async function* generate_cards(
 	cards,
-	theme,
 	library,
 	parents,
 	centers,
@@ -269,7 +262,7 @@ async function* generate_cards(
 	let t = get(i18n)
 
 	for (let [id, card] of Object.entries(cards)) {
-		let colors = theme[library[id]?.curiosity] || theme.neutral;
+		let curiosity = library[id]?.curiosity
 
 		let is_small = id in parents;
 		let is_big = BIG_CARDS.has(id);
@@ -294,7 +287,7 @@ async function* generate_cards(
 		let start_bounds = [cx - h / 2, cy - w / 2];
 		let end_bounds = [cx + h / 2, cy + w / 2];
 
-		if (should_show_curiosity(hide_curiosities, library[id]?.curiosity)) {
+		if (should_show_curiosity(hide_curiosities, curiosity)) {
 			continue;
 		}
 		if (save_loaded && !opened_cards.has(id)) {
@@ -315,8 +308,7 @@ async function* generate_cards(
 			tr[tr_id].replaceAll("@@", "<br/>").replaceAll("$$", "-<br/>"),
 			img,
 			has_unexplored,
-			colors?.color,
-			colors?.highlight,
+			curiosity_to_category(curiosity),
 		);
 		yield { svg, coords: [start_bounds, end_bounds], pane: is_small ? SMALL_PANE : NORMAL_PANE }
 	}

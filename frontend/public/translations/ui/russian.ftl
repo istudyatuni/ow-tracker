@@ -14,7 +14,6 @@ loading-stage-connections-data = данных о связях
 loading-stage-coordinates = координат
 loading-stage-parents = родителей
 loading-stage-translation = перевода для языка { $lang }
-loading-stage-theme = цветовой темы
 loading-stage-sprite = спрайта { $sprite }
 
 file-upload-help-header = Где находятся файлы сохранений

@@ -168,12 +168,12 @@ line.arrow:hover {
 }
 
 $categories-colors: (
-  "orbital-canon": (#388a5d, '68ffac'),
-  "quantum-moon": (#4f3a8d, '9068ff'),
-  "vessel": (#b44a4a, 'ff6868'),
-  "ash-twin-project": (#b4764a, 'ffa768'),
-  "stranger": (#1d4a94, '3280ff'),
-  "other": (#7f807a, 'e2e4da'),
+  "orbital-canon": (#388a5d, #68ffac),
+  "quantum-moon": (#4f3a8d, #9068ff),
+  "vessel": (#b44a4a, #ff6868),
+  "ash-twin-project": (#b4764a, #ffa768),
+  "stranger": (#1d4a94, #3280ff),
+  "other": (#7f807a, #e2e4da),
 );
 
 @each $name, $colors in $categories-colors {
@@ -190,17 +190,16 @@ $categories-colors: (
     }
   }
 
-  // hack to have correct colors in cards
-  .c#{$highlight} {
+  .#{$name} {
     fill: $c;
 
     svg:hover>& {
-      fill: ##{$highlight};
+      fill: $highlight;
     }
   }
 
   button.#{$name} {
-    background: ##{$highlight}77;
+    background: #{$highlight}77;
   }
 }
 
@@ -223,7 +222,7 @@ $other-color: map.get($categories-colors, "other");
   }
 
   & svg:hover>.card {
-    fill: #e2e4da;
+    fill: list.nth($other-color, 2);
   }
 }
 

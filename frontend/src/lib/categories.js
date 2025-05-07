@@ -31,6 +31,18 @@ export function category_to_curiosity(c) {
 	}
 }
 
+export function curiosity_to_category(c) {
+	switch (c) {
+		case CURIOSITY.SUNKEN_MODULE: return "orbital-canon"
+		case CURIOSITY.QUANTUM_MOON: return "quantum-moon"
+		case CURIOSITY.VESSEL: return "vessel"
+		case CURIOSITY.TIME_LOOP: return "ash-twin-project"
+		case CURIOSITY.INVISIBLE_PLANET: return "stranger"
+		case CURIOSITY.COMET_CORE: return "other"
+	}
+	return "other"
+}
+
 /**
  * If should show card/arrow with defined curiosity
  * @param  {Set.<string>}         hide_curiosities Which curiosities to hide
