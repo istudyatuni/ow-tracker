@@ -103,15 +103,13 @@ export async function* generate_all_svg() {
 			let rumor_facts = []
 			let explore_facts = []
 
-			let has_explore_more = false
-
 			// fill opened_cards and opened_card_imgs
 			for (let fact of e?.facts?.explore || []) {
 				if (opened_facts.has(fact.id)) {
 					opened_cards.add(e.id);
 					opened_card_imgs.add(e.id);
 				} else if (!e.ignore_more_to_explore && !fact.ignore_more_to_explore) {
-					has_explore_more = true
+					has_unexplored_cards.add(e.id)
 				}
 				explore_facts.push(fact.id)
 			}
@@ -143,16 +141,13 @@ export async function* generate_all_svg() {
 					}
 				} else if (!fact.ignore_more_to_explore) {
 					// todo: not sure about !fact.ignore_more_to_explore
-					has_explore_more = true
+					has_unexplored_cards.add(fact.source_id)
 				}
 				rumor_facts.push(fact.id)
 			}
 			entries_facts[e.id] = {
 				rumor: rumor_facts,
 				explore: explore_facts,
-			}
-			if (has_explore_more) {
-				has_unexplored_cards.add(e.id)
 			}
 
 			// fill source_ids
