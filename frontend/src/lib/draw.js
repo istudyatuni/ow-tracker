@@ -27,6 +27,18 @@ const RUMOR_PANE = 'mapPane'
 const NORMAL_PANE = 'overlayPane'
 const SMALL_PANE = 'markerPane'
 
+/**
+ * @param  {Array} entries
+ * @param  {Object} result
+ */
+function flatten_entries(entries, result) {
+	for (let e of entries || []) {
+		result[e.id] = e
+		flatten_entries(e.entries, result)
+	}
+	return result
+}
+
 export async function* generate_all_svg() {
 	let save_loaded = window.location.hash !== ''
 	SAVE_FOUND.set(save_loaded)
@@ -65,6 +77,7 @@ export async function* generate_all_svg() {
 	 */
 	let sources = {};
 	let entries_data = await (await fetch(import.meta.env.BASE_URL + "/entries.json")).json();
+	let entries = flatten_entries(entries_data, {})
 	// opened cards ids
 	let opened_cards = new Set();
 	// cards ids where img is opened
@@ -94,82 +107,78 @@ export async function* generate_all_svg() {
 	 */
 	let cards_alt_names = {}
 
-	function handle_entries(entries) {
-		for (let e of entries || []) {
-			library[e.id] = {
-				curiosity: e.curiosity,
-			};
+	for (let e of Object.values(entries)) {
+		library[e.id] = {
+			curiosity: e.curiosity,
+		};
 
-			let rumor_facts = []
-			let explore_facts = []
+		let rumor_facts = []
+		let explore_facts = []
 
-			// fill opened_cards and opened_card_imgs
-			for (let fact of e?.facts?.explore || []) {
-				if (opened_facts.has(fact.id)) {
-					opened_cards.add(e.id);
-					opened_card_imgs.add(e.id);
-				} else if (!e.ignore_more_to_explore && !fact.ignore_more_to_explore) {
-					has_unexplored_cards.add(e.id)
-				}
-				explore_facts.push(fact.id)
+		// fill opened_cards and opened_card_imgs
+		for (let fact of e?.facts?.explore || []) {
+			if (opened_facts.has(fact.id)) {
+				opened_cards.add(e.id);
+				opened_card_imgs.add(e.id);
+			} else if (!e.ignore_more_to_explore && !fact.ignore_more_to_explore) {
+				has_unexplored_cards.add(e.id)
 			}
+			explore_facts.push(fact.id)
+		}
 
-			let last_name_priority = -1
-			for (let fact of e?.facts?.rumor || []) {
-				if (opened_facts.has(fact.id)) {
-					opened_cards.add(e.id);
+		let last_name_priority = -1
+		for (let fact of e?.facts?.rumor || []) {
+			if (opened_facts.has(fact.id)) {
+				opened_cards.add(e.id);
 
-					// remember rumors on same arrow
-					if (fact.source_id !== undefined) {
-						let key = [e.id, fact.source_id].sort()
-						if (joined_rumors[key] !== undefined) {
-							joined_rumors[key].rumors.push(fact.id);
-						} else {
-							joined_rumors[key] = {
-								entries: key,
-								rumors: [fact.id],
-							}
+				// remember rumors on same arrow
+				if (fact.source_id !== undefined) {
+					let key = [e.id, fact.source_id].sort()
+					if (joined_rumors[key] !== undefined) {
+						joined_rumors[key].rumors.push(fact.id);
+					} else {
+						joined_rumors[key] = {
+							entries: key,
+							rumors: [fact.id],
 						}
 					}
-
-					// not all facts with name_id has name priority, so use 0 in this case
-					let name_priority = fact.name_priority || 0
-					// remember card alternative name
-					if (fact.name_id !== undefined && name_priority > last_name_priority) {
-						cards_alt_names[e.id] = fact.name_id
-						last_name_priority = name_priority
-					}
-				} else if (!fact.ignore_more_to_explore) {
-					// todo: not sure about !fact.ignore_more_to_explore
-					has_unexplored_cards.add(fact.source_id)
-				}
-				rumor_facts.push(fact.id)
-			}
-			entries_facts[e.id] = {
-				rumor: rumor_facts,
-				explore: explore_facts,
-			}
-
-			// fill source_ids
-			for (let fact of e?.facts?.rumor || []) {
-				if (fact.source_id === undefined) {
-					continue;
 				}
 
-				let obj = {
-					entry_id: e.id,
-					rumor_id: fact.id,
-				};
-				if (sources[fact.source_id] !== undefined) {
-					sources[fact.source_id].push(obj);
-				} else {
-					sources[fact.source_id] = [obj];
+				// not all facts with name_id has name priority, so use 0 in this case
+				let name_priority = fact.name_priority || 0
+				// remember card alternative name
+				if (fact.name_id !== undefined && name_priority > last_name_priority) {
+					cards_alt_names[e.id] = fact.name_id
+					last_name_priority = name_priority
 				}
+			} else if (!fact.ignore_more_to_explore) {
+				// todo: not sure about !fact.ignore_more_to_explore
+				has_unexplored_cards.add(fact.source_id)
 			}
-			handle_entries(e.entries);
+			rumor_facts.push(fact.id)
+		}
+		entries_facts[e.id] = {
+			rumor: rumor_facts,
+			explore: explore_facts,
+		}
+
+		// fill source_ids
+		for (let fact of e?.facts?.rumor || []) {
+			if (fact.source_id === undefined) {
+				continue;
+			}
+
+			let obj = {
+				entry_id: e.id,
+				rumor_id: fact.id,
+			};
+			if (sources[fact.source_id] !== undefined) {
+				sources[fact.source_id].push(obj);
+			} else {
+				sources[fact.source_id] = [obj];
+			}
 		}
 	}
-	handle_entries(entries_data);
 
 	// leave only when >= 2 rumors on same arrow
 	for (let [key, value] of Object.entries(joined_rumors)) {
@@ -191,7 +200,7 @@ export async function* generate_all_svg() {
 	 * load coordinates and images
 	 * @type {Object.<string, { coordinates: import('leaflet').LatLngTuple, sprite: string | null }>}
 	 */
-	let entries = {};
+	let cards = {};
 	let [minX, maxX, minY, maxY] = [4000, -1000, 2000, -2000]
 	let coordinates_data = await (await fetch(import.meta.env.BASE_URL + "/coordinates.json")).json();
 	for (let [id, [x, y]] of Object.entries(coordinates_data)) {
@@ -201,7 +210,7 @@ export async function* generate_all_svg() {
 			maxX = Math.max(maxX, x)
 			maxY = Math.max(maxY, y)
 		}
-		entries[id] = {
+		cards[id] = {
 			coordinates: coord_to_leaflet(x, y),
 			sprite: opened_card_imgs.has(id) ? `${import.meta.env.BASE_URL}/sprites/${id}.jpg` : null,
 		};
@@ -228,12 +237,12 @@ export async function* generate_all_svg() {
 	// centers is filled inside of generate_cards
 	/** @type {Object.<string, import('leaflet').LatLngTuple>} */
 	let centers = {};
-	yield* generate_cards(entries, theme, library, parents, centers, opened_cards, has_unexplored_cards, tr, cards_alt_names, hide_curiosities, save_loaded)
+	yield* generate_cards(cards, theme, library, parents, centers, opened_cards, has_unexplored_cards, tr, cards_alt_names, hide_curiosities, save_loaded)
 	yield* generate_arrows(sources, library, opened_cards, opened_facts, centers, joined_rumors, hide_curiosities, save_loaded)
 }
 
 /**
- * @param {Object.<string, { coordinates: import('leaflet').LatLngTuple, sprite: string | null }>} entries
+ * @param {Object.<string, { coordinates: import('leaflet').LatLngTuple, sprite: string | null }>} cards
  * @param {Object.<string, { color: string, highlight: string }>} theme
  * @param {Object.<string, { curiosity: string }>} library
  * @param {Object.<string, string>} parents
@@ -247,7 +256,7 @@ export async function* generate_all_svg() {
  * @yield {}
  */
 async function* generate_cards(
-	entries,
+	cards,
 	theme,
 	library,
 	parents,
@@ -261,7 +270,7 @@ async function* generate_cards(
 ) {
 	let t = get(i18n)
 
-	for (let [id, e] of Object.entries(entries)) {
+	for (let [id, card] of Object.entries(cards)) {
 		let colors = theme[library[id]?.curiosity] || theme.neutral;
 
 		let is_small = id in parents;
@@ -273,9 +282,9 @@ async function* generate_cards(
 			mult = BIG_MULT;
 		}
 
-		centers[id] = e.coordinates;
+		centers[id] = card.coordinates;
 
-		let [cx, cy] = e.coordinates;
+		let [cx, cy] = card.coordinates;
 		let w = CARD_WIDTH * mult;
 		let h = CARD_HEIGHT * mult;
 
@@ -295,11 +304,11 @@ async function* generate_cards(
 		}
 
 		let img = await (async () => {
-			if (e.sprite === null) {
+			if (card.sprite === null) {
 				return null;
 			}
 			LOADING.set(t('loading-stage-sprite', { sprite: id }))
-			let img = await (await fetch(e.sprite)).blob();
+			let img = await (await fetch(card.sprite)).blob();
 			return await to_data_url(img);
 		})();
 		let tr_id = cards_alt_names[id] || id
