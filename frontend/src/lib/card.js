@@ -15,6 +15,10 @@ const FULL_CARD_HEIGHT = CARD_HEIGHT + CARD_MARGIN
 
 export const SVG_NS = "http://www.w3.org/2000/svg"
 
+// tabler:medical-cross-circle
+const STAR = '<path fill="none" class="explore-star" transform="translate(250, 0) scale(2, 2)" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0-18 0m9-4v8m3.5-6l-7 4m7 0l-7-4"/>'
+export const STAR_SIZE = 50
+
 const QUESTION = {
 	x: IMAGE_WIDTH / 3,
 	y: TEXT_HEIGHT + IMAGE_HEIGHT / 1.4,
@@ -25,38 +29,54 @@ const QUESTION = {
  * @param  {string} id Unique id, used for detecting clicked element
  * @param  {string} text
  * @param  {string} image_url
+ * @param  {boolean} has_unexplored
  * @param  {string} color
  * @param  {string} hover_color
  * @return {SVGElement}
  */
-export function make_card_svg(id, text, image_url, color, hover_color) {
+export function make_card_svg(id, text, image_url, has_unexplored, color, hover_color) {
+	let left_shift = 0
+	let svg_width = FULL_CARD_WIDTH
+	// increase card width for star
+	// increase on both sides to not shift card on map (because of actual card's center change)
+	if (image_url !== null && has_unexplored) {
+		left_shift = STAR_SIZE
+		svg_width += STAR_SIZE + left_shift
+	}
+
 	let e = document.createElementNS(SVG_NS, "svg")
 	e.setAttribute("xmlns", SVG_NS)
-	e.setAttribute("viewBox", `0 0 ${FULL_CARD_WIDTH} ${FULL_CARD_HEIGHT}`)
+	e.setAttribute("viewBox", `0 0 ${svg_width} ${FULL_CARD_HEIGHT}`)
 
 	// hack to have correct hover colors
 	let hover_class = hover_color.replace('#', 'c')
 
+	let star = ''
 	let img
-	let img_size = `x="${CARD_MARGIN}" y="${TEXT_HEIGHT}" width="${IMAGE_WIDTH}" height="${IMAGE_HEIGHT}"`
+	let img_size = `x="${CARD_MARGIN + left_shift}" y="${TEXT_HEIGHT}" width="${IMAGE_WIDTH}" height="${IMAGE_HEIGHT}"`
 	if (image_url === null) {
 		img = `<rect ${img_size} class="img-q-bg" />
-			<text x="${QUESTION.x}" y="${QUESTION.y}" class="img-q-icon" style="font-size: ${QUESTION.font}px">?</text>`
+			<text x="${QUESTION.x + left_shift}" y="${QUESTION.y}" class="img-q-icon" style="font-size: ${QUESTION.font}px">?</text>`
 	} else {
 		img = `<image href="${image_url}" ${img_size} />`
+
+		if (has_unexplored) {
+			star = STAR
+		}
 	}
 
 	// foreignObject is used to use <p> to have text auto-wrap
 	e.innerHTML = `
-		<rect x="0" y="0" id="${id}" width="${FULL_CARD_WIDTH}" height="${FULL_CARD_HEIGHT}" fill="${color}" class="card ${hover_class}" />
+		<rect x="${left_shift}" y="0" id="${id}" width="${FULL_CARD_WIDTH}" height="${FULL_CARD_HEIGHT}" fill="${color}" class="card ${hover_class}" />
 		<switch>
-			<foreignObject x="0" y="0" width="${CARD_WIDTH}" height="${TEXT_HEIGHT}">
+			<foreignObject x="${left_shift}" y="0" width="${CARD_WIDTH}" height="${TEXT_HEIGHT}">
 				<div xmlns="http://www.w3.org/1999/xhtml" class="card-text-wrapper">
 					<p class="card-text mono spoiler" style="font-size: ${FONT_SIZE_EM}em">${text}</p>
 				</div>
 			</foreignObject>
-			<text x="0" y="0" font-size="20" text-anchor="middle" fill="white">svg viewer doesn't support html</text>
+			<text x="${left_shift}" y="0" font-size="20" text-anchor="middle" fill="white">svg viewer doesn't support html</text>
 		</switch>
+		${star}
 		${img}`
 	return e
 }

@@ -1,6 +1,6 @@
 import { expand_thin_bounds, make_rumor_arrow } from './arrow';
-import { CARD_HEIGHT, CARD_WIDTH, make_card_svg } from './card';
-import { category_to_curiosity, CURIOSITY, should_show_curiosity } from './categories';
+import { CARD_HEIGHT, CARD_WIDTH, make_card_svg, STAR_SIZE } from './card';
+import { category_to_curiosity, should_show_curiosity } from './categories';
 import { load_tr, set_entries_facts, set_joined_rumors, set_has_unexplored_cards, set_opened_cards_only_rumors, set_opened_facts } from './data';
 import { to_data_url } from './dataurl';
 import { detect_language } from './language';
@@ -233,7 +233,7 @@ export async function* generate_all_svg() {
 	// centers is filled inside of generate_cards
 	/** @type {Object.<string, import('leaflet').LatLngTuple>} */
 	let centers = {};
-	yield* generate_cards(entries, theme, library, parents, centers, opened_cards, tr, cards_alt_names, hide_curiosities, save_loaded)
+	yield* generate_cards(entries, theme, library, parents, centers, opened_cards, has_unexplored_cards, tr, cards_alt_names, hide_curiosities, save_loaded)
 	yield* generate_arrows(sources, library, opened_cards, opened_facts, centers, joined_rumors, hide_curiosities, save_loaded)
 }
 
@@ -244,13 +244,26 @@ export async function* generate_all_svg() {
  * @param {Object.<string, string>} parents
  * @param {Object.<string, import('leaflet').LatLngTuple>} centers
  * @param {Set.<string>} opened_cards
+ * @param {Set.<string>} has_unexplored_cards
  * @param {Object.<string, string>} tr
  * @param {Object.<string, string>} cards_alt_names
  * @param {Set.<string>} hide_curiosities
  * @param {boolean} save_loaded
  * @yield {}
  */
-async function* generate_cards(entries, theme, library, parents, centers, opened_cards, tr, cards_alt_names, hide_curiosities, save_loaded) {
+async function* generate_cards(
+	entries,
+	theme,
+	library,
+	parents,
+	centers,
+	opened_cards,
+	has_unexplored_cards,
+	tr,
+	cards_alt_names,
+	hide_curiosities,
+	save_loaded,
+) {
 	let t = get(i18n)
 
 	for (let [id, e] of Object.entries(entries)) {
@@ -270,6 +283,12 @@ async function* generate_cards(entries, theme, library, parents, centers, opened
 		let [cx, cy] = e.coordinates;
 		let w = CARD_WIDTH * mult;
 		let h = CARD_HEIGHT * mult;
+
+		let has_unexplored = has_unexplored_cards.has(id)
+		if (has_unexplored) {
+			// increase when "more to explore" star is displayed
+			w += STAR_SIZE * 2
+		}
 		let start_bounds = [cx - h / 2, cy - w / 2];
 		let end_bounds = [cx + h / 2, cy + w / 2];
 
@@ -293,6 +312,7 @@ async function* generate_cards(entries, theme, library, parents, centers, opened
 			id,
 			tr[tr_id].replaceAll("@@", "<br/>").replaceAll("$$", "-<br/>"),
 			img,
+			has_unexplored,
 			colors?.color,
 			colors?.highlight,
 		);
