@@ -4,43 +4,16 @@
   import LanguageIcon from "~icons/tabler/language-hiragana";
   import GithubIcon from "~icons/tabler/brand-github";
 
+  import FileUpload from "./atoms/FileUpload.svelte";
   import ShiplogCategories from "./ShiplogCategories.svelte";
 
   import { LANGUAGE_NAMES, save_language } from "../lib/language";
-  import {
-    export_save_to_browser_url,
-    get_save_opened_facts,
-  } from "../lib/saves";
   import { LANGUAGE, SETTINGS } from "../lib/stores";
   import { t } from "../lib/i18n";
-
-  // todo: more
-  const SAVE_LOCATIONS = [
-    [
-      "Steam, Windows",
-      "%USERPROFILE%/AppData/LocalLow/Mobius Digital/Outer Wilds/SteamSaves",
-    ],
-    [
-      "Steam, Linux",
-      "$HOME/.local/share/Steam/steamapps/compatdata/753640/pfx/drive_c/users/steamuser/AppData/LocalLow/Mobius Digital/Outer Wilds/SteamSaves",
-    ],
-  ];
 </script>
 
 <script>
   let opened = $state(false);
-  let file_upload_help_opened = $state(false);
-  let input;
-
-  function on_file_upload_click() {
-    input.click();
-  }
-  async function handle_file_change(e) {
-    let file = await e.target.files[0].text();
-    let data = JSON.parse(file).shipLogFactSaves;
-    export_save_to_browser_url(Object.keys(data), get_save_opened_facts(data));
-    window.location.reload();
-  }
   function handle_select_lang(e) {
     save_language(e.target.value);
     window.location.reload();
@@ -48,13 +21,7 @@
 </script>
 
 <div class="bar above-map" class:border={opened}>
-  <button
-    onclick={() => {
-      if (opened) {
-        file_upload_help_opened = false;
-      }
-      opened = !opened;
-    }}>
+  <button onclick={() => (opened = !opened)}>
     {#if opened}
       <CloseIcon />
     {:else}
@@ -63,33 +30,7 @@
   </button>
 
   <div class:hidden={!opened}>
-    <button type="button" onclick={on_file_upload_click}
-      >{$t("upload-save-file-button")}</button>
-    <button
-      type="button"
-      class="question-button"
-      onclick={() => (file_upload_help_opened = !file_upload_help_opened)}
-      >?</button>
-    <input
-      bind:this={input}
-      id="fileinput"
-      type="file"
-      accept=".owsave"
-      class="hidden"
-      onchange={handle_file_change} />
-    <br />
-
-    {#if file_upload_help_opened}
-      <div class="block-wrapper">
-        <h3>{$t("file-upload-help-header")}</h3>
-        {#each SAVE_LOCATIONS as [platform, path]}
-          <p>
-            <b>{platform}:</b>
-            <code>{@html path.replaceAll("/", "/<wbr />")}</code>
-          </p>
-        {/each}
-      </div>
-    {/if}
+    <FileUpload />
 
     <div class="block-wrapper categories">
       <ShiplogCategories />
@@ -139,28 +80,15 @@
     vertical-align: middle;
     margin-left: 4px;
   }
-  .question-button {
-    font-weight: 700;
-  }
-  .block-wrapper {
+  .bar :global(.block-wrapper) {
     background-color: var(--bg);
     border-radius: 10px;
     padding: 10px 10px;
-    margin-bottom: 10px;
+    margin-bottom: 5px;
     max-width: 25em;
-
-    & p {
-      margin-top: 10px;
-      margin-bottom: 0;
-    }
-
-    & > h3 {
-      margin: 0px;
-    }
-
-    &.categories {
-      max-width: 35em;
-    }
+  }
+  .block-wrapper.categories {
+    max-width: 35em;
   }
   .brand-icon {
     color: white;
@@ -172,11 +100,5 @@
   select {
     cursor: pointer;
     margin-bottom: 5px;
-  }
-  code {
-    word-break: break-word;
-  }
-  .hidden {
-    display: none;
   }
 </style>
