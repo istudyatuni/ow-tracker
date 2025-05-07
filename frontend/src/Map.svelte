@@ -14,7 +14,7 @@
     OPENED_FACT,
   } from "./lib/stores";
 
-  const MAP_PAD = 3000;
+  const MAP_PAD = 100;
 
   /** @type {import('leaflet').Map} */
   let map;
@@ -72,8 +72,8 @@
 
     MAP_SIZE.subscribe((bounds) => {
       map
-        .setView(bounds_center(bounds), -2)
-        .fitBounds(map_bounds_to_leaflet(bounds));
+        .fitBounds(map_bounds_to_leaflet(bounds))
+        .setView(bounds_center(bounds));
     });
 
     for await (let { svg, coords, pane } of generate_all_svg()) {
