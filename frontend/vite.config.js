@@ -4,25 +4,25 @@ import { VitePWA } from 'vite-plugin-pwa'
 import Icons from 'unplugin-icons/vite'
 
 export default defineConfig({
-  plugins: [
-    svelte(),
-    VitePWA({
-      registerType: 'autoUpdate',
-      workbox: {
-        globPatterns: ['**/*.{js,css,html,ico}'],
-      },
-      includeAssets: ['*.json', 'translations/*.json', 'translations/ui/*.ftl', 'sprites/*.jpg'],
-    }),
-    Icons({ compiler: 'svelte' }),
-    injectMetrikaPlugin('101631901'),
-  ],
-  base: '/ow-tracker',
-  build: {
-    sourcemap: true,
-    rollupOptions: {
-      treeshake: true,
-    },
-  },
+	plugins: [
+		svelte(),
+		VitePWA({
+			registerType: 'autoUpdate',
+			workbox: {
+				globPatterns: ['**/*.{js,css,html,ico}'],
+			},
+			includeAssets: ['*.json', 'translations/*.json', 'translations/ui/*.ftl', 'sprites/*.jpg'],
+		}),
+		Icons({ compiler: 'svelte' }),
+		injectMetrikaPlugin('101631901'),
+	],
+	base: '/ow-tracker',
+	build: {
+		sourcemap: true,
+		rollupOptions: {
+			treeshake: true,
+		},
+	},
 })
 
 /**
@@ -30,27 +30,27 @@ export default defineConfig({
  * @return {import('vite').Plugin}
  */
 function injectMetrikaPlugin(id) {
-  return {
-    name: 'inject-yandex-metrika',
-    // not in dev mode
-    apply: 'build',
-    transformIndexHtml(html, ctx) {
-      return {
-        html,
-        tags: [
-          {
-            tag: 'raw',
-            children: gen_ya_metrica(id),
-            injectTo: 'head',
-          },
-        ],
-      }
-    },
-  }
+	return {
+		name: 'inject-yandex-metrika',
+		// not in dev mode
+		apply: 'build',
+		transformIndexHtml(html, ctx) {
+			return {
+				html,
+				tags: [
+					{
+						tag: 'raw',
+						children: gen_ya_metrica(id),
+						injectTo: 'head',
+					},
+				],
+			}
+		},
+	}
 }
 
 function gen_ya_metrica(id) {
-  return `<!-- Yandex.Metrika counter -->
+	return `<!-- Yandex.Metrika counter -->
 <script type="text/javascript" >
    (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
    m[i].l=1*new Date();
