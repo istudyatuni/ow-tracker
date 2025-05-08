@@ -9,7 +9,7 @@
   import ShiplogCategories from "./ShiplogCategories.svelte";
 
   import { LANGUAGE_NAMES, save_language } from "../lib/language";
-  import { LANGUAGE } from "../lib/stores";
+  import { LANGUAGE, SETTINGS } from "../lib/stores";
   import { t } from "../lib/i18n";
 </script>
 
@@ -25,7 +25,7 @@
   }
 </script>
 
-<div class="bar above-map">
+<div class="bar above-map" class:hidden={!$SETTINGS.welcome_popup_done}>
   <button onclick={() => (opened = !opened)}>
     {#if opened}
       <CloseIcon />
