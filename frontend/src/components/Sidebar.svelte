@@ -35,7 +35,7 @@
   </button>
 
   <div class:hidden={!opened}>
-    <FileUpload />
+    <FileUpload upload={() => window.location.reload()} />
 
     <div class="block-wrapper categories">
       <ShiplogCategories />
