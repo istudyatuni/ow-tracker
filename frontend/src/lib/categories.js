@@ -50,10 +50,10 @@ export function curiosity_to_category(c) {
 
 /**
  * If should show card/arrow with defined curiosity
- * @param  {Set.<string>}         hide_curiosities Which curiosities to hide
+ * @param  {Set.<string>}     hide_curiosities Which curiosities to hide
  * @param  {string|undefined} curiosity        Curiosity of card
  * @return {boolean}
  */
-export function should_show_curiosity(hide_curiosities, curiosity) {
+export function should_hide_curiosity(hide_curiosities, curiosity) {
 	return hide_curiosities.has(curiosity)
 }
