@@ -27,6 +27,7 @@ shiplog-category-quantum-moon = The Quantum Moon & related phenomena
 shiplog-category-vessel = The Vessel & Nomai arrival
 shiplog-category-ash-twin-project = The Ash Twin Project
 shiplog-category-stranger = The Stranger
-shiplog-category-other = Other, including The Interloper and the fate of the Nomai
+shiplog-category-nomai-fate = The Interloper and the fate of the Nomai
+shiplog-category-other = Other
 
 show-full-map-button = Show full map

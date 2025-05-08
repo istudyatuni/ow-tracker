@@ -13,7 +13,7 @@ export const SELECTED_CATEGORIES = localStore('show-categories', default_categor
 export const SAVE_FOUND_CATEGORIES = writable(new Set())
 
 const DEFAULT_SETTINGS = {
-	version: 2,
+	version: 3,
 	hide_spoilers: true,
 	welcome_popup_done: false,
 }

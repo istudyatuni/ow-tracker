@@ -4,6 +4,7 @@ export const CATEGORIES = [
 	"vessel",
 	"ash-twin-project",
 	"stranger",
+	"nomai-fate",
 	"other",
 ];
 
@@ -14,6 +15,9 @@ export const CURIOSITY = {
 	SUNKEN_MODULE: 'SUNKEN_MODULE',
 	TIME_LOOP: 'TIME_LOOP',
 	VESSEL: 'VESSEL',
+
+	// custom, used for cards without explicit curiosity
+	OTHER: 'OTHER',
 }
 
 export function default_categories() {
@@ -27,7 +31,8 @@ export function category_to_curiosity(c) {
 		case "vessel": return CURIOSITY.VESSEL
 		case "ash-twin-project": return CURIOSITY.TIME_LOOP
 		case "stranger": return CURIOSITY.INVISIBLE_PLANET
-		case "other": return CURIOSITY.COMET_CORE
+		case "nomai-fate": return CURIOSITY.COMET_CORE
+		case "other": return CURIOSITY.OTHER
 	}
 }
 
@@ -38,7 +43,7 @@ export function curiosity_to_category(c) {
 		case CURIOSITY.VESSEL: return "vessel"
 		case CURIOSITY.TIME_LOOP: return "ash-twin-project"
 		case CURIOSITY.INVISIBLE_PLANET: return "stranger"
-		case CURIOSITY.COMET_CORE: return "other"
+		case CURIOSITY.COMET_CORE: return "nomai-fate"
 	}
 	return "other"
 }
@@ -50,8 +55,5 @@ export function curiosity_to_category(c) {
  * @return {boolean}
  */
 export function should_show_curiosity(hide_curiosities, curiosity) {
-	if (curiosity !== undefined) {
-		return hide_curiosities.has(curiosity)
-	}
-	return hide_curiosities.has(CURIOSITY.COMET_CORE)
+	return hide_curiosities.has(curiosity)
 }

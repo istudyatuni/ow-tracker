@@ -121,7 +121,7 @@ export async function* generate_all_svg() {
 
 	for (let e of Object.values(entries)) {
 		library[e.id] = {
-			curiosity: e.curiosity,
+			curiosity: e.curiosity || CURIOSITY.OTHER,
 		};
 
 		let rumor_facts = []
@@ -196,7 +196,7 @@ export async function* generate_all_svg() {
 		}
 
 		if (opened_cards.has(e.id)) {
-			found_categories.add(curiosity_to_category(e.curiosity || CURIOSITY.COMET_CORE))
+			found_categories.add(curiosity_to_category(e.curiosity))
 		}
 	}
 
@@ -214,7 +214,6 @@ export async function* generate_all_svg() {
 
 	SAVE_FOUND_CATEGORIES.set(found_categories)
 
-	// hiding while some features not ready
 	if (!get(SETTINGS).welcome_popup_done) {
 		return []
 	}
@@ -291,7 +290,7 @@ async function* generate_cards(
 	let t = get(i18n)
 
 	for (let [id, card] of Object.entries(cards)) {
-		let curiosity = library[id]?.curiosity
+		let curiosity = library[id].curiosity
 
 		let is_small = id in parents;
 		let is_big = BIG_CARDS.has(id);
@@ -355,14 +354,14 @@ async function* generate_cards(
  */
 function* generate_arrows(sources, library, opened_cards, opened_facts, centers, joined_rumors, hide_curiosities, save_loaded) {
 	for (let [source_id, entry_ids] of Object.entries(sources)) {
-		if (should_show_curiosity(hide_curiosities, library[source_id]?.curiosity)) {
+		if (should_show_curiosity(hide_curiosities, library[source_id].curiosity)) {
 			continue;
 		}
 		if (save_loaded && !opened_cards.has(source_id)) {
 			continue;
 		}
 		for (let { entry_id, rumor_id } of entry_ids) {
-			if (should_show_curiosity(hide_curiosities, library[entry_id]?.curiosity)) {
+			if (should_show_curiosity(hide_curiosities, library[entry_id].curiosity)) {
 				continue;
 			}
 
