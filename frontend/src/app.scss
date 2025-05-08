@@ -199,6 +199,10 @@ $categories-colors: (
 
   button.#{$name} {
     background: #{$highlight}77;
+
+    &:hover {
+      border-color: $highlight;
+    }
   }
 }
 
