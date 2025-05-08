@@ -68,10 +68,14 @@ SETTINGS.subscribe(({ hide_spoilers }) => {
 	}
 })
 
-export function check_settings_version() {
+export function migrate_storage() {
 	let s = get(SETTINGS)
 	if (s.version < DEFAULT_SETTINGS.version) {
 		Object.keys(s).forEach((k) => SETTINGS.delete(k))
 		Object.entries(DEFAULT_SETTINGS).forEach(([k, v]) => SETTINGS.set(k, v))
+
+		let c = get(SELECTED_CATEGORIES)
+		Object.keys(c).forEach((c) => SELECTED_CATEGORIES.delete(c))
+		Object.entries(default_categories()).forEach(([k, v]) => SELECTED_CATEGORIES.set(k, v))
 	}
 }
