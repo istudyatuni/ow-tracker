@@ -6,6 +6,7 @@ import { default_categories } from "./categories";
 import { detect_language } from "./language";
 
 export const OPENED_FACT = writable(null)
+export const SAVE_FOUND = writable(null)
 export const LOADING = writable('base')
 export const LANGUAGE = writable(detect_language())
 export const SELECTED_CATEGORIES = localStore('show-categories', default_categories())

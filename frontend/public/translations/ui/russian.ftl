@@ -1,6 +1,8 @@
 welcome-popup-header = Просматривайте и делитесь своим прогрессом в { $game }
+welcome-popup-opening-save = Вы открываете сохранение
 welcome-popup-upload-save-file = Вы можете загрузить своё сохранение
-welcome-popup-launch-map = Или запустить полную карту
+welcome-popup-launch-full-map = Или запустить полную карту
+welcome-popup-launch-save-map = Или запустить карту
 welcome-popup-launch-button = Запуск
 
 upload-save-file-button = Загрузить файл сохранения

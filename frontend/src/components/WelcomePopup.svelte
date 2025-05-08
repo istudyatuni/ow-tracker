@@ -6,7 +6,7 @@
   import FileUpload from "./atoms/FileUpload.svelte";
   import HideSpoilers from "./atoms/HideSpoilers.svelte";
   import HideDlc from "./atoms/HideDlc.svelte";
-  import { SETTINGS } from "../lib/stores";
+  import { SAVE_FOUND, SETTINGS } from "../lib/stores";
 </script>
 
 {#snippet game_name()}
@@ -15,14 +15,23 @@
 {/snippet}
 
 <Popup>
-  <h4>
+  <h4 class="center">
     {@html $t("welcome-popup-header", { game: renderSnippet(game_name) })}
   </h4>
+  {#if $SAVE_FOUND}
+    <p class="center">{$t("welcome-popup-opening-save")}</p>
+  {/if}
   <p>
     {$t("welcome-popup-upload-save-file")}:
     <FileUpload />
   </p>
-  <p>{$t("welcome-popup-launch-map")}:</p>
+  <p>
+    {#if $SAVE_FOUND}
+      {$t("welcome-popup-launch-save-map")}:
+    {:else}
+      {$t("welcome-popup-launch-full-map")}:
+    {/if}
+  </p>
   <HideSpoilers />
   <br />
   <HideDlc />
@@ -31,15 +40,14 @@
     <button
       class="mono orbital-canon"
       onclick={() => {
-        SETTINGS.set("welcome_popup_done", true)
-        window.location.reload()
-      }}
-      >{$t("welcome-popup-launch-button")} --|-..|-.</button>
+        SETTINGS.set("welcome_popup_done", true);
+        window.location.reload();
+      }}>{$t("welcome-popup-launch-button")} --|-..|-.</button>
   </div>
 </Popup>
 
 <style lang="scss">
-  h4 {
+  .center {
     text-align: center;
   }
   .game {

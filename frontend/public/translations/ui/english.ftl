@@ -1,6 +1,8 @@
 welcome-popup-header = View and share your progress in { $game }
+welcome-popup-opening-save = You're opening a save
 welcome-popup-upload-save-file = You can upload a save file
-welcome-popup-launch-map = Or launch the full map
+welcome-popup-launch-full-map = Or launch the full map
+welcome-popup-launch-save-map = Or launch the map
 welcome-popup-launch-button = Launch
 
 upload-save-file-button = Upload save file
