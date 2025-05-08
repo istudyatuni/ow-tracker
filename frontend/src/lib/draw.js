@@ -4,7 +4,7 @@ import { CATEGORIES, CATEGORY, category_to_curiosity, CURIOSITY, curiosity_to_ca
 import { load_tr, set_entries_facts, set_joined_rumors, set_has_unexplored_cards, set_opened_cards_only_rumors, set_opened_facts } from './data';
 import { to_data_url } from './dataurl';
 import { detect_language } from './language';
-import { get_save_from_browser_url } from './saves';
+import { get_save_from_browser_url, has_save_in_url } from './saves';
 import { LOADING, MAP_SIZE, OPENED_FACTS_COUNT, SAVE_FOUND, SAVE_FOUND_CATEGORIES, SAVE_KNOWN_CATEGORIES_NAMES, SELECTED_CATEGORIES, SETTINGS } from './stores';
 import { t as i18n } from './i18n';
 import { get } from 'svelte/store';
@@ -40,7 +40,7 @@ function flatten_entries(entries, result) {
 }
 
 export async function* generate_all_svg() {
-	let save_loaded = window.location.hash !== ''
+	let save_loaded = has_save_in_url()
 	SAVE_FOUND.set(save_loaded)
 
 	let t = get(i18n)

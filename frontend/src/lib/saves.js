@@ -3,6 +3,7 @@ const V16_KEYS_COUNT = 374
 export const KEYS_COUNT = V16_KEYS_COUNT
 const GAME_VERSION = '1.1.16'
 const ENCODING_VERSION = 1
+const ENCODED_SAVE_LEN = 64
 
 export function get_save_opened_facts(facts_data) {
 	// todo: not sure if read and newlyRevealed affect showing
@@ -35,6 +36,11 @@ export function get_save_from_browser_url(keys) {
 	}
 	let opened = decode_save(keys, encoded)
 	return opened
+}
+
+export function has_save_in_url() {
+	let h = window.location.hash
+	return h.includes('save=') && h.split('save=')[1].length == ENCODED_SAVE_LEN
 }
 
 /**
