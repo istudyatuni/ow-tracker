@@ -5,17 +5,22 @@
   import GithubIcon from "~icons/tabler/brand-github";
 
   import FileUpload from "./atoms/FileUpload.svelte";
+  import HideSpoilers from "./atoms/HideSpoilers.svelte";
   import ShiplogCategories from "./ShiplogCategories.svelte";
 
   import { LANGUAGE_NAMES, save_language } from "../lib/language";
   import { LANGUAGE } from "../lib/stores";
-  import HideSpoilers from "./atoms/HideSpoilers.svelte";
+  import { t } from "../lib/i18n";
 </script>
 
 <script>
   let opened = $state(false);
   function handle_select_lang(e) {
     save_language(e.target.value);
+    window.location.reload();
+  }
+  function show_full_map() {
+    window.location.hash = "";
     window.location.reload();
   }
 </script>
@@ -38,6 +43,8 @@
 
     <div class="block-wrapper">
       <HideSpoilers />
+      <br />
+      <button onclick={show_full_map}>{$t("show-full-map-button")}</button>
     </div>
 
     <select onchange={handle_select_lang}>
@@ -80,8 +87,13 @@
     margin-bottom: 5px;
     max-width: 25em;
   }
-  .block-wrapper.categories {
-    max-width: 35em;
+  .block-wrapper {
+    &.categories {
+      max-width: 35em;
+    }
+    & > button {
+      margin-top: 10px;
+    }
   }
   .brand-icon {
     color: white;

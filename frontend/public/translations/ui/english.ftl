@@ -28,3 +28,5 @@ shiplog-category-vessel = The Vessel & Nomai arrival
 shiplog-category-ash-twin-project = The Ash Twin Project
 shiplog-category-stranger = The Stranger
 shiplog-category-other = Other, including The Interloper and the fate of the Nomai
+
+show-full-map-button = Show full map

@@ -28,3 +28,5 @@ shiplog-category-vessel = Звездолёт и прибытие номаи
 shiplog-category-ash-twin-project = Проект "Час Пепла"
 shiplog-category-stranger = Незнакомец
 shiplog-category-other = Другое, включая Чужака и судьбу номаи
+
+show-full-map-button = Показать полную карту
