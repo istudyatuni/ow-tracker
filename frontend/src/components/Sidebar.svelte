@@ -25,7 +25,7 @@
   }
 </script>
 
-<div class="bar above-map" class:hidden={!$SETTINGS.welcome_popup_done}>
+<div class="bar above-map">
   <button onclick={() => (opened = !opened)}>
     {#if opened}
       <CloseIcon />
@@ -35,16 +35,18 @@
   </button>
 
   <div class:hidden={!opened}>
-    <FileUpload upload={() => window.location.reload()} />
+    <div class:hidden={!$SETTINGS.welcome_popup_done}>
+      <FileUpload upload={() => window.location.reload()} />
 
-    <div class="block-wrapper categories">
-      <ShiplogCategories />
-    </div>
+      <div class="block-wrapper categories">
+        <ShiplogCategories />
+      </div>
 
-    <div class="block-wrapper">
-      <HideSpoilers />
-      <br />
-      <button onclick={show_full_map}>{$t("show-full-map-button")}</button>
+      <div class="block-wrapper">
+        <HideSpoilers />
+        <br />
+        <button onclick={show_full_map}>{$t("show-full-map-button")}</button>
+      </div>
     </div>
 
     <select onchange={handle_select_lang}>
