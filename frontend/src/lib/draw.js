@@ -300,7 +300,7 @@ export async function* generate_all_svg() {
 	 * @type {Object.<string, { coordinates: import('leaflet').LatLngTuple, sprite: string | null }>}
 	 */
 	let cards = {};
-	let [minX, maxX, minY, maxY] = [4000, -1000, 2000, -2000];
+	let [minX, maxX, minY, maxY] = [null, null, null, null];
 	let coordinates_data = await (
 		await fetch(import.meta.env.BASE_URL + "/coordinates.json")
 	).json();
