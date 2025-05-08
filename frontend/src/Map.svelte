@@ -14,7 +14,7 @@
     OPENED_FACT,
   } from "./lib/stores";
 
-  const MAP_PAD = 100;
+  const MAP_PAD = 200;
 
   /** @type {import('leaflet').Map} */
   let map;
