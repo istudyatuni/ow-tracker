@@ -44,7 +44,7 @@
     map = L.map("map", {
       center: bounds_center(bounds),
       zoom: -2,
-      minZoom: -3,
+      minZoom: -2,
       maxZoom: 2,
       zoomDelta: 0.5,
       // fix zoomDelta not work in chrome
