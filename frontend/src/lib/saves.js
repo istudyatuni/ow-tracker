@@ -1,9 +1,9 @@
-const V15_KEYS_COUNT = 374
-const V16_KEYS_COUNT = 374
-export const KEYS_COUNT = V16_KEYS_COUNT
-const GAME_VERSION = '1.1.16'
-const ENCODING_VERSION = 1
-const ENCODED_SAVE_LEN = 64
+const V15_KEYS_COUNT = 374;
+const V16_KEYS_COUNT = 374;
+export const KEYS_COUNT = V16_KEYS_COUNT;
+const GAME_VERSION = "1.1.16";
+const ENCODING_VERSION = 1;
+const ENCODED_SAVE_LEN = 64;
 
 export function get_save_opened_facts(facts_data) {
 	// todo: not sure if read and newlyRevealed affect showing
@@ -18,29 +18,31 @@ export function get_save_opened_facts(facts_data) {
 			opened_facts.add(id);
 		}
 	}
-	return opened_facts
+	return opened_facts;
 }
 
 export function export_save_to_browser_url(keys, opened) {
-	let encoded = encode_save(keys, opened)
+	let encoded = encode_save(keys, opened);
 	// save version for now
-	window.location.hash = `v=${GAME_VERSION}&ev=${ENCODING_VERSION}&save=${encoded}`
+	window.location.hash = `v=${GAME_VERSION}&ev=${ENCODING_VERSION}&save=${encoded}`;
 }
 
 export function get_save_from_browser_url(keys) {
-	let h = window.location.hash
-	let encoded = h.split('&save=')[1]
+	let h = window.location.hash;
+	let encoded = h.split("&save=")[1];
 	// to not break early links. todo: remove
-	if (h.startsWith('#save')) {
-		encoded = h.split('save=')[1]
+	if (h.startsWith("#save")) {
+		encoded = h.split("save=")[1];
 	}
-	let opened = decode_save(keys, encoded)
-	return opened
+	let opened = decode_save(keys, encoded);
+	return opened;
 }
 
 export function has_save_in_url() {
-	let h = window.location.hash
-	return h.includes('save=') && h.split('save=')[1].length == ENCODED_SAVE_LEN
+	let h = window.location.hash;
+	return (
+		h.includes("save=") && h.split("save=")[1].length == ENCODED_SAVE_LEN
+	);
 }
 
 /**
@@ -49,15 +51,20 @@ export function has_save_in_url() {
  * @return {string|null}
  */
 export function encode_save(keys, opened) {
-	keys = keys.sort()
-	let keys_count = keys.length
+	keys = keys.sort();
+	let keys_count = keys.length;
 	if (keys_count != V16_KEYS_COUNT) {
-		console.error('trying to load save with wrong number of keys:', keys_count, 'expected', V16_KEYS_COUNT)
-		return null
+		console.error(
+			"trying to load save with wrong number of keys:",
+			keys_count,
+			"expected",
+			V16_KEYS_COUNT,
+		);
+		return null;
 	}
 
-	let packed = pack_bools(keys.map((id) => opened.has(id)))
-	return btoa(String.fromCharCode(...packed))
+	let packed = pack_bools(keys.map((id) => opened.has(id)));
+	return btoa(String.fromCharCode(...packed));
 }
 
 /**
@@ -66,24 +73,29 @@ export function encode_save(keys, opened) {
  * @return {Set.<string>|null}
  */
 export function decode_save(keys, encoded) {
-	let bytes = [...atob(encoded)].map((char) => char.charCodeAt(0))
-	let unpacked = unpack_bools(bytes)
-	keys = keys.sort()
-	let keys_count = keys.length
-	let unpacked_count = unpacked.length
+	let bytes = [...atob(encoded)].map((char) => char.charCodeAt(0));
+	let unpacked = unpack_bools(bytes);
+	keys = keys.sort();
+	let keys_count = keys.length;
+	let unpacked_count = unpacked.length;
 	// can't check !== because at the end can be padding of zeroes
 	if (unpacked_count < keys_count) {
-		console.error('trying to load save with wrong number of keys:', unpacked_count, 'expected', keys_count)
-		return null
+		console.error(
+			"trying to load save with wrong number of keys:",
+			unpacked_count,
+			"expected",
+			keys_count,
+		);
+		return null;
 	}
 
-	let opened = new Set()
+	let opened = new Set();
 	for (let [i, key] of Object.entries(keys)) {
 		if (unpacked[i]) {
-			opened.add(key)
+			opened.add(key);
 		}
 	}
-	return opened
+	return opened;
 }
 
 function pack_bools(bools) {

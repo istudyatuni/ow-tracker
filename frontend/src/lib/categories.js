@@ -6,56 +6,69 @@ export const CATEGORY = {
 	STRANGER: "stranger",
 	NOMAI_FATE: "nomai-fate",
 	OTHER: "other",
-}
+};
 
 export const CATEGORIES = Object.values(CATEGORY);
 
 export const CURIOSITY = {
-	COMET_CORE: 'COMET_CORE',
-	INVISIBLE_PLANET: 'INVISIBLE_PLANET',
-	QUANTUM_MOON: 'QUANTUM_MOON',
-	SUNKEN_MODULE: 'SUNKEN_MODULE',
-	TIME_LOOP: 'TIME_LOOP',
-	VESSEL: 'VESSEL',
+	COMET_CORE: "COMET_CORE",
+	INVISIBLE_PLANET: "INVISIBLE_PLANET",
+	QUANTUM_MOON: "QUANTUM_MOON",
+	SUNKEN_MODULE: "SUNKEN_MODULE",
+	TIME_LOOP: "TIME_LOOP",
+	VESSEL: "VESSEL",
 
 	// custom, used for cards without explicit curiosity
-	OTHER: 'OTHER',
-}
+	OTHER: "OTHER",
+};
 
 export function default_enabled_categories() {
-	return default_categories(true)
+	return default_categories(true);
 }
 
 export function default_disabled_categories() {
-	return default_categories(false)
+	return default_categories(false);
 }
 
 export function default_categories(enabled) {
-	return Object.fromEntries(CATEGORIES.map((c) => [c, enabled]))
+	return Object.fromEntries(CATEGORIES.map((c) => [c, enabled]));
 }
 
 export function category_to_curiosity(c) {
 	switch (c) {
-		case CATEGORY.ORBITAL_CANON: return CURIOSITY.SUNKEN_MODULE
-		case CATEGORY.QUANTUM_MOON: return CURIOSITY.QUANTUM_MOON
-		case CATEGORY.VESSEL: return CURIOSITY.VESSEL
-		case CATEGORY.ASH_TWIN_PROJECT: return CURIOSITY.TIME_LOOP
-		case CATEGORY.STRANGER: return CURIOSITY.INVISIBLE_PLANET
-		case CATEGORY.NOMAI_FATE: return CURIOSITY.COMET_CORE
-		case CATEGORY.OTHER: return CURIOSITY.OTHER
+		case CATEGORY.ORBITAL_CANON:
+			return CURIOSITY.SUNKEN_MODULE;
+		case CATEGORY.QUANTUM_MOON:
+			return CURIOSITY.QUANTUM_MOON;
+		case CATEGORY.VESSEL:
+			return CURIOSITY.VESSEL;
+		case CATEGORY.ASH_TWIN_PROJECT:
+			return CURIOSITY.TIME_LOOP;
+		case CATEGORY.STRANGER:
+			return CURIOSITY.INVISIBLE_PLANET;
+		case CATEGORY.NOMAI_FATE:
+			return CURIOSITY.COMET_CORE;
+		case CATEGORY.OTHER:
+			return CURIOSITY.OTHER;
 	}
 }
 
 export function curiosity_to_category(c) {
 	switch (c) {
-		case CURIOSITY.SUNKEN_MODULE: return CATEGORY.ORBITAL_CANON
-		case CURIOSITY.QUANTUM_MOON: return CATEGORY.QUANTUM_MOON
-		case CURIOSITY.VESSEL: return CATEGORY.VESSEL
-		case CURIOSITY.TIME_LOOP: return CATEGORY.ASH_TWIN_PROJECT
-		case CURIOSITY.INVISIBLE_PLANET: return CATEGORY.STRANGER
-		case CURIOSITY.COMET_CORE: return CATEGORY.NOMAI_FATE
+		case CURIOSITY.SUNKEN_MODULE:
+			return CATEGORY.ORBITAL_CANON;
+		case CURIOSITY.QUANTUM_MOON:
+			return CATEGORY.QUANTUM_MOON;
+		case CURIOSITY.VESSEL:
+			return CATEGORY.VESSEL;
+		case CURIOSITY.TIME_LOOP:
+			return CATEGORY.ASH_TWIN_PROJECT;
+		case CURIOSITY.INVISIBLE_PLANET:
+			return CATEGORY.STRANGER;
+		case CURIOSITY.COMET_CORE:
+			return CATEGORY.NOMAI_FATE;
 	}
-	return CATEGORY.OTHER
+	return CATEGORY.OTHER;
 }
 
 /**
@@ -65,5 +78,5 @@ export function curiosity_to_category(c) {
  * @return {boolean}
  */
 export function should_hide_curiosity(hide_curiosities, curiosity) {
-	return hide_curiosities.has(curiosity)
+	return hide_curiosities.has(curiosity);
 }

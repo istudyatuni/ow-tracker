@@ -1,13 +1,37 @@
-import { expand_thin_bounds, make_rumor_arrow } from './arrow';
-import { CARD_HEIGHT, CARD_WIDTH, make_card_svg, STAR_SIZE } from './card';
-import { CATEGORIES, CATEGORY, category_to_curiosity, CURIOSITY, curiosity_to_category, default_disabled_categories, should_hide_curiosity } from './categories';
-import { load_tr, set_entries_facts, set_joined_rumors, set_has_unexplored_cards, set_opened_cards_only_rumors, set_opened_facts } from './data';
-import { to_data_url } from './dataurl';
-import { detect_language } from './language';
-import { get_save_from_browser_url, has_save_in_url } from './saves';
-import { LOADING, MAP_SIZE, OPENED_FACTS_COUNT, SAVE_FOUND, SAVE_FOUND_CATEGORIES, SAVE_KNOWN_CATEGORIES_NAMES, SELECTED_CATEGORIES, SETTINGS } from './stores';
-import { t as i18n } from './i18n';
-import { get } from 'svelte/store';
+import { get } from "svelte/store";
+
+import { expand_thin_bounds, make_rumor_arrow } from "./arrow";
+import { CARD_HEIGHT, CARD_WIDTH, make_card_svg, STAR_SIZE } from "./card";
+import {
+	CATEGORIES,
+	CATEGORY,
+	category_to_curiosity,
+	CURIOSITY,
+	curiosity_to_category,
+	should_hide_curiosity,
+} from "./categories";
+import {
+	load_tr,
+	set_entries_facts,
+	set_joined_rumors,
+	set_has_unexplored_cards,
+	set_opened_cards_only_rumors,
+	set_opened_facts,
+} from "./data";
+import { to_data_url } from "./dataurl";
+import { detect_language } from "./language";
+import { get_save_from_browser_url, has_save_in_url } from "./saves";
+import {
+	LOADING,
+	MAP_SIZE,
+	OPENED_FACTS_COUNT,
+	SAVE_FOUND,
+	SAVE_FOUND_CATEGORIES,
+	SAVE_KNOWN_CATEGORIES_NAMES,
+	SELECTED_CATEGORIES,
+	SETTINGS,
+} from "./stores";
+import { t as i18n } from "./i18n";
 
 const DEFAULT_MULT = 0.7;
 const BIG_MULT = 1.2;
@@ -23,9 +47,9 @@ const BIG_CARDS = new Set([
 ]);
 
 // pane names doesn't mean anything here, just panes with increasing z-index
-const RUMOR_PANE = 'mapPane'
-const NORMAL_PANE = 'overlayPane'
-const SMALL_PANE = 'markerPane'
+const RUMOR_PANE = "mapPane";
+const NORMAL_PANE = "overlayPane";
+const SMALL_PANE = "markerPane";
 
 /**
  * @param  {Array} entries
@@ -33,34 +57,38 @@ const SMALL_PANE = 'markerPane'
  */
 function flatten_entries(entries, result) {
 	for (let e of entries || []) {
-		result[e.id] = e
-		flatten_entries(e.entries, result)
+		result[e.id] = e;
+		flatten_entries(e.entries, result);
 	}
-	return result
+	return result;
 }
 
 export async function* generate_all_svg() {
-	let save_loaded = has_save_in_url()
-	SAVE_FOUND.set(save_loaded)
+	let save_loaded = has_save_in_url();
+	SAVE_FOUND.set(save_loaded);
 
-	let t = get(i18n)
-	let hide_curiosities = new Set(Object.entries(get(SELECTED_CATEGORIES))
-		.filter(([_, enabled]) => !enabled)
-		.map(([category, _]) => category_to_curiosity(category)))
+	let t = get(i18n);
+	let hide_curiosities = new Set(
+		Object.entries(get(SELECTED_CATEGORIES))
+			.filter(([_, enabled]) => !enabled)
+			.map(([category, _]) => category_to_curiosity(category)),
+	);
 
-	LOADING.set(t('loading-stage-save-keys'))
+	LOADING.set(t("loading-stage-save-keys"));
 
-	let save_keys = await (await fetch(import.meta.env.BASE_URL + "/save_keys.json")).json();
-	let opened_facts
+	let save_keys = await (
+		await fetch(import.meta.env.BASE_URL + "/save_keys.json")
+	).json();
+	let opened_facts;
 	if (save_loaded) {
-		opened_facts = get_save_from_browser_url(save_keys)
+		opened_facts = get_save_from_browser_url(save_keys);
 	} else {
-		opened_facts = new Set(save_keys)
+		opened_facts = new Set(save_keys);
 	}
-	set_opened_facts(opened_facts)
-	OPENED_FACTS_COUNT.set(opened_facts.size)
+	set_opened_facts(opened_facts);
+	OPENED_FACTS_COUNT.set(opened_facts.size);
 
-	LOADING.set(t('loading-stage-connections-data'))
+	LOADING.set(t("loading-stage-connections-data"));
 
 	/**
 	 * load ids data and rumors source ids
@@ -72,8 +100,10 @@ export async function* generate_all_svg() {
 	 * @type {Object.<string, Object.<string, string>[]>}
 	 */
 	let sources = {};
-	let entries_data = await (await fetch(import.meta.env.BASE_URL + "/entries.json")).json();
-	let entries = flatten_entries(entries_data, {})
+	let entries_data = await (
+		await fetch(import.meta.env.BASE_URL + "/entries.json")
+	).json();
+	let entries = flatten_entries(entries_data, {});
 	// opened cards ids
 	let opened_cards = new Set();
 	// cards ids where img is opened
@@ -86,14 +116,14 @@ export async function* generate_all_svg() {
 	 * `entry id -> [{ rumor_id, explore_id }]`
 	 * @type {Object.<string, { rumor: string[], explore: string[] }>}
 	 */
-	let entries_facts = {}
+	let entries_facts = {};
 
 	// rumors which should be shown on the same arrow
 	// [entry1_id, entry2_id] -> [rumor id]
-	let joined_rumors = {}
+	let joined_rumors = {};
 
 	// cards where not all explore facts are opened, excluding ignore_more_to_explore
-	let has_unexplored_cards = new Set()
+	let has_unexplored_cards = new Set();
 
 	/**
 	 * cards alternative names
@@ -101,10 +131,10 @@ export async function* generate_all_svg() {
 	 * entry_id -> alt_name_id
 	 * @type {Object.<string, string>}
 	 */
-	let cards_alt_names = {}
+	let cards_alt_names = {};
 
 	// cards with which categories opened in save
-	let cards_categories_in_save = new Set()
+	let cards_categories_in_save = new Set();
 
 	// fill opened_cards and opened_card_imgs
 	for (let e of Object.values(entries)) {
@@ -126,59 +156,62 @@ export async function* generate_all_svg() {
 			curiosity: e.curiosity || CURIOSITY.OTHER,
 		};
 
-		let rumor_facts = []
-		let explore_facts = []
+		let rumor_facts = [];
+		let explore_facts = [];
 
 		for (let fact of e?.facts?.explore || []) {
 			if (
-				!opened_facts.has(fact.id)
-				&& !e.ignore_more_to_explore
-				&& !fact.ignore_more_to_explore
+				!opened_facts.has(fact.id) &&
+				!e.ignore_more_to_explore &&
+				!fact.ignore_more_to_explore
 			) {
-				has_unexplored_cards.add(e.id)
+				has_unexplored_cards.add(e.id);
 			}
-			explore_facts.push(fact.id)
+			explore_facts.push(fact.id);
 		}
 
-		let last_name_priority = -1
+		let last_name_priority = -1;
 		for (let fact of e?.facts?.rumor || []) {
 			if (opened_facts.has(fact.id)) {
 				// remember rumors on same arrow
 				if (fact.source_id !== undefined) {
-					let key = [e.id, fact.source_id].sort()
+					let key = [e.id, fact.source_id].sort();
 					if (joined_rumors[key] !== undefined) {
 						joined_rumors[key].rumors.push(fact.id);
 					} else {
 						joined_rumors[key] = {
 							entries: key,
 							rumors: [fact.id],
-						}
+						};
 					}
 				}
 
 				// not all facts with name_id has name priority, so use 0 in this case
-				let name_priority = fact.name_priority || 0
+				let name_priority = fact.name_priority || 0;
 				// remember card alternative name
-				if (fact.name_id !== undefined && name_priority > last_name_priority) {
-					cards_alt_names[e.id] = fact.name_id
-					last_name_priority = name_priority
+				if (
+					fact.name_id !== undefined &&
+					name_priority > last_name_priority
+				) {
+					cards_alt_names[e.id] = fact.name_id;
+					last_name_priority = name_priority;
 				}
 			} else if (
 				// todo: this check is still incomplete
 				// fix for TH_VILLAGE
-				!entries[fact.source_id]?.ignore_more_to_explore
+				!entries[fact.source_id]?.ignore_more_to_explore &&
 				// not sure about it
-				&& !fact.ignore_more_to_explore
-				&& !opened_card_imgs.has(e.id)
+				!fact.ignore_more_to_explore &&
+				!opened_card_imgs.has(e.id)
 			) {
-				has_unexplored_cards.add(fact.source_id)
+				has_unexplored_cards.add(fact.source_id);
 			}
-			rumor_facts.push(fact.id)
+			rumor_facts.push(fact.id);
 		}
 		entries_facts[e.id] = {
 			rumor: rumor_facts,
 			explore: explore_facts,
-		}
+		};
 
 		// fill source_ids
 		for (let fact of e?.facts?.rumor || []) {
@@ -199,87 +232,110 @@ export async function* generate_all_svg() {
 
 		// fill cards categories in save
 		if (opened_cards.has(e.id)) {
-			cards_categories_in_save.add(curiosity_to_category(e.curiosity))
+			cards_categories_in_save.add(curiosity_to_category(e.curiosity));
 		}
 	}
 
 	// leave only when >= 2 rumors on same arrow
 	for (let [key, value] of Object.entries(joined_rumors)) {
 		if (value.rumors.length <= 1) {
-			delete joined_rumors[key]
+			delete joined_rumors[key];
 		}
 	}
 
 	// categories with known names (e.g card with the same name is opened)
-	let categories_known_names = new Set(CATEGORIES)
+	let categories_known_names = new Set(CATEGORIES);
 	if (save_loaded) {
-		categories_known_names = new Set([CATEGORY.OTHER])
+		categories_known_names = new Set([CATEGORY.OTHER]);
 
 		function check_category_known_name(id, category) {
 			if (opened_cards.has(id)) {
-				categories_known_names.add(category)
+				categories_known_names.add(category);
 			}
 		}
 		{
-			let id = 'ORBITAL_PROBE_CANNON'
-			if (opened_cards.has(id) && (cards_alt_names[id] === undefined || cards_alt_names[id] === id)) {
-				categories_known_names.add(CATEGORY.ORBITAL_CANON)
+			let id = "ORBITAL_PROBE_CANNON";
+			if (
+				opened_cards.has(id) &&
+				(cards_alt_names[id] === undefined ||
+					cards_alt_names[id] === id)
+			) {
+				categories_known_names.add(CATEGORY.ORBITAL_CANON);
 			}
 		}
-		check_category_known_name('QUANTUM_MOON', CATEGORY.QUANTUM_MOON)
-		check_category_known_name('DB_VESSEL', CATEGORY.VESSEL)
-		check_category_known_name('TT_TIME_LOOP_DEVICE', CATEGORY.ASH_TWIN_PROJECT)
-		check_category_known_name('IP_RING_WORLD', CATEGORY.STRANGER)
-		if (opened_card_imgs.has('COMET_INTERIOR')) {
-			categories_known_names.add(CATEGORY.NOMAI_FATE)
+		check_category_known_name("QUANTUM_MOON", CATEGORY.QUANTUM_MOON);
+		check_category_known_name("DB_VESSEL", CATEGORY.VESSEL);
+		check_category_known_name(
+			"TT_TIME_LOOP_DEVICE",
+			CATEGORY.ASH_TWIN_PROJECT,
+		);
+		check_category_known_name("IP_RING_WORLD", CATEGORY.STRANGER);
+		if (opened_card_imgs.has("COMET_INTERIOR")) {
+			categories_known_names.add(CATEGORY.NOMAI_FATE);
 		}
 	}
 
-	set_opened_cards_only_rumors(opened_cards.difference(opened_card_imgs))
-	set_entries_facts(entries_facts)
-	set_joined_rumors(joined_rumors)
-	set_has_unexplored_cards(has_unexplored_cards)
+	set_opened_cards_only_rumors(opened_cards.difference(opened_card_imgs));
+	set_entries_facts(entries_facts);
+	set_joined_rumors(joined_rumors);
+	set_has_unexplored_cards(has_unexplored_cards);
 
-	SAVE_FOUND_CATEGORIES.set(cards_categories_in_save)
-	SAVE_KNOWN_CATEGORIES_NAMES.set(categories_known_names)
+	SAVE_FOUND_CATEGORIES.set(cards_categories_in_save);
+	SAVE_KNOWN_CATEGORIES_NAMES.set(categories_known_names);
 
 	if (!get(SETTINGS).welcome_popup_done) {
-		return []
+		return [];
 	}
 
-	cards_alt_names = Object.fromEntries(Object.entries(cards_alt_names).filter(([id, _]) => !opened_card_imgs.has(id)))
+	cards_alt_names = Object.fromEntries(
+		Object.entries(cards_alt_names).filter(
+			([id, _]) => !opened_card_imgs.has(id),
+		),
+	);
 
-	LOADING.set(t('loading-stage-coordinates'))
+	LOADING.set(t("loading-stage-coordinates"));
 
 	/**
 	 * load coordinates and images
 	 * @type {Object.<string, { coordinates: import('leaflet').LatLngTuple, sprite: string | null }>}
 	 */
 	let cards = {};
-	let [minX, maxX, minY, maxY] = [4000, -1000, 2000, -2000]
-	let coordinates_data = await (await fetch(import.meta.env.BASE_URL + "/coordinates.json")).json();
+	let [minX, maxX, minY, maxY] = [4000, -1000, 2000, -2000];
+	let coordinates_data = await (
+		await fetch(import.meta.env.BASE_URL + "/coordinates.json")
+	).json();
 	for (let [id, [x, y]] of Object.entries(coordinates_data)) {
-		if (opened_cards.has(id) && !should_hide_curiosity(hide_curiosities, library[id].curiosity)) {
-			minX = Math.min(minX, x)
-			minY = Math.min(minY, y)
-			maxX = Math.max(maxX, x)
-			maxY = Math.max(maxY, y)
+		if (
+			opened_cards.has(id) &&
+			!should_hide_curiosity(hide_curiosities, library[id].curiosity)
+		) {
+			minX = Math.min(minX, x);
+			minY = Math.min(minY, y);
+			maxX = Math.max(maxX, x);
+			maxY = Math.max(maxY, y);
 		}
 		cards[id] = {
 			coordinates: coord_to_leaflet(x, y),
-			sprite: opened_card_imgs.has(id) ? `${import.meta.env.BASE_URL}/sprites/${id}.jpg` : null,
+			sprite: opened_card_imgs.has(id)
+				? `${import.meta.env.BASE_URL}/sprites/${id}.jpg`
+				: null,
 		};
 	}
-	MAP_SIZE.set([[minX, minY], [maxX, maxY]])
+	MAP_SIZE.set([
+		[minX, minY],
+		[maxX, maxY],
+	]);
 
-	LOADING.set(t('loading-stage-parents'))
+	LOADING.set(t("loading-stage-parents"));
 
 	/** @type {Object.<string, string>} */
-	let parents = await (await fetch(import.meta.env.BASE_URL + "/parents.json")).json();
+	let parents = await (
+		await fetch(import.meta.env.BASE_URL + "/parents.json")
+	).json();
 
 	// load translations
 	let lang = detect_language();
-	LOADING.set(t('loading-stage-translation', { lang }))
+	LOADING.set(t("loading-stage-translation", { lang }));
 
 	/** @type {Object.<string, string>} */
 	let tr = await load_tr(lang);
@@ -287,8 +343,28 @@ export async function* generate_all_svg() {
 	// centers is filled inside of generate_cards
 	/** @type {Object.<string, import('leaflet').LatLngTuple>} */
 	let centers = {};
-	yield* generate_cards(cards, library, parents, centers, opened_cards, has_unexplored_cards, tr, cards_alt_names, hide_curiosities, save_loaded)
-	yield* generate_arrows(sources, library, opened_cards, opened_facts, centers, joined_rumors, hide_curiosities, save_loaded)
+	yield* generate_cards(
+		cards,
+		library,
+		parents,
+		centers,
+		opened_cards,
+		has_unexplored_cards,
+		tr,
+		cards_alt_names,
+		hide_curiosities,
+		save_loaded,
+	);
+	yield* generate_arrows(
+		sources,
+		library,
+		opened_cards,
+		opened_facts,
+		centers,
+		joined_rumors,
+		hide_curiosities,
+		save_loaded,
+	);
 }
 
 /**
@@ -316,10 +392,10 @@ async function* generate_cards(
 	hide_curiosities,
 	save_loaded,
 ) {
-	let t = get(i18n)
+	let t = get(i18n);
 
 	for (let [id, card] of Object.entries(cards)) {
-		let curiosity = library[id].curiosity
+		let curiosity = library[id].curiosity;
 
 		let is_small = id in parents;
 		let is_big = BIG_CARDS.has(id);
@@ -336,10 +412,10 @@ async function* generate_cards(
 		let w = CARD_WIDTH * mult;
 		let h = CARD_HEIGHT * mult;
 
-		let has_unexplored = has_unexplored_cards.has(id)
+		let has_unexplored = has_unexplored_cards.has(id);
 		if (has_unexplored) {
 			// increase when "more to explore" star is displayed
-			w += STAR_SIZE * 2
+			w += STAR_SIZE * 2;
 		}
 		let start_bounds = [cx - h / 2, cy - w / 2];
 		let end_bounds = [cx + h / 2, cy + w / 2];
@@ -355,11 +431,11 @@ async function* generate_cards(
 			if (card.sprite === null) {
 				return null;
 			}
-			LOADING.set(t('loading-stage-sprite', { sprite: id }))
+			LOADING.set(t("loading-stage-sprite", { sprite: id }));
 			let img = await (await fetch(card.sprite)).blob();
 			return await to_data_url(img);
 		})();
-		let tr_id = cards_alt_names[id] || id
+		let tr_id = cards_alt_names[id] || id;
 		let svg = make_card_svg(
 			id,
 			tr[tr_id].replaceAll("@@", "<br/>").replaceAll("$$", "-<br/>"),
@@ -367,7 +443,11 @@ async function* generate_cards(
 			has_unexplored,
 			curiosity_to_category(curiosity),
 		);
-		yield { svg, coords: [start_bounds, end_bounds], pane: is_small ? SMALL_PANE : NORMAL_PANE }
+		yield {
+			svg,
+			coords: [start_bounds, end_bounds],
+			pane: is_small ? SMALL_PANE : NORMAL_PANE,
+		};
 	}
 }
 
@@ -381,24 +461,43 @@ async function* generate_cards(
  * @param {boolean} save_loaded
  * @yield {}
  */
-function* generate_arrows(sources, library, opened_cards, opened_facts, centers, joined_rumors, hide_curiosities, save_loaded) {
+function* generate_arrows(
+	sources,
+	library,
+	opened_cards,
+	opened_facts,
+	centers,
+	joined_rumors,
+	hide_curiosities,
+	save_loaded,
+) {
 	for (let [source_id, entry_ids] of Object.entries(sources)) {
-		if (should_hide_curiosity(hide_curiosities, library[source_id].curiosity)) {
+		if (
+			should_hide_curiosity(
+				hide_curiosities,
+				library[source_id].curiosity,
+			)
+		) {
 			continue;
 		}
 		if (save_loaded && !opened_cards.has(source_id)) {
 			continue;
 		}
 		for (let { entry_id, rumor_id } of entry_ids) {
-			if (should_hide_curiosity(hide_curiosities, library[entry_id].curiosity)) {
+			if (
+				should_hide_curiosity(
+					hide_curiosities,
+					library[entry_id].curiosity,
+				)
+			) {
 				continue;
 			}
 
-			let key = [source_id, entry_id].sort()
+			let key = [source_id, entry_id].sort();
 			// @ts-ignore
-			let rumors = joined_rumors[key]?.rumors
-			let should_join = rumors !== undefined
-			let is_not_first_rumor = should_join && rumor_id !== rumors[0]
+			let rumors = joined_rumors[key]?.rumors;
+			let should_join = rumors !== undefined;
+			let is_not_first_rumor = should_join && rumor_id !== rumors[0];
 			// draw line only for first rumor
 			if (is_not_first_rumor) {
 				continue;
@@ -408,12 +507,15 @@ function* generate_arrows(sources, library, opened_cards, opened_facts, centers,
 				continue;
 			}
 			let svg = make_rumor_arrow(
-				should_join ? key.join(',') : rumor_id,
+				should_join ? key.join(",") : rumor_id,
 				centers[source_id],
 				centers[entry_id],
 			);
-			let coords = expand_thin_bounds([centers[source_id], centers[entry_id]])
-			yield { svg, coords, pane: RUMOR_PANE }
+			let coords = expand_thin_bounds([
+				centers[source_id],
+				centers[entry_id],
+			]);
+			yield { svg, coords, pane: RUMOR_PANE };
 		}
 	}
 }

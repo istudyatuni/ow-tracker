@@ -1,29 +1,34 @@
-import { defineConfig } from 'vite'
-import { svelte } from '@sveltejs/vite-plugin-svelte'
-import { VitePWA } from 'vite-plugin-pwa'
-import Icons from 'unplugin-icons/vite'
+import { defineConfig } from "vite";
+import { svelte } from "@sveltejs/vite-plugin-svelte";
+import { VitePWA } from "vite-plugin-pwa";
+import Icons from "unplugin-icons/vite";
 
 export default defineConfig({
 	plugins: [
 		svelte(),
 		VitePWA({
-			registerType: 'autoUpdate',
+			registerType: "autoUpdate",
 			workbox: {
-				globPatterns: ['**/*.{js,css,html,ico}'],
+				globPatterns: ["**/*.{js,css,html,ico}"],
 			},
-			includeAssets: ['*.json', 'translations/*.json', 'translations/ui/*.ftl', 'sprites/*.jpg'],
+			includeAssets: [
+				"*.json",
+				"translations/*.json",
+				"translations/ui/*.ftl",
+				"sprites/*.jpg",
+			],
 		}),
-		Icons({ compiler: 'svelte' }),
-		injectMetrikaPlugin('101631901'),
+		Icons({ compiler: "svelte" }),
+		injectMetrikaPlugin("101631901"),
 	],
-	base: '/ow-tracker',
+	base: "/ow-tracker",
 	build: {
 		sourcemap: true,
 		rollupOptions: {
 			treeshake: true,
 		},
 	},
-})
+});
 
 /**
  * @param  {string} id
@@ -31,22 +36,22 @@ export default defineConfig({
  */
 function injectMetrikaPlugin(id) {
 	return {
-		name: 'inject-yandex-metrika',
+		name: "inject-yandex-metrika",
 		// not in dev mode
-		apply: 'build',
+		apply: "build",
 		transformIndexHtml(html, ctx) {
 			return {
 				html,
 				tags: [
 					{
-						tag: 'raw',
+						tag: "raw",
 						children: gen_ya_metrica(id),
-						injectTo: 'head',
+						injectTo: "head",
 					},
 				],
-			}
+			};
 		},
-	}
+	};
 }
 
 function gen_ya_metrica(id) {
@@ -65,5 +70,5 @@ function gen_ya_metrica(id) {
    });
 </script>
 <noscript><div><img src="https://mc.yandex.ru/watch/${id}" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
-<!-- /Yandex.Metrika counter -->`
+<!-- /Yandex.Metrika counter -->`;
 }
