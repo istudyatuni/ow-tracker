@@ -1,7 +1,7 @@
 <script module>
   import { CATEGORIES } from "../lib/categories";
   import { t } from "../lib/i18n";
-  import { SELECTED_CATEGORIES } from "../lib/stores";
+  import { SAVE_FOUND_CATEGORIES, SELECTED_CATEGORIES } from "../lib/stores";
 </script>
 
 <script>
@@ -9,8 +9,8 @@
 </script>
 
 <h4>{$t("shiplog-categories-header")}</h4>
-{#each Object.entries(CATEGORIES) as [i, id] (id)}
-  <div class="spoiler">
+{#each CATEGORIES as id (id)}
+  <div class="spoiler" class:hidden={!$SAVE_FOUND_CATEGORIES.has(id)}>
     <label>
       <input
         type="checkbox"

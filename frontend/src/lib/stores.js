@@ -10,6 +10,7 @@ export const SAVE_FOUND = writable(null)
 export const LOADING = writable('base')
 export const LANGUAGE = writable(detect_language())
 export const SELECTED_CATEGORIES = localStore('show-categories', default_categories())
+export const SAVE_FOUND_CATEGORIES = writable(new Set())
 
 const DEFAULT_SETTINGS = {
 	version: 2,
