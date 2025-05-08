@@ -1,12 +1,13 @@
 <script module>
-  import Popup from "./Popup.svelte";
-
-  import { t } from "../lib/i18n";
-  import { renderSnippet } from "../lib/utils";
   import FileUpload from "./atoms/FileUpload.svelte";
   import HideSpoilers from "./atoms/HideSpoilers.svelte";
   import HideDlc from "./atoms/HideDlc.svelte";
+  import Popup from "./Popup.svelte";
+
+  import { t } from "../lib/i18n";
   import { SAVE_FOUND, SAVE_FOUND_CATEGORIES, SETTINGS } from "../lib/stores";
+  import { renderSnippet } from "../lib/utils";
+  import { CATEGORY } from "../lib/categories";
 </script>
 
 {#snippet game_name()}
@@ -34,7 +35,7 @@
   </p>
   <HideSpoilers />
   <br />
-  {#if $SAVE_FOUND_CATEGORIES.has("stranger")}
+  {#if $SAVE_FOUND_CATEGORIES.has(CATEGORY.STRANGER)}
     <HideDlc />
     <br />
   {/if}

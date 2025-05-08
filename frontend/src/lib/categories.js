@@ -1,12 +1,14 @@
-export const CATEGORIES = [
-	"orbital-canon",
-	"quantum-moon",
-	"vessel",
-	"ash-twin-project",
-	"stranger",
-	"nomai-fate",
-	"other",
-];
+export const CATEGORY = {
+	ORBITAL_CANON: "orbital-canon",
+	QUANTUM_MOON: "quantum-moon",
+	VESSEL: "vessel",
+	ASH_TWIN_PROJECT: "ash-twin-project",
+	STRANGER: "stranger",
+	NOMAI_FATE: "nomai-fate",
+	OTHER: "other",
+}
+
+export const CATEGORIES = Object.values(CATEGORY);
 
 export const CURIOSITY = {
 	COMET_CORE: 'COMET_CORE',
@@ -26,26 +28,26 @@ export function default_categories() {
 
 export function category_to_curiosity(c) {
 	switch (c) {
-		case "orbital-canon": return CURIOSITY.SUNKEN_MODULE
-		case "quantum-moon": return CURIOSITY.QUANTUM_MOON
-		case "vessel": return CURIOSITY.VESSEL
-		case "ash-twin-project": return CURIOSITY.TIME_LOOP
-		case "stranger": return CURIOSITY.INVISIBLE_PLANET
-		case "nomai-fate": return CURIOSITY.COMET_CORE
-		case "other": return CURIOSITY.OTHER
+		case CATEGORY.ORBITAL_CANON: return CURIOSITY.SUNKEN_MODULE
+		case CATEGORY.QUANTUM_MOON: return CURIOSITY.QUANTUM_MOON
+		case CATEGORY.VESSEL: return CURIOSITY.VESSEL
+		case CATEGORY.ASH_TWIN_PROJECT: return CURIOSITY.TIME_LOOP
+		case CATEGORY.STRANGER: return CURIOSITY.INVISIBLE_PLANET
+		case CATEGORY.NOMAI_FATE: return CURIOSITY.COMET_CORE
+		case CATEGORY.OTHER: return CURIOSITY.OTHER
 	}
 }
 
 export function curiosity_to_category(c) {
 	switch (c) {
-		case CURIOSITY.SUNKEN_MODULE: return "orbital-canon"
-		case CURIOSITY.QUANTUM_MOON: return "quantum-moon"
-		case CURIOSITY.VESSEL: return "vessel"
-		case CURIOSITY.TIME_LOOP: return "ash-twin-project"
-		case CURIOSITY.INVISIBLE_PLANET: return "stranger"
-		case CURIOSITY.COMET_CORE: return "nomai-fate"
+		case CURIOSITY.SUNKEN_MODULE: return CATEGORY.ORBITAL_CANON
+		case CURIOSITY.QUANTUM_MOON: return CATEGORY.QUANTUM_MOON
+		case CURIOSITY.VESSEL: return CATEGORY.VESSEL
+		case CURIOSITY.TIME_LOOP: return CATEGORY.ASH_TWIN_PROJECT
+		case CURIOSITY.INVISIBLE_PLANET: return CATEGORY.STRANGER
+		case CURIOSITY.COMET_CORE: return CATEGORY.NOMAI_FATE
 	}
-	return "other"
+	return CATEGORY.OTHER
 }
 
 /**
