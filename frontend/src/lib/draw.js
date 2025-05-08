@@ -43,11 +43,6 @@ export async function* generate_all_svg() {
 	let save_loaded = window.location.hash !== ''
 	SAVE_FOUND.set(save_loaded)
 
-	// hiding while some features not ready
-	if (!get(SETTINGS).welcome_popup_done) {
-		return []
-	}
-
 	let t = get(i18n)
 	let hide_curiosities = new Set(Object.entries(get(SELECTED_CATEGORIES))
 		.filter(([_, enabled]) => !enabled)
@@ -218,6 +213,11 @@ export async function* generate_all_svg() {
 	set_has_unexplored_cards(has_unexplored_cards)
 
 	SAVE_FOUND_CATEGORIES.set(found_categories)
+
+	// hiding while some features not ready
+	if (!get(SETTINGS).welcome_popup_done) {
+		return []
+	}
 
 	cards_alt_names = Object.fromEntries(Object.entries(cards_alt_names).filter(([id, _]) => !opened_card_imgs.has(id)))
 

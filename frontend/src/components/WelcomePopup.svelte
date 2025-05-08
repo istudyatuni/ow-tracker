@@ -6,7 +6,7 @@
   import FileUpload from "./atoms/FileUpload.svelte";
   import HideSpoilers from "./atoms/HideSpoilers.svelte";
   import HideDlc from "./atoms/HideDlc.svelte";
-  import { SAVE_FOUND, SETTINGS } from "../lib/stores";
+  import { SAVE_FOUND, SAVE_FOUND_CATEGORIES, SETTINGS } from "../lib/stores";
 </script>
 
 {#snippet game_name()}
@@ -34,8 +34,10 @@
   </p>
   <HideSpoilers />
   <br />
-  <HideDlc />
-  <br />
+  {#if $SAVE_FOUND_CATEGORIES.has("stranger")}
+    <HideDlc />
+    <br />
+  {/if}
   <div class="launch">
     <button
       class="mono orbital-canon"
