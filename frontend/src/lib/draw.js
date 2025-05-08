@@ -109,6 +109,21 @@ export async function* generate_all_svg() {
 
 	let found_categories = new Set()
 
+	// fill opened_cards and opened_card_imgs
+	for (let e of Object.values(entries)) {
+		for (let fact of e?.facts?.explore || []) {
+			if (opened_facts.has(fact.id)) {
+				opened_cards.add(e.id);
+				opened_card_imgs.add(e.id);
+			}
+		}
+		for (let fact of e?.facts?.rumor || []) {
+			if (opened_facts.has(fact.id)) {
+				opened_cards.add(e.id);
+			}
+		}
+	}
+
 	for (let e of Object.values(entries)) {
 		library[e.id] = {
 			curiosity: e.curiosity,
@@ -117,12 +132,12 @@ export async function* generate_all_svg() {
 		let rumor_facts = []
 		let explore_facts = []
 
-		// fill opened_cards and opened_card_imgs
 		for (let fact of e?.facts?.explore || []) {
-			if (opened_facts.has(fact.id)) {
-				opened_cards.add(e.id);
-				opened_card_imgs.add(e.id);
-			} else if (!e.ignore_more_to_explore && !fact.ignore_more_to_explore) {
+			if (
+				!opened_facts.has(fact.id)
+				&& !e.ignore_more_to_explore
+				&& !fact.ignore_more_to_explore
+			) {
 				has_unexplored_cards.add(e.id)
 			}
 			explore_facts.push(fact.id)
@@ -131,8 +146,6 @@ export async function* generate_all_svg() {
 		let last_name_priority = -1
 		for (let fact of e?.facts?.rumor || []) {
 			if (opened_facts.has(fact.id)) {
-				opened_cards.add(e.id);
-
 				// remember rumors on same arrow
 				if (fact.source_id !== undefined) {
 					let key = [e.id, fact.source_id].sort()
@@ -153,8 +166,14 @@ export async function* generate_all_svg() {
 					cards_alt_names[e.id] = fact.name_id
 					last_name_priority = name_priority
 				}
-			} else if (!fact.ignore_more_to_explore) {
-				// todo: not sure about !fact.ignore_more_to_explore
+			} else if (
+				// todo: this check is still incomplete
+				// fix for TH_VILLAGE
+				!entries[fact.source_id]?.ignore_more_to_explore
+				// not sure about it
+				&& !fact.ignore_more_to_explore
+				&& !opened_card_imgs.has(e.id)
+			) {
 				has_unexplored_cards.add(fact.source_id)
 			}
 			rumor_facts.push(fact.id)
