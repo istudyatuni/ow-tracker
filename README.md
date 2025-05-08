@@ -2,10 +2,18 @@
 
 This site allows you to view and share your progress in game. All in-game translations are available
 
-Some examples (**SPOILERS!!**):
+Example (**SPOILERS!!**): [ship log after completing tutorial](https://istudyatuni.github.io/ow-tracker/#save=AAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPxAAAAA=)
 
-- [Ship log after completing tutorial](https://istudyatuni.github.io/ow-tracker/#save=AAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPxAAAAA=)
-- [Full base game ship log](https://istudyatuni.github.io/ow-tracker/#v=1.1.15&save=/////////////////////////////8AAAAAAAAAAAAAAAf//////////v/////w=)
+### Features
+
+- Upload your save and view the same Ship Log as in the game
+	- *There are still some bugs lurking here*
+- Share a save via the link
+- View full map
+- Hide categories
+- Hide spoilers
+- Categories not yet found in the save are hidden
+- Category names are marked as spoilers if certain facts are not yet found in the save
 
 ## Develop
 
