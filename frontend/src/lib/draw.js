@@ -1,11 +1,11 @@
 import { expand_thin_bounds, make_rumor_arrow } from './arrow';
 import { CARD_HEIGHT, CARD_WIDTH, make_card_svg, STAR_SIZE } from './card';
-import { category_to_curiosity, CURIOSITY, curiosity_to_category, should_hide_curiosity } from './categories';
+import { CATEGORIES, CATEGORY, category_to_curiosity, CURIOSITY, curiosity_to_category, default_disabled_categories, should_hide_curiosity } from './categories';
 import { load_tr, set_entries_facts, set_joined_rumors, set_has_unexplored_cards, set_opened_cards_only_rumors, set_opened_facts } from './data';
 import { to_data_url } from './dataurl';
 import { detect_language } from './language';
 import { get_save_from_browser_url } from './saves';
-import { LOADING, MAP_SIZE, SAVE_FOUND, SAVE_FOUND_CATEGORIES, SELECTED_CATEGORIES, SETTINGS } from './stores';
+import { LOADING, MAP_SIZE, SAVE_FOUND, SAVE_FOUND_CATEGORIES, SAVE_KNOWN_CATEGORIES_NAMES, SELECTED_CATEGORIES, SETTINGS } from './stores';
 import { t as i18n } from './i18n';
 import { get } from 'svelte/store';
 
@@ -102,7 +102,8 @@ export async function* generate_all_svg() {
 	 */
 	let cards_alt_names = {}
 
-	let found_categories = new Set()
+	// cards with which categories opened in save
+	let cards_categories_in_save = new Set()
 
 	// fill opened_cards and opened_card_imgs
 	for (let e of Object.values(entries)) {
@@ -195,8 +196,9 @@ export async function* generate_all_svg() {
 			}
 		}
 
+		// fill cards categories in save
 		if (opened_cards.has(e.id)) {
-			found_categories.add(curiosity_to_category(e.curiosity))
+			cards_categories_in_save.add(curiosity_to_category(e.curiosity))
 		}
 	}
 
@@ -207,12 +209,38 @@ export async function* generate_all_svg() {
 		}
 	}
 
+	// categories with known names (e.g card with the same name is opened)
+	let categories_known_names = new Set(CATEGORIES)
+	if (save_loaded) {
+		categories_known_names = new Set([CATEGORY.OTHER])
+
+		function check_category_known_name(id, category) {
+			if (opened_cards.has(id)) {
+				categories_known_names.add(category)
+			}
+		}
+		{
+			let id = 'ORBITAL_PROBE_CANNON'
+			if (opened_cards.has(id) && (cards_alt_names[id] === undefined || cards_alt_names[id] === id)) {
+				categories_known_names.add(CATEGORY.ORBITAL_CANON)
+			}
+		}
+		check_category_known_name('QUANTUM_MOON', CATEGORY.QUANTUM_MOON)
+		check_category_known_name('DB_VESSEL', CATEGORY.VESSEL)
+		check_category_known_name('TT_TIME_LOOP_DEVICE', CATEGORY.ASH_TWIN_PROJECT)
+		check_category_known_name('IP_RING_WORLD', CATEGORY.STRANGER)
+		if (opened_card_imgs.has('COMET_INTERIOR')) {
+			categories_known_names.add(CATEGORY.NOMAI_FATE)
+		}
+	}
+
 	set_opened_cards_only_rumors(opened_cards.difference(opened_card_imgs))
 	set_entries_facts(entries_facts)
 	set_joined_rumors(joined_rumors)
 	set_has_unexplored_cards(has_unexplored_cards)
 
-	SAVE_FOUND_CATEGORIES.set(found_categories)
+	SAVE_FOUND_CATEGORIES.set(cards_categories_in_save)
+	SAVE_KNOWN_CATEGORIES_NAMES.set(categories_known_names)
 
 	if (!get(SETTINGS).welcome_popup_done) {
 		return []

@@ -205,7 +205,9 @@ $categories-colors: (
 $other-color: map.get($categories-colors, "other");
 
 .hide-spoilers {
-  & .spoiler {
+
+  & .spoiler,
+  &.spoiler {
     font-family: var(--spoilers-font);
     font-size: 19px;
     line-height: 0.93em;

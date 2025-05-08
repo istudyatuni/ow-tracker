@@ -2,15 +2,16 @@ import { derived, get, writable } from "svelte/store";
 
 import { localStore } from 'svelte-storages'
 
-import { default_categories } from "./categories";
+import { default_enabled_categories } from "./categories";
 import { detect_language } from "./language";
 
 export const OPENED_FACT = writable(null)
 export const SAVE_FOUND = writable(null)
 export const LOADING = writable('base')
 export const LANGUAGE = writable(detect_language())
-export const SELECTED_CATEGORIES = localStore('show-categories', default_categories())
+export const SELECTED_CATEGORIES = localStore('show-categories', default_enabled_categories())
 export const SAVE_FOUND_CATEGORIES = writable(new Set())
+export const SAVE_KNOWN_CATEGORIES_NAMES = writable(new Set())
 
 const DEFAULT_SETTINGS = {
 	version: 3,
@@ -76,6 +77,6 @@ export function migrate_storage() {
 
 		let c = get(SELECTED_CATEGORIES)
 		Object.keys(c).forEach((c) => SELECTED_CATEGORIES.delete(c))
-		Object.entries(default_categories()).forEach(([k, v]) => SELECTED_CATEGORIES.set(k, v))
+		Object.entries(default_enabled_categories()).forEach(([k, v]) => SELECTED_CATEGORIES.set(k, v))
 	}
 }

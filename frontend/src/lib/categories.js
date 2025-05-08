@@ -22,8 +22,16 @@ export const CURIOSITY = {
 	OTHER: 'OTHER',
 }
 
-export function default_categories() {
-	return Object.fromEntries(CATEGORIES.map((c) => [c, true]))
+export function default_enabled_categories() {
+	return default_categories(true)
+}
+
+export function default_disabled_categories() {
+	return default_categories(false)
+}
+
+export function default_categories(enabled) {
+	return Object.fromEntries(CATEGORIES.map((c) => [c, enabled]))
 }
 
 export function category_to_curiosity(c) {
