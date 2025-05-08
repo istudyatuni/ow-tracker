@@ -16,6 +16,7 @@ export const SELECTED_CATEGORIES = localStore(
 );
 export const SAVE_FOUND_CATEGORIES = writable(new Set());
 export const SAVE_KNOWN_CATEGORIES_NAMES = writable(new Set());
+export const MAP_EMPTY = writable(false);
 
 const DEFAULT_SETTINGS = {
 	version: 4,

@@ -23,6 +23,7 @@ import { detect_language } from "./language";
 import { get_save_from_browser_url, has_save_in_url } from "./saves";
 import {
 	LOADING,
+	MAP_EMPTY,
 	MAP_SIZE,
 	OPENED_FACTS_COUNT,
 	SAVE_FOUND,
@@ -282,6 +283,9 @@ export async function* generate_all_svg() {
 
 	SAVE_FOUND_CATEGORIES.set(cards_categories_in_save);
 	SAVE_KNOWN_CATEGORIES_NAMES.set(categories_known_names);
+	MAP_EMPTY.set(
+		opened_cards.size === 0 || hide_curiosities.size === CATEGORIES.length,
+	);
 
 	if (!get(SESSION_SETTINGS).welcome_popup_done) {
 		return [];

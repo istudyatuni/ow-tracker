@@ -32,3 +32,5 @@ shiplog-category-nomai-fate = The Interloper and the fate of the Nomai
 shiplog-category-other = Other
 
 show-full-map-button = Show full map
+
+map-empty-popup = Map is empty

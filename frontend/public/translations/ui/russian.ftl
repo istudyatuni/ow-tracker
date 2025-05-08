@@ -32,3 +32,5 @@ shiplog-category-nomai-fate = Чужак и судьба номаи
 shiplog-category-other = Другое
 
 show-full-map-button = Показать полную карту
+
+map-empty-popup = Карта пустая
