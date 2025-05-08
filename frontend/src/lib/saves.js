@@ -1,9 +1,11 @@
 const V15_KEYS_COUNT = 374
 const V16_KEYS_COUNT = 374
 const GAME_VERSION = '1.1.16'
+const ENCODING_VERSION = 1
 
 export function get_save_opened_facts(facts_data) {
 	// todo: not sure if read and newlyRevealed affect showing
+	// if this function changed, should increase ENCODING_VERSION
 	// || fact.read || fact.newlyRevealed
 	let is_fact_opened = (fact) => fact.revealOrder >= 0;
 
@@ -20,7 +22,7 @@ export function get_save_opened_facts(facts_data) {
 export function export_save_to_browser_url(keys, opened) {
 	let encoded = encode_save(keys, opened)
 	// save version for now
-	window.location.hash = `v=${GAME_VERSION}&save=${encoded}`
+	window.location.hash = `v=${GAME_VERSION}&ev=${ENCODING_VERSION}&save=${encoded}`
 }
 
 export function get_save_from_browser_url(keys) {
