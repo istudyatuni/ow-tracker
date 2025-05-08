@@ -9,7 +9,7 @@
   import ShiplogCategories from "./ShiplogCategories.svelte";
 
   import { LANGUAGE_NAMES, save_language } from "../lib/language";
-  import { LANGUAGE, SETTINGS } from "../lib/stores";
+  import { LANGUAGE, reset_selected_categories, SETTINGS } from "../lib/stores";
   import { t } from "../lib/i18n";
 </script>
 
@@ -21,6 +21,10 @@
   }
   function show_full_map() {
     window.location.hash = "";
+    window.location.reload();
+  }
+  function handle_file_upload() {
+    reset_selected_categories();
     window.location.reload();
   }
 </script>
@@ -36,7 +40,7 @@
 
   <div class:hidden={!opened}>
     <div class:hidden={!$SETTINGS.welcome_popup_done}>
-      <FileUpload upload={() => window.location.reload()} />
+      <FileUpload upload={handle_file_upload} />
 
       <div class="block-wrapper categories">
         <ShiplogCategories />

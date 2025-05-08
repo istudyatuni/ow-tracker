@@ -7,6 +7,7 @@
   import { t } from "../lib/i18n";
   import {
     OPENED_FACTS_COUNT,
+    reset_selected_categories,
     SAVE_FOUND,
     SAVE_FOUND_CATEGORIES,
     SETTINGS,
@@ -31,6 +32,7 @@
   function handle_file_uploaded(opened_facts) {
     file_uploaded = true;
     save_complete_percent = count_complete_percent(opened_facts.size);
+    reset_selected_categories();
   }
 </script>
 

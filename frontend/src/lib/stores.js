@@ -2,7 +2,7 @@ import { derived, get, writable } from "svelte/store";
 
 import { localStore } from "svelte-storages";
 
-import { default_enabled_categories } from "./categories";
+import { CATEGORIES, default_enabled_categories } from "./categories";
 import { detect_language } from "./language";
 
 export const OPENED_FACT = writable(null);
@@ -49,6 +49,12 @@ export const translator = derived(tr_bundle, (bundle) => (id, args = {}) => {
 	console.warn("no value for message with id", id);
 	return id;
 });
+
+export function reset_selected_categories() {
+	for (let c of CATEGORIES) {
+		SELECTED_CATEGORIES.set(c, true);
+	}
+}
 
 export function open_fact(id) {
 	OPENED_FACT.set(id);
