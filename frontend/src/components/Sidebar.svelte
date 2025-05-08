@@ -25,7 +25,7 @@
   }
 </script>
 
-<div class="bar above-map" class:border={opened}>
+<div class="bar above-map">
   <button onclick={() => (opened = !opened)}>
     {#if opened}
       <CloseIcon />
@@ -98,9 +98,6 @@
   .brand-icon {
     color: white;
   }
-  /*.border {
-    border: 1px $color solid;
-  }*/
   button,
   select {
     cursor: pointer;
