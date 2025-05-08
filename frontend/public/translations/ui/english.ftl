@@ -1,5 +1,5 @@
 welcome-popup-header = View and share your progress in { $game }
-welcome-popup-opening-save = You're opening a save
+welcome-popup-opening-save = You're opening a save.
 welcome-popup-upload-save-file = You can upload a save file
 welcome-popup-save-file-approx-progress = Approximate progress: { NUMBER($percent, maximumFractionDigits: 1) }%
 welcome-popup-launch-full-map = Or launch the full map

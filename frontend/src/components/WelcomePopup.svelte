@@ -5,20 +5,32 @@
   import Popup from "./Popup.svelte";
 
   import { t } from "../lib/i18n";
-  import { SAVE_FOUND, SAVE_FOUND_CATEGORIES, SETTINGS } from "../lib/stores";
+  import {
+    OPENED_FACTS_COUNT,
+    SAVE_FOUND,
+    SAVE_FOUND_CATEGORIES,
+    SETTINGS,
+  } from "../lib/stores";
   import { renderSnippet } from "../lib/utils";
   import { CATEGORY } from "../lib/categories";
   import { KEYS_COUNT } from "../lib/saves";
+
+  /** @param {number} opened */
+  function count_complete_percent(opened) {
+    return (opened / KEYS_COUNT) * 100;
+  }
 </script>
 
 <script>
   let file_uploaded = $state(false);
-  let save_complete_percent = $state(0);
+  let save_complete_percent = $derived(
+    count_complete_percent($OPENED_FACTS_COUNT),
+  );
 
   /** @param {Set} opened_facts */
   function handle_file_uploaded(opened_facts) {
     file_uploaded = true;
-    save_complete_percent = (opened_facts.size / KEYS_COUNT) * 100;
+    save_complete_percent = count_complete_percent(opened_facts.size);
   }
 </script>
 
@@ -27,18 +39,25 @@
     >Outer Wilds</a>
 {/snippet}
 
+{#snippet progress()}
+  {$t("welcome-popup-save-file-approx-progress", {
+    percent: save_complete_percent,
+  })}
+{/snippet}
+
 <Popup>
   <h4 class="center">
     {@html $t("welcome-popup-header", { game: renderSnippet(game_name) })}
   </h4>
   {#if $SAVE_FOUND && !file_uploaded}
-    <p class="center">{$t("welcome-popup-opening-save")}</p>
+    <p class="center">
+      {$t("welcome-popup-opening-save")}
+      {@render progress()}
+    </p>
   {/if}
   <p>
     {#if file_uploaded}
-      {$t("welcome-popup-save-file-approx-progress", {
-        percent: save_complete_percent,
-      })}
+      {@render progress()}
     {:else}
       {$t("welcome-popup-upload-save-file")}:
     {/if}

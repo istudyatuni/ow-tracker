@@ -1,5 +1,5 @@
 welcome-popup-header = Просматривайте и делитесь своим прогрессом в { $game }
-welcome-popup-opening-save = Вы открываете сохранение
+welcome-popup-opening-save = Вы открываете сохранение.
 welcome-popup-upload-save-file = Вы можете загрузить своё сохранение
 welcome-popup-save-file-approx-progress = Примерный прогресс: { NUMBER($percent, maximumFractionDigits: 1) }%
 welcome-popup-launch-full-map = Или запустить полную карту
