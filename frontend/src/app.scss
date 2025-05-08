@@ -209,6 +209,7 @@ $other-color: map.get($categories-colors, "other");
     font-family: var(--spoilers-font);
     font-size: 19px;
     line-height: 0.93em;
+    user-select: none;
   }
 
   & image.spoiler,
