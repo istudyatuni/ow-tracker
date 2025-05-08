@@ -1,6 +1,6 @@
 import { derived, get, writable } from "svelte/store";
 
-import { localStore } from "svelte-storages";
+import { localStore, sessionStore } from "svelte-storages";
 
 import { CATEGORIES, default_enabled_categories } from "./categories";
 import { detect_language } from "./language";
@@ -18,11 +18,18 @@ export const SAVE_FOUND_CATEGORIES = writable(new Set());
 export const SAVE_KNOWN_CATEGORIES_NAMES = writable(new Set());
 
 const DEFAULT_SETTINGS = {
-	version: 3,
+	version: 4,
 	hide_spoilers: true,
+};
+const DEFAULT_SESSION_SETTINGS = {
+	version: 1,
 	welcome_popup_done: false,
 };
 export const SETTINGS = localStore("ow-settings", DEFAULT_SETTINGS);
+export const SESSION_SETTINGS = sessionStore(
+	"ow-settings",
+	DEFAULT_SESSION_SETTINGS,
+);
 
 // max/min in normal coordinates:
 // x: [-878, 3341.8005]
@@ -83,13 +90,19 @@ SETTINGS.subscribe(({ hide_spoilers }) => {
 });
 
 export function migrate_storage() {
+	function migrate(store, default_kv) {
+		let s = get(store);
+		if (s.version < default_kv.version) {
+			Object.keys(s).forEach((k) => store.delete(k));
+			Object.entries(default_kv).forEach(([k, v]) => store.set(k, v));
+		}
+	}
+
+	migrate(SETTINGS, DEFAULT_SETTINGS);
+	migrate(SESSION_SETTINGS, DEFAULT_SESSION_SETTINGS);
+
 	let s = get(SETTINGS);
 	if (s.version < DEFAULT_SETTINGS.version) {
-		Object.keys(s).forEach((k) => SETTINGS.delete(k));
-		Object.entries(DEFAULT_SETTINGS).forEach(([k, v]) =>
-			SETTINGS.set(k, v),
-		);
-
 		let c = get(SELECTED_CATEGORIES);
 		Object.keys(c).forEach((c) => SELECTED_CATEGORIES.delete(c));
 		Object.entries(default_enabled_categories()).forEach(([k, v]) =>

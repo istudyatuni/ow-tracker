@@ -5,7 +5,7 @@
   import WelcomePopup from "./components/WelcomePopup.svelte";
   import Map from "./Map.svelte";
 
-  import { migrate_storage, OPENED_FACT, SETTINGS } from "./lib/stores";
+  import { migrate_storage, OPENED_FACT, SESSION_SETTINGS } from "./lib/stores";
   import { get_facts_for, has_more_to_explore } from "./lib/data";
   import { init_i18n } from "./lib/i18n";
 </script>
@@ -25,7 +25,7 @@
   <Map />
   <FactsPanel {facts} {more_to_explore} />
   <Loading />
-  {#if !$SETTINGS.welcome_popup_done}
+  {#if !$SESSION_SETTINGS.welcome_popup_done}
     <WelcomePopup />
   {/if}
 </main>

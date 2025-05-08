@@ -29,7 +29,7 @@ import {
 	SAVE_FOUND_CATEGORIES,
 	SAVE_KNOWN_CATEGORIES_NAMES,
 	SELECTED_CATEGORIES,
-	SETTINGS,
+	SESSION_SETTINGS,
 } from "./stores";
 import { t as i18n } from "./i18n";
 
@@ -283,7 +283,7 @@ export async function* generate_all_svg() {
 	SAVE_FOUND_CATEGORIES.set(cards_categories_in_save);
 	SAVE_KNOWN_CATEGORIES_NAMES.set(categories_known_names);
 
-	if (!get(SETTINGS).welcome_popup_done) {
+	if (!get(SESSION_SETTINGS).welcome_popup_done) {
 		return [];
 	}
 

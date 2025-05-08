@@ -10,7 +10,7 @@
     reset_selected_categories,
     SAVE_FOUND,
     SAVE_FOUND_CATEGORIES,
-    SETTINGS,
+    SESSION_SETTINGS,
   } from "../lib/stores";
   import { renderSnippet } from "../lib/utils";
   import { CATEGORY } from "../lib/categories";
@@ -84,7 +84,7 @@
     <button
       class="mono orbital-canon"
       onclick={() => {
-        SETTINGS.set("welcome_popup_done", true);
+        SESSION_SETTINGS.set("welcome_popup_done", true);
         window.location.reload();
       }}>{$t("welcome-popup-launch-button")} --|-..|-.</button>
   </div>

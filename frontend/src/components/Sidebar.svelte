@@ -9,7 +9,11 @@
   import ShiplogCategories from "./ShiplogCategories.svelte";
 
   import { LANGUAGE_NAMES, save_language } from "../lib/language";
-  import { LANGUAGE, reset_selected_categories, SETTINGS } from "../lib/stores";
+  import {
+    LANGUAGE,
+    reset_selected_categories,
+    SESSION_SETTINGS,
+  } from "../lib/stores";
   import { t } from "../lib/i18n";
 </script>
 
@@ -39,7 +43,7 @@
   </button>
 
   <div class:hidden={!opened}>
-    <div class:hidden={!$SETTINGS.welcome_popup_done}>
+    <div class:hidden={!$SESSION_SETTINGS.welcome_popup_done}>
       <FileUpload upload={handle_file_upload} />
 
       <div class="block-wrapper categories">
