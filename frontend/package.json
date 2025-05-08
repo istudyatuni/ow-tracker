@@ -6,12 +6,16 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "format": "prettier . --write",
+    "format:check": "prettier . --check"
   },
   "devDependencies": {
     "@iconify-json/tabler": "^1.2.17",
     "@sveltejs/vite-plugin-svelte": "^5.0.3",
     "@types/leaflet": "^1.9.17",
+    "prettier": "^3.5.3",
+    "prettier-plugin-svelte": "^3.3.3",
     "sass-embedded": "^1.87.0",
     "svelte": "^5.23.1",
     "svelte-storages": "^0.0.2",
