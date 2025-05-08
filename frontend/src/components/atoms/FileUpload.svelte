@@ -30,8 +30,9 @@
   async function handle_file_change(e) {
     let file = await e.target.files[0].text();
     let data = JSON.parse(file).shipLogFactSaves;
-    export_save_to_browser_url(Object.keys(data), get_save_opened_facts(data));
-    upload();
+    let opened_facts = get_save_opened_facts(data);
+    export_save_to_browser_url(Object.keys(data), opened_facts);
+    upload(opened_facts);
   }
 </script>
 

@@ -1,5 +1,6 @@
 const V15_KEYS_COUNT = 374
 const V16_KEYS_COUNT = 374
+export const KEYS_COUNT = V16_KEYS_COUNT
 const GAME_VERSION = '1.1.16'
 const ENCODING_VERSION = 1
 

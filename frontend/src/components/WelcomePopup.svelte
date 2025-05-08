@@ -8,6 +8,18 @@
   import { SAVE_FOUND, SAVE_FOUND_CATEGORIES, SETTINGS } from "../lib/stores";
   import { renderSnippet } from "../lib/utils";
   import { CATEGORY } from "../lib/categories";
+  import { KEYS_COUNT } from "../lib/saves";
+</script>
+
+<script>
+  let file_uploaded = $state(false);
+  let save_complete_percent = $state(0);
+
+  /** @param {Set} opened_facts */
+  function handle_file_uploaded(opened_facts) {
+    file_uploaded = true;
+    save_complete_percent = (opened_facts.size / KEYS_COUNT) * 100;
+  }
 </script>
 
 {#snippet game_name()}
@@ -19,23 +31,31 @@
   <h4 class="center">
     {@html $t("welcome-popup-header", { game: renderSnippet(game_name) })}
   </h4>
-  {#if $SAVE_FOUND}
+  {#if $SAVE_FOUND && !file_uploaded}
     <p class="center">{$t("welcome-popup-opening-save")}</p>
   {/if}
   <p>
-    {$t("welcome-popup-upload-save-file")}:
-    <FileUpload />
-  </p>
-  <p>
-    {#if $SAVE_FOUND}
-      {$t("welcome-popup-launch-save-map")}:
+    {#if file_uploaded}
+      {$t("welcome-popup-save-file-approx-progress", {
+        percent: save_complete_percent,
+      })}
     {:else}
-      {$t("welcome-popup-launch-full-map")}:
+      {$t("welcome-popup-upload-save-file")}:
     {/if}
+    <FileUpload upload={handle_file_uploaded} />
   </p>
+  {#if !file_uploaded}
+    <p>
+      {#if $SAVE_FOUND}
+        {$t("welcome-popup-launch-save-map")}:
+      {:else}
+        {$t("welcome-popup-launch-full-map")}:
+      {/if}
+    </p>
+  {/if}
   <HideSpoilers />
   <br />
-  {#if $SAVE_FOUND_CATEGORIES.has(CATEGORY.STRANGER)}
+  {#if $SAVE_FOUND_CATEGORIES.has(CATEGORY.STRANGER) && !file_uploaded}
     <HideDlc />
     <br />
   {/if}
