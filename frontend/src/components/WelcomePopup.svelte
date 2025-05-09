@@ -82,7 +82,7 @@
   {/if}
   <div class="launch">
     <button
-      class="mono orbital-canon"
+      class="mono green"
       onclick={() => {
         SESSION_SETTINGS.set("welcome_popup_done", true);
         window.location.reload();
