@@ -99,8 +99,15 @@ export function migrate_storage() {
 	function migrate(store, default_kv) {
 		let s = get(store);
 		if (s.version < default_kv.version) {
-			Object.keys(s).forEach((k) => store.delete(k));
-			Object.entries(default_kv).forEach(([k, v]) => store.set(k, v));
+			let old_keys = new Set(Object.keys(s));
+			let new_keys = new Set(Object.keys(default_kv));
+
+			old_keys.difference(new_keys).forEach((k) => store.delete(k));
+			new_keys
+				.difference(old_keys)
+				.forEach((k) => store.set(k, default_kv[k]));
+
+			store.set("version", default_kv.version);
 		}
 	}
 
