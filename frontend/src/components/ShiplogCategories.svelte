@@ -1,4 +1,6 @@
 <script module>
+  import SidebarApply from "./atoms/SidebarApply.svelte";
+
   import { CATEGORIES } from "../lib/categories";
   import { t } from "../lib/i18n";
   import {
@@ -32,15 +34,12 @@
     </label>
   </div>
 {/each}
-<button onclick={() => window.location.reload()} disabled={!changed}
-  >{$t("sidebar-apply-button")}</button>
+
+<SidebarApply style="margin-top: 5px" disabled={!changed} />
 
 <style lang="scss">
   h4 {
     margin: 5px auto;
     margin-top: 0;
-  }
-  button {
-    margin-top: 5px;
   }
 </style>

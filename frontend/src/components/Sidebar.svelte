@@ -8,6 +8,7 @@
   import FileUpload from "./atoms/FileUpload.svelte";
   import HideSpoilers from "./atoms/HideSpoilers.svelte";
   import ShiplogCategories from "./ShiplogCategories.svelte";
+  import SidebarApply from "./atoms/SidebarApply.svelte";
 
   import { LANGUAGE_NAMES, save_language } from "../lib/language";
   import {
@@ -58,8 +59,7 @@
         <br />
         <ConsiderIgnored onchange={() => (changed = true)} />
         <br />
-        <button onclick={() => window.location.reload()} disabled={!changed}
-          >{$t("sidebar-apply-button")}</button>
+        <SidebarApply disabled={!changed} />
         <button onclick={show_full_map}
           >{$t("sidebar-show-full-map-button")}</button>
       </div>
