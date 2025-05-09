@@ -1,20 +1,20 @@
 <script module>
-  import FileUpload from "./atoms/FileUpload.svelte";
-  import HideSpoilers from "./atoms/HideSpoilers.svelte";
-  import HideDlc from "./atoms/HideDlc.svelte";
-  import Popup from "./Popup.svelte";
+  import FileUpload from "@/components/atoms/FileUpload.svelte";
+  import HideSpoilers from "@/components/atoms/HideSpoilers.svelte";
+  import HideDlc from "@/components/atoms/HideDlc.svelte";
+  import Popup from "@/components/Popup.svelte";
 
-  import { t } from "../lib/i18n";
+  import { t } from "@/lib/i18n";
   import {
     OPENED_FACTS_COUNT,
     reset_selected_categories,
     SAVE_FOUND,
     SAVE_FOUND_CATEGORIES,
     SESSION_SETTINGS,
-  } from "../lib/stores";
-  import { renderSnippet } from "../lib/utils";
-  import { CATEGORY } from "../lib/categories";
-  import { KEYS_COUNT } from "../lib/saves";
+  } from "@/lib/stores";
+  import { renderSnippet } from "@/lib/utils";
+  import { CATEGORY } from "@/lib/categories";
+  import { KEYS_COUNT } from "@/lib/saves";
 
   /** @param {number} opened */
   function count_complete_percent(opened) {

@@ -1,6 +1,6 @@
 <script module>
-  import { t } from "../lib/i18n";
-  import { LOADING, LOADING_STAGE, LOADING_TOTAL } from "../lib/stores";
+  import { t } from "@/lib/i18n";
+  import { LOADING, LOADING_STAGE, LOADING_TOTAL } from "@/lib/stores";
 </script>
 
 <div class="block above-map" class:hidden={$LOADING === null}>

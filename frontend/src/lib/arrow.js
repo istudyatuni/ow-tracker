@@ -1,4 +1,4 @@
-import { SVG_NS } from "./card";
+import { SVG_NS } from "@/lib/card";
 
 const STROKE = 8;
 

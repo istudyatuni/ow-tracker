@@ -1,13 +1,13 @@
 <script module>
-  import SidebarApply from "./atoms/SidebarApply.svelte";
+  import SidebarApply from "@/components/atoms/SidebarApply.svelte";
 
-  import { CATEGORIES } from "../lib/categories";
-  import { t } from "../lib/i18n";
+  import { CATEGORIES } from "@/lib/categories";
+  import { t } from "@/lib/i18n";
   import {
     SAVE_FOUND_CATEGORIES,
     SAVE_KNOWN_CATEGORIES_NAMES,
     SELECTED_CATEGORIES,
-  } from "../lib/stores";
+  } from "@/lib/stores";
 </script>
 
 <script>

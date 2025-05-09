@@ -1,7 +1,7 @@
 import { FluentBundle, FluentResource } from "@fluent/bundle";
 
-import { set_tr_bundle, translator } from "./stores";
-import { detect_language, language_to_code, LANGUAGES } from "./language";
+import { set_tr_bundle, translator } from "@/lib/stores";
+import { detect_language, language_to_code, LANGUAGES } from "@/lib/language";
 
 export async function init_i18n() {
 	let lang = detect_language();

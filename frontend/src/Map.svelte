@@ -5,14 +5,14 @@
   import "leaflet/dist/leaflet.css";
   import L from "leaflet";
 
-  import { coord_to_leaflet, generate_all_svg } from "./lib/draw";
+  import { coord_to_leaflet, generate_all_svg } from "@/lib/draw";
   import {
     close_fact,
     LOADING,
     MAP_SIZE,
     open_fact,
     OPENED_FACT,
-  } from "./lib/stores";
+  } from "@/lib/stores";
 
   const MAP_PAD = 200;
 

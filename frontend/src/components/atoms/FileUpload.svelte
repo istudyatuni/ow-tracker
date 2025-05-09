@@ -2,8 +2,8 @@
   import {
     export_save_to_browser_url,
     get_save_opened_facts,
-  } from "../../lib/saves";
-  import { t } from "../../lib/i18n";
+  } from "@/lib/saves";
+  import { t } from "@/lib/i18n";
 
   // todo: more
   const SAVE_LOCATIONS = [

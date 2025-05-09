@@ -1,10 +1,10 @@
 <script module>
-  import FactsPanel from "./components/FactsPanel.svelte";
-  import Sidebar from "./components/Sidebar.svelte";
-  import Loading from "./components/Loading.svelte";
-  import Popup from "./components/Popup.svelte";
-  import WelcomePopup from "./components/WelcomePopup.svelte";
-  import Map from "./Map.svelte";
+  import FactsPanel from "@/components/FactsPanel.svelte";
+  import Sidebar from "@/components/Sidebar.svelte";
+  import Loading from "@/components/Loading.svelte";
+  import Popup from "@/components/Popup.svelte";
+  import WelcomePopup from "@/components/WelcomePopup.svelte";
+  import Map from "@/Map.svelte";
 
   import {
     MAP_EMPTY,
@@ -12,9 +12,9 @@
     OPENED_FACT,
     SESSION_SETTINGS,
     SETTINGS,
-  } from "./lib/stores";
-  import { get_facts_for } from "./lib/data";
-  import { init_i18n, t } from "./lib/i18n";
+  } from "@/lib/stores";
+  import { get_facts_for } from "@/lib/data";
+  import { init_i18n, t } from "@/lib/i18n";
 </script>
 
 <script>

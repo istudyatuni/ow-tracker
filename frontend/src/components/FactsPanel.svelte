@@ -1,5 +1,5 @@
 <script module>
-  import { SETTINGS } from "../lib/stores";
+  import { SETTINGS } from "@/lib/stores";
 </script>
 
 <script>

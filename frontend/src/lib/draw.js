@@ -1,7 +1,7 @@
 import { get } from "svelte/store";
 
-import { expand_thin_bounds, make_rumor_arrow } from "./arrow";
-import { CARD_HEIGHT, CARD_WIDTH, make_card_svg, STAR_SIZE } from "./card";
+import { expand_thin_bounds, make_rumor_arrow } from "@/lib/arrow";
+import { CARD_HEIGHT, CARD_WIDTH, make_card_svg, STAR_SIZE } from "@/lib/card";
 import {
 	CATEGORIES,
 	CATEGORY,
@@ -9,7 +9,7 @@ import {
 	CURIOSITY,
 	curiosity_to_category,
 	should_hide_curiosity,
-} from "./categories";
+} from "@/lib/categories";
 import {
 	load_tr,
 	set_entries_facts,
@@ -17,10 +17,10 @@ import {
 	set_has_unexplored_cards,
 	set_opened_cards_only_rumors,
 	set_opened_facts,
-} from "./data";
-import { to_data_url } from "./dataurl";
-import { detect_language } from "./language";
-import { get_save_from_browser_url, has_save_in_url } from "./saves";
+} from "@/lib/data";
+import { to_data_url } from "@/lib/dataurl";
+import { detect_language } from "@/lib/language";
+import { get_save_from_browser_url, has_save_in_url } from "@/lib/saves";
 import {
 	LOADING,
 	LOADING_STAGE,
@@ -34,7 +34,7 @@ import {
 	SELECTED_CATEGORIES,
 	SESSION_SETTINGS,
 	SETTINGS,
-} from "./stores";
+} from "@/lib/stores";
 
 const DEFAULT_MULT = 0.7;
 const BIG_MULT = 1.2;

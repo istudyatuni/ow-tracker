@@ -1,6 +1,6 @@
 <script module>
-  import { SELECTED_CATEGORIES } from "../../lib/stores";
-  import { t } from "../../lib/i18n";
+  import { SELECTED_CATEGORIES } from "@/lib/stores";
+  import { t } from "@/lib/i18n";
 
   const CATEGORY = "stranger";
 </script>

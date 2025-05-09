@@ -2,8 +2,8 @@ import { derived, get, writable } from "svelte/store";
 
 import { localStore, sessionStore } from "svelte-storages";
 
-import { CATEGORIES, default_enabled_categories } from "./categories";
-import { detect_language } from "./language";
+import { CATEGORIES, default_enabled_categories } from "@/lib/categories";
+import { detect_language } from "@/lib/language";
 
 export const LOADING = writable(null);
 export const LOADING_TOTAL = writable(0);

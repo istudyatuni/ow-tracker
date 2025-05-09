@@ -4,20 +4,20 @@
   import LanguageIcon from "~icons/tabler/language-hiragana";
   import GithubIcon from "~icons/tabler/brand-github";
 
-  import ConsiderIgnored from "./atoms/ConsiderIgnored.svelte";
-  import FileUpload from "./atoms/FileUpload.svelte";
-  import HideSpoilers from "./atoms/HideSpoilers.svelte";
-  import ShiplogCategories from "./ShiplogCategories.svelte";
-  import SidebarApply from "./atoms/SidebarApply.svelte";
+  import ConsiderIgnored from "@/components/atoms/ConsiderIgnored.svelte";
+  import FileUpload from "@/components/atoms/FileUpload.svelte";
+  import HideSpoilers from "@/components/atoms/HideSpoilers.svelte";
+  import ShiplogCategories from "@/components/ShiplogCategories.svelte";
+  import SidebarApply from "@/components/atoms/SidebarApply.svelte";
+  import ShowUnexplored from "@/components/atoms/ShowUnexplored.svelte";
 
-  import { LANGUAGE_NAMES, save_language } from "../lib/language";
+  import { LANGUAGE_NAMES, save_language } from "@/lib/language";
   import {
     LANGUAGE,
     reset_selected_categories,
     SESSION_SETTINGS,
-  } from "../lib/stores";
-  import { t } from "../lib/i18n";
-  import ShowUnexplored from "./atoms/ShowUnexplored.svelte";
+  } from "@/lib/stores";
+  import { t } from "@/lib/i18n";
 </script>
 
 <script>

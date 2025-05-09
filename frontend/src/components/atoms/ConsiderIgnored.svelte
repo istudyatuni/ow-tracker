@@ -1,6 +1,6 @@
 <script module>
-  import { SETTINGS } from "../../lib/stores";
-  import { t } from "../../lib/i18n";
+  import { SETTINGS } from "@/lib/stores";
+  import { t } from "@/lib/i18n";
 </script>
 
 <script>
