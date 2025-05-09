@@ -13,7 +13,12 @@ export function get_save_opened_facts(facts_data) {
 
 	// which facts in save are opened
 	let opened_facts = new Set();
-	for (let [id, fact] of Object.entries(facts_data)) {
+	let entries = Object.entries(facts_data);
+	if (entries.length === 0) {
+		return opened_facts;
+	}
+
+	for (let [id, fact] of entries) {
 		if (is_fact_opened(fact)) {
 			opened_facts.add(id);
 		}
@@ -53,17 +58,24 @@ export function has_save_in_url() {
 export function encode_save(keys, opened) {
 	keys = keys.sort();
 	let keys_count = keys.length;
-	if (keys_count != V16_KEYS_COUNT) {
+	if (keys_count != KEYS_COUNT && keys_count > 0) {
 		console.error(
 			"trying to load save with wrong number of keys:",
 			keys_count,
 			"expected",
-			V16_KEYS_COUNT,
+			KEYS_COUNT,
 		);
 		return null;
 	}
 
-	let packed = pack_bools(keys.map((id) => opened.has(id)));
+	let booled = [];
+	if (keys_count > 0) {
+		booled = keys.map((id) => opened.has(id));
+	} else {
+		// empty save
+		booled = Array.from({ length: KEYS_COUNT }, () => false);
+	}
+	let packed = pack_bools(booled);
 	return btoa(String.fromCharCode(...packed));
 }
 
