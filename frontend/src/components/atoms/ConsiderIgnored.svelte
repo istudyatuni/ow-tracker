@@ -10,8 +10,8 @@
 <label>
   <input
     type="checkbox"
-    name="show-spoilers"
-    class="other"
+    name="consider-ignored"
+    class="orange"
     {onchange}
     bind:checked={$SETTINGS.consider_ignored_facts} />
   {$t("consider-ignored-checkbox")}

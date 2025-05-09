@@ -7,7 +7,7 @@
   <input
     type="checkbox"
     name="show-spoilers"
-    class="other"
+    class="gray"
     bind:checked={$SETTINGS.hide_spoilers} />
   {$t("hide-spoilers-checkbox")}
 </label>

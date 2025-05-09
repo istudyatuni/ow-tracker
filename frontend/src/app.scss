@@ -210,7 +210,8 @@ $categories-colors: (
   $highlight: list.nth($colors, 2);
   $alt-name: list.nth($colors, 3);
 
-  input[type="checkbox"].#{$name} {
+  input[type="checkbox"].#{$name},
+  input[type="checkbox"].#{$alt-name} {
     border: 0.1px solid $c;
     background-color: #{$c}44;
 
