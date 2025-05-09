@@ -22,7 +22,8 @@ export const SAVE_KNOWN_CATEGORIES_NAMES = writable(new Set());
 export const MAP_EMPTY = writable(false);
 
 const DEFAULT_SETTINGS = {
-	version: 5,
+	version: 6,
+	selected_categories_version: 1,
 	hide_spoilers: true,
 	consider_ignored_facts: false,
 	show_ignored_facts: false,
@@ -115,7 +116,10 @@ export function migrate_storage() {
 	migrate(SESSION_SETTINGS, DEFAULT_SESSION_SETTINGS);
 
 	let s = get(SETTINGS);
-	if (s.version < DEFAULT_SETTINGS.version) {
+	if (
+		s.selected_categories_version <
+		DEFAULT_SETTINGS.selected_categories_version
+	) {
 		let c = get(SELECTED_CATEGORIES);
 		Object.keys(c).forEach((c) => SELECTED_CATEGORIES.delete(c));
 		Object.entries(default_enabled_categories()).forEach(([k, v]) =>
