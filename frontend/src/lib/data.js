@@ -37,14 +37,14 @@ export async function set_joined_rumors(data) {
 
 /**
  * @param  {string} id
- * @return {string[]}
+ * @return {{text:string}[]}
  */
 export function get_facts_for(id) {
 	let is_joined = id.includes(",");
 
 	if (id.match(RUMOR_REGEX)) {
 		// clicked on rumor
-		return [tr[id]];
+		return [{ text: tr[id] }];
 	}
 
 	if (opened_facts_by_id[id] !== undefined) {
@@ -69,16 +69,22 @@ export function get_facts_for(id) {
 
 	opened_facts_by_id[id] = facts
 		.filter((f) => opened_facts.has(f))
-		.map((f) => tr[f]);
+		.map((f) => {
+			return { text: tr[f] };
+		});
+
+	if (has_more_to_explore(id)) {
+		opened_facts_by_id[id].push({
+			text: tr[MORE_TO_EXPLORE_TR],
+			more_to_explore: true,
+		});
+	}
+
 	return opened_facts_by_id[id];
 }
 
-export function has_more_to_explore(id) {
+function has_more_to_explore(id) {
 	return !opened_cards_only_rumors.has(id) && has_unexplored_cards.has(id);
-}
-
-export function get_more_to_explore_tr() {
-	return tr[MORE_TO_EXPLORE_TR];
 }
 
 /**

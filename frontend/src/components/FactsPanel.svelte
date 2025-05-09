@@ -1,21 +1,21 @@
 <script module>
-  import { get_more_to_explore_tr } from "../lib/data";
   import { SETTINGS } from "../lib/stores";
 </script>
 
 <script>
-  let { facts = [], more_to_explore = false } = $props();
+  let { facts = [] } = $props();
 </script>
 
 <div class="facts above-map" class:hidden={facts.length === 0}>
   <ul>
     {#each facts as fact}
-      <li class="mono spoiler">{fact}</li>
+      <li
+        class="mono spoiler"
+        class:more-to-explore={fact.more_to_explore}
+        class:hidden={fact.more_to_explore && $SETTINGS.hide_spoilers}>
+        {fact.text}
+      </li>
     {/each}
-
-    {#if more_to_explore && !$SETTINGS.hide_spoilers}
-      <li class="more-to-explore mono">{get_more_to_explore_tr()}</li>
-    {/if}
   </ul>
 </div>
 

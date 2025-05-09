@@ -12,7 +12,7 @@
     OPENED_FACT,
     SESSION_SETTINGS,
   } from "./lib/stores";
-  import { get_facts_for, has_more_to_explore } from "./lib/data";
+  import { get_facts_for } from "./lib/data";
   import { init_i18n, t } from "./lib/i18n";
 </script>
 
@@ -21,15 +21,12 @@
   migrate_storage();
 
   let facts = $derived($OPENED_FACT ? get_facts_for($OPENED_FACT) : []);
-  let more_to_explore = $derived(
-    $OPENED_FACT ? has_more_to_explore($OPENED_FACT) : false,
-  );
 </script>
 
 <main>
   <Sidebar />
   <Map />
-  <FactsPanel {facts} {more_to_explore} />
+  <FactsPanel {facts} />
   <Loading />
   {#if !$SESSION_SETTINGS.welcome_popup_done}
     <WelcomePopup />
