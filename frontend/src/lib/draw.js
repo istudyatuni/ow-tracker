@@ -33,6 +33,7 @@ import {
 	SAVE_KNOWN_CATEGORIES_NAMES,
 	SELECTED_CATEGORIES,
 	SESSION_SETTINGS,
+	SETTINGS,
 } from "./stores";
 
 const DEFAULT_MULT = 0.7;
@@ -74,6 +75,7 @@ export async function* generate_all_svg() {
 			.filter(([_, enabled]) => !enabled)
 			.map(([category, _]) => category_to_curiosity(category)),
 	);
+	let consider_ignored = get(SETTINGS).consider_ignored_facts;
 
 	// number of fetches before fetching images
 	LOADING_TOTAL.set(5);
@@ -125,7 +127,7 @@ export async function* generate_all_svg() {
 	// [entry1_id, entry2_id] -> [rumor id]
 	let joined_rumors = {};
 
-	// cards where not all explore facts are opened, excluding ignore_more_to_explore
+	// cards where not all explore facts are opened
 	let has_unexplored_cards = new Set();
 
 	/**
@@ -165,8 +167,8 @@ export async function* generate_all_svg() {
 		for (let fact of e?.facts?.explore || []) {
 			if (
 				!opened_facts.has(fact.id) &&
-				!e.ignore_more_to_explore &&
-				!fact.ignore_more_to_explore
+				(consider_ignored ||
+					(!e.ignore_more_to_explore && !fact.ignore_more_to_explore))
 			) {
 				has_unexplored_cards.add(e.id);
 			}
@@ -201,11 +203,12 @@ export async function* generate_all_svg() {
 				}
 			} else if (
 				// todo: this check is still incomplete
-				// fix for TH_VILLAGE
-				!entries[fact.source_id]?.ignore_more_to_explore &&
-				// not sure about it
-				!fact.ignore_more_to_explore &&
-				!opened_card_imgs.has(e.id)
+				consider_ignored ||
+				(!opened_card_imgs.has(e.id) &&
+					// fix for TH_VILLAGE
+					!entries[fact.source_id]?.ignore_more_to_explore &&
+					// not sure about it
+					!fact.ignore_more_to_explore)
 			) {
 				has_unexplored_cards.add(fact.source_id);
 			}

@@ -10,6 +10,7 @@ upload-save-file-button = Upload save file
 
 hide-spoilers-checkbox = Hide spoilers
 hide-dlc-checkbox = Hide DLC
+consider-ignored-checkbox = Consider hidden facts
 
 loading-prefix = Loading
 loading-stage-data = data
@@ -18,7 +19,6 @@ loading-stage-images = images
 file-upload-help-header = Where are the save files located
 
 shiplog-categories-header = Ship Log Categories
-shiplog-categories-apply-button = Apply
 shiplog-category-orbital-canon = The Orbital Cannon & The Eye
 shiplog-category-quantum-moon = The Quantum Moon & related phenomena
 shiplog-category-vessel = The Vessel & Nomai arrival
@@ -27,6 +27,7 @@ shiplog-category-stranger = The Stranger
 shiplog-category-nomai-fate = The Interloper and the fate of the Nomai
 shiplog-category-other = Other
 
-show-full-map-button = Show full map
+sidebar-apply-button = Apply
+sidebar-show-full-map-button = Show full map
 
 map-empty-popup = Map is empty

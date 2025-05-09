@@ -10,6 +10,7 @@ upload-save-file-button = Загрузить файл сохранения
 
 hide-spoilers-checkbox = Скрыть спойлеры
 hide-dlc-checkbox = Скрыть DLC
+consider-ignored-checkbox = Учитывать скрытые факты
 
 loading-prefix = Загрузка
 loading-stage-data = данных
@@ -18,7 +19,6 @@ loading-stage-images = изображений
 file-upload-help-header = Где находятся файлы сохранений
 
 shiplog-categories-header = Категории бортжурнала
-shiplog-categories-apply-button = Применить
 shiplog-category-orbital-canon = Орбитальная зондовая пушка и Око Вселенной
 shiplog-category-quantum-moon = Квантовая луна и связанные феномены
 shiplog-category-vessel = Звездолёт и прибытие номаи
@@ -27,6 +27,7 @@ shiplog-category-stranger = Незнакомец
 shiplog-category-nomai-fate = Чужак и судьба номаи
 shiplog-category-other = Другое
 
-show-full-map-button = Показать полную карту
+sidebar-apply-button = Применить
+sidebar-show-full-map-button = Показать полную карту
 
 map-empty-popup = Карта пустая

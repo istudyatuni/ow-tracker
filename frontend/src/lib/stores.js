@@ -22,8 +22,10 @@ export const SAVE_KNOWN_CATEGORIES_NAMES = writable(new Set());
 export const MAP_EMPTY = writable(false);
 
 const DEFAULT_SETTINGS = {
-	version: 4,
+	version: 5,
 	hide_spoilers: true,
+	consider_ignored_facts: false,
+	show_ignored_facts: false,
 };
 const DEFAULT_SESSION_SETTINGS = {
 	version: 1,

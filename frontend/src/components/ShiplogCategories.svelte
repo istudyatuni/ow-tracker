@@ -33,7 +33,7 @@
   </div>
 {/each}
 <button onclick={() => window.location.reload()} disabled={!changed}
-  >{$t("shiplog-categories-apply-button")}</button>
+  >{$t("sidebar-apply-button")}</button>
 
 <style lang="scss">
   h4 {

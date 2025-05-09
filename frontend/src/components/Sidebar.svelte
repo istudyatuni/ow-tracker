@@ -4,6 +4,7 @@
   import LanguageIcon from "~icons/tabler/language-hiragana";
   import GithubIcon from "~icons/tabler/brand-github";
 
+  import ConsiderIgnored from "./atoms/ConsiderIgnored.svelte";
   import FileUpload from "./atoms/FileUpload.svelte";
   import HideSpoilers from "./atoms/HideSpoilers.svelte";
   import ShiplogCategories from "./ShiplogCategories.svelte";
@@ -19,6 +20,8 @@
 
 <script>
   let opened = $state(false);
+  let changed = $state(false);
+
   function handle_select_lang(e) {
     save_language(e.target.value);
     window.location.reload();
@@ -53,7 +56,12 @@
       <div class="block-wrapper">
         <HideSpoilers />
         <br />
-        <button onclick={show_full_map}>{$t("show-full-map-button")}</button>
+        <ConsiderIgnored onchange={() => (changed = true)} />
+        <br />
+        <button onclick={() => window.location.reload()} disabled={!changed}
+          >{$t("sidebar-apply-button")}</button>
+        <button onclick={show_full_map}
+          >{$t("sidebar-show-full-map-button")}</button>
       </div>
     </div>
 
