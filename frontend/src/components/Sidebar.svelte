@@ -17,6 +17,7 @@
     SESSION_SETTINGS,
   } from "../lib/stores";
   import { t } from "../lib/i18n";
+  import ShowUnexplored from "./atoms/ShowUnexplored.svelte";
 </script>
 
 <script>
@@ -58,6 +59,8 @@
         <HideSpoilers />
         <br />
         <ConsiderIgnored onchange={() => (changed = true)} />
+        <br />
+        <ShowUnexplored />
         <br />
         <SidebarApply disabled={!changed} />
         <button onclick={show_full_map}

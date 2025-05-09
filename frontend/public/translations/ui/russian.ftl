@@ -11,6 +11,7 @@ upload-save-file-button = Загрузить файл сохранения
 hide-spoilers-checkbox = Скрыть спойлеры
 hide-dlc-checkbox = Скрыть DLC
 consider-ignored-checkbox = Учитывать скрытые факты
+show-unexplored-checkbox = Показывать неисследованные факты
 
 loading-prefix = Загрузка
 loading-stage-data = данных

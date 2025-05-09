@@ -11,6 +11,7 @@ upload-save-file-button = Upload save file
 hide-spoilers-checkbox = Hide spoilers
 hide-dlc-checkbox = Hide DLC
 consider-ignored-checkbox = Consider hidden facts
+show-unexplored-checkbox = Show unexplored facts
 
 loading-prefix = Loading
 loading-stage-data = data

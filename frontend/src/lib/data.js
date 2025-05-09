@@ -5,8 +5,6 @@ const RUMOR_REGEX = /_R\d+$/;
 
 const MORE_TO_EXPLORE_TR = "MORE_TO_EXPLORE";
 
-// cache of facts
-let opened_facts_by_id = {};
 let opened_facts = new Set();
 let opened_cards_only_rumors = new Set();
 let has_unexplored_cards = new Set();
@@ -37,18 +35,15 @@ export async function set_joined_rumors(data) {
 
 /**
  * @param  {string} id
+ * @param  {boolean} show_unexplored
  * @return {{text:string}[]}
  */
-export function get_facts_for(id) {
+export function get_facts_for(id, show_unexplored) {
 	let is_joined = id.includes(",");
 
 	if (id.match(RUMOR_REGEX)) {
 		// clicked on rumor
 		return [{ text: tr[id] }];
-	}
-
-	if (opened_facts_by_id[id] !== undefined) {
-		return opened_facts_by_id[id];
 	}
 
 	let facts;
@@ -59,6 +54,9 @@ export function get_facts_for(id) {
 	} else {
 		facts = entries_facts[id]?.explore;
 	}
+	if (!show_unexplored) {
+		facts = facts.filter((f) => opened_facts.has(f));
+	}
 
 	// when vite reloads this file in dev mode, site breaks
 	if (import.meta.env.DEV) {
@@ -67,20 +65,18 @@ export function get_facts_for(id) {
 		}
 	}
 
-	opened_facts_by_id[id] = facts
-		.filter((f) => opened_facts.has(f))
-		.map((f) => {
-			return { text: tr[f] };
-		});
+	facts = facts.map((f) => {
+		return { text: tr[f], more_to_explore: !opened_facts.has(f) };
+	});
 
-	if (has_more_to_explore(id)) {
-		opened_facts_by_id[id].push({
+	if (has_more_to_explore(id) && !show_unexplored) {
+		facts.push({
 			text: tr[MORE_TO_EXPLORE_TR],
 			more_to_explore: true,
 		});
 	}
 
-	return opened_facts_by_id[id];
+	return facts;
 }
 
 function has_more_to_explore(id) {

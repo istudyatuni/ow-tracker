@@ -11,6 +11,7 @@
     migrate_storage,
     OPENED_FACT,
     SESSION_SETTINGS,
+    SETTINGS,
   } from "./lib/stores";
   import { get_facts_for } from "./lib/data";
   import { init_i18n, t } from "./lib/i18n";
@@ -20,7 +21,11 @@
   init_i18n();
   migrate_storage();
 
-  let facts = $derived($OPENED_FACT ? get_facts_for($OPENED_FACT) : []);
+  let facts = $derived(
+    $OPENED_FACT
+      ? get_facts_for($OPENED_FACT, $SETTINGS.show_ignored_facts)
+      : [],
+  );
 </script>
 
 <main>
