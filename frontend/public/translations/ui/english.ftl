@@ -12,12 +12,8 @@ hide-spoilers-checkbox = Hide spoilers
 hide-dlc-checkbox = Hide DLC
 
 loading-prefix = Loading
-loading-stage-save-keys = available save keys
-loading-stage-connections-data = connections data
-loading-stage-coordinates = coordinates
-loading-stage-parents = parents
-loading-stage-translation = translation for { $lang }
-loading-stage-sprite = sprite for { $sprite }
+loading-stage-data = data
+loading-stage-images = images
 
 file-upload-help-header = Where are the save files located
 

@@ -1,11 +1,14 @@
 <script module>
   import { t } from "../lib/i18n";
-  import { LOADING } from "../lib/stores";
+  import { LOADING, LOADING_STAGE, LOADING_TOTAL } from "../lib/stores";
 </script>
 
 <div class="block above-map" class:hidden={$LOADING === null}>
-  {$t("loading-prefix")}
-  {$LOADING}
+  <label>
+    {$t("loading-prefix")}
+    {$t(`loading-stage-${$LOADING_STAGE}`)}
+    <progress value={$LOADING} max={$LOADING_TOTAL}></progress>
+  </label>
 </div>
 
 <style lang="scss">

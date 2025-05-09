@@ -5,10 +5,13 @@ import { localStore, sessionStore } from "svelte-storages";
 import { CATEGORIES, default_enabled_categories } from "./categories";
 import { detect_language } from "./language";
 
+export const LOADING = writable(null);
+export const LOADING_TOTAL = writable(0);
+export const LOADING_STAGE = writable("data");
+
 export const OPENED_FACT = writable(null);
 export const OPENED_FACTS_COUNT = writable(0);
 export const SAVE_FOUND = writable(null);
-export const LOADING = writable("base");
 export const LANGUAGE = writable(detect_language());
 export const SELECTED_CATEGORIES = localStore(
 	"show-categories",

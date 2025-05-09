@@ -23,6 +23,8 @@ import { detect_language } from "./language";
 import { get_save_from_browser_url, has_save_in_url } from "./saves";
 import {
 	LOADING,
+	LOADING_STAGE,
+	LOADING_TOTAL,
 	MAP_EMPTY,
 	MAP_SIZE,
 	OPENED_FACTS_COUNT,
@@ -32,7 +34,6 @@ import {
 	SELECTED_CATEGORIES,
 	SESSION_SETTINGS,
 } from "./stores";
-import { t as i18n } from "./i18n";
 
 const DEFAULT_MULT = 0.7;
 const BIG_MULT = 1.2;
@@ -68,14 +69,15 @@ export async function* generate_all_svg() {
 	let save_loaded = has_save_in_url();
 	SAVE_FOUND.set(save_loaded);
 
-	let t = get(i18n);
 	let hide_curiosities = new Set(
 		Object.entries(get(SELECTED_CATEGORIES))
 			.filter(([_, enabled]) => !enabled)
 			.map(([category, _]) => category_to_curiosity(category)),
 	);
 
-	LOADING.set(t("loading-stage-save-keys"));
+	// number of fetches before fetching images
+	LOADING_TOTAL.set(5);
+	LOADING.set(0);
 
 	let save_keys = await (
 		await fetch(import.meta.env.BASE_URL + "/save_keys.json")
@@ -89,7 +91,7 @@ export async function* generate_all_svg() {
 	set_opened_facts(opened_facts);
 	OPENED_FACTS_COUNT.set(opened_facts.size);
 
-	LOADING.set(t("loading-stage-connections-data"));
+	LOADING.update((n) => n + 1);
 
 	/**
 	 * load ids data and rumors source ids
@@ -297,7 +299,7 @@ export async function* generate_all_svg() {
 		),
 	);
 
-	LOADING.set(t("loading-stage-coordinates"));
+	LOADING.update((n) => n + 1);
 
 	/**
 	 * load coordinates and images
@@ -330,7 +332,7 @@ export async function* generate_all_svg() {
 		[maxX, maxY],
 	]);
 
-	LOADING.set(t("loading-stage-parents"));
+	LOADING.update((n) => n + 1);
 
 	/** @type {Object.<string, string>} */
 	let parents = await (
@@ -339,10 +341,14 @@ export async function* generate_all_svg() {
 
 	// load translations
 	let lang = detect_language();
-	LOADING.set(t("loading-stage-translation", { lang }));
+	LOADING.update((n) => n + 1);
 
 	/** @type {Object.<string, string>} */
 	let tr = await load_tr(lang);
+
+	LOADING.set(0);
+	LOADING_TOTAL.set(opened_card_imgs.size);
+	LOADING_STAGE.set("images");
 
 	// centers is filled inside of generate_cards
 	/** @type {Object.<string, import('leaflet').LatLngTuple>} */
@@ -396,8 +402,6 @@ async function* generate_cards(
 	hide_curiosities,
 	save_loaded,
 ) {
-	let t = get(i18n);
-
 	for (let [id, card] of Object.entries(cards)) {
 		let curiosity = library[id].curiosity;
 
@@ -435,7 +439,7 @@ async function* generate_cards(
 			if (card.sprite === null) {
 				return null;
 			}
-			LOADING.set(t("loading-stage-sprite", { sprite: id }));
+			LOADING.update((n) => n + 1);
 			let img = await (await fetch(card.sprite)).blob();
 			return await to_data_url(img);
 		})();
