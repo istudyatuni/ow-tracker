@@ -486,6 +486,8 @@ function* generate_arrows(
 				should_join ? key.join(",") : rumor_id,
 				centers[source_id],
 				centers[entry_id],
+				// use both categories as class names so that the arrow is
+				// hidden if either of these categories is hidden
 				curiosity_to_category(source_curiosity) +
 					" " +
 					curiosity_to_category(entry_curiosity),
