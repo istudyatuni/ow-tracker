@@ -15,6 +15,7 @@
   import {
     LANGUAGE,
     reset_selected_categories,
+    SAVE_FOUND,
     SESSION_SETTINGS,
   } from "@/lib/stores";
   import { t } from "@/lib/i18n";
@@ -57,14 +58,16 @@
 
       <div class="block-wrapper">
         <HideSpoilers />
-        <br />
-        <ConsiderIgnored onchange={() => (changed = true)} />
-        <br />
-        <ShowUnexplored />
-        <br />
-        <SidebarApply disabled={!changed} />
-        <button onclick={show_full_map}
-          >{$t("sidebar-show-full-map-button")}</button>
+        {#if $SAVE_FOUND}
+          <br />
+          <ConsiderIgnored onchange={() => (changed = true)} />
+          <br />
+          <ShowUnexplored />
+          <br />
+          <SidebarApply disabled={!changed} />
+          <button onclick={show_full_map}
+            >{$t("sidebar-show-full-map-button")}</button>
+        {/if}
       </div>
     </div>
 
