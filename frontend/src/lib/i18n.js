@@ -1,8 +1,12 @@
-import { derived } from "svelte/store";
+import { derived, writable } from "svelte/store";
 import { FluentBundle, FluentResource } from "@fluent/bundle";
 
-import { set_tr_bundle, tr_bundle } from "@/lib/stores";
 import { detect_language, language_to_code, LANGUAGES } from "@/lib/language";
+
+/**
+ * @type {import("svelte/store").Writable.<import("@fluent/bundle").FluentBundle> | null}
+ */
+const tr_bundle = writable(null);
 
 export async function init_i18n() {
 	let lang = detect_language();
@@ -20,10 +24,10 @@ export async function init_i18n() {
 
 	let errors = bundle.addResource(res);
 	if (errors.length) {
-		console.error("error during i18n inittialization", errors);
+		console.error("error during i18n initialization", errors);
 	}
 
-	set_tr_bundle(bundle);
+	tr_bundle.set(bundle);
 }
 
 function translator_fn(bundle) {

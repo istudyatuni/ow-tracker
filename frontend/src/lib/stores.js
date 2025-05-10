@@ -48,11 +48,6 @@ export const MAP_SIZE = writable([
 	[3300, 1700],
 ]);
 
-/**
- * @type {import("svelte/store").Writable.<import("@fluent/bundle").FluentBundle> | null}
- */
-export const tr_bundle = writable(null);
-
 export function reset_selected_categories() {
 	for (let c of CATEGORIES) {
 		SELECTED_CATEGORIES.set(c, true);
@@ -65,13 +60,6 @@ export function open_fact(id) {
 
 export function close_fact() {
 	OPENED_FACT.set(null);
-}
-
-/**
- * @param {import("@fluent/bundle").FluentBundle} bundle
- */
-export function set_tr_bundle(bundle) {
-	tr_bundle.set(bundle);
 }
 
 function toggle_body_class(name, enabled) {
