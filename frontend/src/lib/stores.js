@@ -1,4 +1,4 @@
-import { derived, get, writable } from "svelte/store";
+import { get, writable } from "svelte/store";
 
 import { localStore, sessionStore } from "svelte-storages";
 
@@ -51,20 +51,7 @@ export const MAP_SIZE = writable([
 /**
  * @type {import("svelte/store").Writable.<import("@fluent/bundle").FluentBundle> | null}
  */
-const tr_bundle = writable(null);
-
-export const translator = derived(tr_bundle, (bundle) => (id, args = {}) => {
-	if (bundle === null) {
-		return "";
-	}
-
-	let msg = bundle.getMessage(id);
-	if (msg?.value) {
-		return bundle.formatPattern(msg.value, args);
-	}
-	console.warn("no value for message with id", id);
-	return id;
-});
+export const tr_bundle = writable(null);
 
 export function reset_selected_categories() {
 	for (let c of CATEGORIES) {

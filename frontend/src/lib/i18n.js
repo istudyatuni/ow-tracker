@@ -1,6 +1,7 @@
+import { derived } from "svelte/store";
 import { FluentBundle, FluentResource } from "@fluent/bundle";
 
-import { set_tr_bundle, translator } from "@/lib/stores";
+import { set_tr_bundle, tr_bundle } from "@/lib/stores";
 import { detect_language, language_to_code, LANGUAGES } from "@/lib/language";
 
 export async function init_i18n() {
@@ -25,4 +26,19 @@ export async function init_i18n() {
 	set_tr_bundle(bundle);
 }
 
-export { translator as t };
+function translator_fn(bundle) {
+	return (id, args = {}) => {
+		if (bundle === null) {
+			return "";
+		}
+
+		let msg = bundle.getMessage(id);
+		if (msg?.value) {
+			return bundle.formatPattern(msg.value, args);
+		}
+		console.warn("no value for message with id", id);
+		return id;
+	};
+}
+
+export const t = derived(tr_bundle, translator_fn);
