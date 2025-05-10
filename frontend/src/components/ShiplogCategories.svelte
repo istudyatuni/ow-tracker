@@ -1,12 +1,14 @@
 <script module>
   import SidebarApply from "@/components/atoms/SidebarApply.svelte";
 
-  import { CATEGORIES } from "@/lib/categories";
+  import { CATEGORIES, CATEGORY } from "@/lib/categories";
   import { t } from "@/lib/i18n";
   import {
+    SAVE_FOUND,
     SAVE_FOUND_CATEGORIES,
     SAVE_KNOWN_CATEGORIES_NAMES,
     SELECTED_CATEGORIES,
+    SETTINGS,
   } from "@/lib/stores";
 </script>
 
@@ -18,7 +20,8 @@
 {#each CATEGORIES as id (id)}
   <div
     class="spoiler"
-    class:hidden={!$SAVE_FOUND_CATEGORIES.has(id)}
+    class:hidden={!$SAVE_FOUND_CATEGORIES.has(id) ||
+      (id === CATEGORY.STRANGER && !$SAVE_FOUND && $SETTINGS.hide_dlc)}
     class:hide-spoilers={!$SAVE_KNOWN_CATEGORIES_NAMES.has(id)}>
     <label>
       <input

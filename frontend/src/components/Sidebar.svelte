@@ -6,6 +6,7 @@
 
   import ConsiderIgnored from "@/components/atoms/ConsiderIgnored.svelte";
   import FileUpload from "@/components/atoms/FileUpload.svelte";
+  import HideDlc from "@/components/atoms/HideDlc.svelte";
   import HideSpoilers from "@/components/atoms/HideSpoilers.svelte";
   import ShiplogCategories from "@/components/ShiplogCategories.svelte";
   import SidebarApply from "@/components/atoms/SidebarApply.svelte";
@@ -63,11 +64,19 @@
           <ConsiderIgnored onchange={() => (changed = true)} />
           <br />
           <ShowUnexplored />
+        {:else}
           <br />
-          <SidebarApply disabled={!changed} />
-          <button onclick={show_full_map}
-            >{$t("sidebar-show-full-map-button")}</button>
+          <HideDlc onchange={() => (changed = true)} />
         {/if}
+
+        <div class="buttons">
+          <SidebarApply disabled={!changed} />
+
+          {#if $SAVE_FOUND}
+            <button onclick={show_full_map}
+              >{$t("sidebar-show-full-map-button")}</button>
+          {/if}
+        </div>
       </div>
     </div>
 
@@ -115,7 +124,7 @@
     &.categories {
       max-width: 35em;
     }
-    & > button {
+    & > .buttons {
       margin-top: 10px;
     }
   }

@@ -22,9 +22,11 @@ export const SAVE_KNOWN_CATEGORIES_NAMES = writable(new Set());
 export const MAP_EMPTY = writable(false);
 
 const DEFAULT_SETTINGS = {
-	version: 6,
+	version: 7,
 	selected_categories_version: 1,
 	hide_spoilers: true,
+	// separate field for hiding "stranger" category when showing full map
+	hide_dlc: false,
 	consider_ignored_facts: false,
 	show_ignored_facts: false,
 };
