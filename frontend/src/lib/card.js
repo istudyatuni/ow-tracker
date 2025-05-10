@@ -53,6 +53,7 @@ export function make_card_svg(
 	let e = document.createElementNS(SVG_NS, "svg");
 	e.setAttribute("xmlns", SVG_NS);
 	e.setAttribute("viewBox", `0 0 ${svg_width} ${FULL_CARD_HEIGHT}`);
+	e.setAttribute("class", category_class);
 
 	let star = "";
 	let img_size = `x="${CARD_MARGIN + left_shift}" y="${TEXT_HEIGHT}" width="${IMAGE_WIDTH}" height="${IMAGE_HEIGHT}"`;

@@ -34,25 +34,6 @@ export function default_categories(enabled) {
 	return Object.fromEntries(CATEGORIES.map((c) => [c, enabled]));
 }
 
-export function category_to_curiosity(c) {
-	switch (c) {
-		case CATEGORY.ORBITAL_CANON:
-			return CURIOSITY.SUNKEN_MODULE;
-		case CATEGORY.QUANTUM_MOON:
-			return CURIOSITY.QUANTUM_MOON;
-		case CATEGORY.VESSEL:
-			return CURIOSITY.VESSEL;
-		case CATEGORY.ASH_TWIN_PROJECT:
-			return CURIOSITY.TIME_LOOP;
-		case CATEGORY.STRANGER:
-			return CURIOSITY.INVISIBLE_PLANET;
-		case CATEGORY.NOMAI_FATE:
-			return CURIOSITY.COMET_CORE;
-		case CATEGORY.OTHER:
-			return CURIOSITY.OTHER;
-	}
-}
-
 export function curiosity_to_category(c) {
 	switch (c) {
 		case CURIOSITY.SUNKEN_MODULE:
@@ -69,14 +50,4 @@ export function curiosity_to_category(c) {
 			return CATEGORY.NOMAI_FATE;
 	}
 	return CATEGORY.OTHER;
-}
-
-/**
- * If should show card/arrow with defined curiosity
- * @param  {Set.<string>}     hide_curiosities Which curiosities to hide
- * @param  {string|undefined} curiosity        Curiosity of card
- * @return {boolean}
- */
-export function should_hide_curiosity(hide_curiosities, curiosity) {
-	return hide_curiosities.has(curiosity);
 }

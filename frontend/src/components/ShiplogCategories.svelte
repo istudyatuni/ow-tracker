@@ -1,6 +1,4 @@
 <script module>
-  import SidebarApply from "@/components/atoms/SidebarApply.svelte";
-
   import { CATEGORIES, CATEGORY } from "@/lib/categories";
   import { t } from "@/lib/i18n";
   import {
@@ -10,10 +8,6 @@
     SELECTED_CATEGORIES,
     SETTINGS,
   } from "@/lib/stores";
-</script>
-
-<script>
-  let changed = $state(false);
 </script>
 
 <h4>{$t("shiplog-categories-header")}</h4>
@@ -29,16 +23,11 @@
         name={id}
         class={id}
         checked={$SELECTED_CATEGORIES[id]}
-        onchange={(e) => {
-          changed = true;
-          SELECTED_CATEGORIES.set(id, e.target.checked);
-        }} />
+        onchange={(e) => SELECTED_CATEGORIES.set(id, e.target.checked)} />
       {$t(`shiplog-category-${id}`)}
     </label>
   </div>
 {/each}
-
-<SidebarApply style="margin-top: 5px" disabled={!changed} />
 
 <style lang="scss">
   h4 {

@@ -236,6 +236,10 @@ $categories-colors: (
       border-color: $highlight;
     }
   }
+
+  .hide-#{$name} svg.#{$name} {
+    display: none;
+  }
 }
 
 $other-color: map.get($categories-colors, "other");

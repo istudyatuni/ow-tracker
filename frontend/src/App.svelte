@@ -7,10 +7,12 @@
   import Map from "@/Map.svelte";
 
   import {
-    MAP_EMPTY,
     migrate_storage,
     OPENED_FACT,
+    SAVE_EMPTY,
+    SAVE_FOUND_CATEGORIES,
     SESSION_SETTINGS,
+    SELECTED_CATEGORIES,
     SETTINGS,
   } from "@/lib/stores";
   import { get_facts_for } from "@/lib/data";
@@ -26,6 +28,18 @@
       ? get_facts_for($OPENED_FACT, $SETTINGS.show_ignored_facts)
       : [],
   );
+  let is_map_empty = $derived(
+    // if save has no opened cards
+    $SAVE_EMPTY ||
+      // or none of the categories found in the save are selected
+      $SAVE_FOUND_CATEGORIES.intersection(
+        new Set(
+          Object.entries($SELECTED_CATEGORIES)
+            .filter(([_, v]) => v)
+            .map(([v, _]) => v),
+        ),
+      ).size === 0,
+  );
 </script>
 
 <main>
@@ -35,10 +49,7 @@
   <Loading />
   {#if !$SESSION_SETTINGS.welcome_popup_done}
     <WelcomePopup />
-  {:else if $MAP_EMPTY}
+  {:else if is_map_empty}
     <Popup>{$t("map-empty-popup")}</Popup>
   {/if}
 </main>
-
-<style>
-</style>

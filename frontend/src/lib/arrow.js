@@ -14,9 +14,10 @@ const ARROW = {
  * @param  {string} id
  * @param  {import('leaflet').LatLngTuple} center1
  * @param  {import('leaflet').LatLngTuple} center2
+ * @param  {string} category_class
  * @return {SVGElement}
  */
-export function make_rumor_arrow(id, center1, center2) {
+export function make_rumor_arrow(id, center1, center2, category_class) {
 	let [x1, y1] = center1;
 	let [x2, y2] = center2;
 
@@ -50,6 +51,7 @@ export function make_rumor_arrow(id, center1, center2) {
 	let e = document.createElementNS(SVG_NS, "svg");
 	e.setAttribute("xmlns", SVG_NS);
 	e.setAttribute("viewBox", `0 0 ${rect_width} ${rect_height}`);
+	e.setAttribute("class", category_class);
 
 	e.innerHTML = `<line id="${id}" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" class="arrow" stroke-width="${STROKE}" />
 		<path d="${ARROW.path}" transform="translate(${cx - ARROW.cx}, ${cy - ARROW.cy}) rotate(${deg}, ${ARROW.cx}, ${ARROW.cy})" class="arrow" />`;

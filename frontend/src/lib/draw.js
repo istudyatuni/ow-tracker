@@ -5,10 +5,8 @@ import { CARD_HEIGHT, CARD_WIDTH, make_card_svg, STAR_SIZE } from "@/lib/card";
 import {
 	CATEGORIES,
 	CATEGORY,
-	category_to_curiosity,
 	CURIOSITY,
 	curiosity_to_category,
-	should_hide_curiosity,
 } from "@/lib/categories";
 import {
 	load_tr,
@@ -25,13 +23,12 @@ import {
 	LOADING,
 	LOADING_STAGE,
 	LOADING_TOTAL,
-	MAP_EMPTY,
 	MAP_SIZE,
 	OPENED_FACTS_COUNT,
+	SAVE_EMPTY,
 	SAVE_FOUND,
 	SAVE_FOUND_CATEGORIES,
 	SAVE_KNOWN_CATEGORIES_NAMES,
-	SELECTED_CATEGORIES,
 	SESSION_SETTINGS,
 	SETTINGS,
 } from "@/lib/stores";
@@ -70,11 +67,6 @@ export async function* generate_all_svg() {
 	let save_loaded = has_save_in_url();
 	SAVE_FOUND.set(save_loaded);
 
-	let hide_curiosities = new Set(
-		Object.entries(get(SELECTED_CATEGORIES))
-			.filter(([_, enabled]) => !enabled)
-			.map(([category, _]) => category_to_curiosity(category)),
-	);
 	let consider_ignored = get(SETTINGS).consider_ignored_facts;
 
 	// number of fetches before fetching images
@@ -288,9 +280,7 @@ export async function* generate_all_svg() {
 
 	SAVE_FOUND_CATEGORIES.set(cards_categories_in_save);
 	SAVE_KNOWN_CATEGORIES_NAMES.set(categories_known_names);
-	MAP_EMPTY.set(
-		opened_cards.size === 0 || hide_curiosities.size === CATEGORIES.length,
-	);
+	SAVE_EMPTY.set(opened_cards.size === 0);
 
 	if (!get(SESSION_SETTINGS).welcome_popup_done) {
 		return [];
@@ -314,10 +304,7 @@ export async function* generate_all_svg() {
 		await fetch(import.meta.env.BASE_URL + "/coordinates.json")
 	).json();
 	for (let [id, [x, y]] of Object.entries(coordinates_data)) {
-		if (
-			opened_cards.has(id) &&
-			!should_hide_curiosity(hide_curiosities, library[id].curiosity)
-		) {
+		if (opened_cards.has(id)) {
 			minX = Math.min(minX, x);
 			minY = Math.min(minY, y);
 			maxX = Math.max(maxX, x);
@@ -365,7 +352,6 @@ export async function* generate_all_svg() {
 		has_unexplored_cards,
 		tr,
 		cards_alt_names,
-		hide_curiosities,
 		save_loaded,
 	);
 	yield* generate_arrows(
@@ -375,7 +361,6 @@ export async function* generate_all_svg() {
 		opened_facts,
 		centers,
 		joined_rumors,
-		hide_curiosities,
 		save_loaded,
 	);
 }
@@ -389,7 +374,6 @@ export async function* generate_all_svg() {
  * @param {Set.<string>} has_unexplored_cards
  * @param {Object.<string, string>} tr
  * @param {Object.<string, string>} cards_alt_names
- * @param {Set.<string>} hide_curiosities
  * @param {boolean} save_loaded
  * @yield {}
  */
@@ -402,7 +386,6 @@ async function* generate_cards(
 	has_unexplored_cards,
 	tr,
 	cards_alt_names,
-	hide_curiosities,
 	save_loaded,
 ) {
 	for (let [id, card] of Object.entries(cards)) {
@@ -431,9 +414,6 @@ async function* generate_cards(
 		let start_bounds = [cx - h / 2, cy - w / 2];
 		let end_bounds = [cx + h / 2, cy + w / 2];
 
-		if (should_hide_curiosity(hide_curiosities, curiosity)) {
-			continue;
-		}
 		if (save_loaded && !opened_cards.has(id)) {
 			continue;
 		}
@@ -468,7 +448,6 @@ async function* generate_cards(
  * @param {Set.<string>} opened_cards
  * @param {Set.<string>} opened_facts
  * @param {Object.<string, import('leaflet').LatLngTuple>} centers
- * @param {Set.<string>} hide_curiosities
  * @param {boolean} save_loaded
  * @yield {}
  */
@@ -479,30 +458,16 @@ function* generate_arrows(
 	opened_facts,
 	centers,
 	joined_rumors,
-	hide_curiosities,
 	save_loaded,
 ) {
 	for (let [source_id, entry_ids] of Object.entries(sources)) {
-		if (
-			should_hide_curiosity(
-				hide_curiosities,
-				library[source_id].curiosity,
-			)
-		) {
-			continue;
-		}
+		let source_curiosity = library[source_id].curiosity;
+
 		if (save_loaded && !opened_cards.has(source_id)) {
 			continue;
 		}
 		for (let { entry_id, rumor_id } of entry_ids) {
-			if (
-				should_hide_curiosity(
-					hide_curiosities,
-					library[entry_id].curiosity,
-				)
-			) {
-				continue;
-			}
+			let entry_curiosity = library[entry_id].curiosity;
 
 			let key = [source_id, entry_id].sort();
 			// @ts-ignore
@@ -521,6 +486,9 @@ function* generate_arrows(
 				should_join ? key.join(",") : rumor_id,
 				centers[source_id],
 				centers[entry_id],
+				curiosity_to_category(source_curiosity) +
+					" " +
+					curiosity_to_category(entry_curiosity),
 			);
 			let coords = expand_thin_bounds([
 				centers[source_id],

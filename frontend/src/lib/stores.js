@@ -19,7 +19,7 @@ export const SELECTED_CATEGORIES = localStore(
 );
 export const SAVE_FOUND_CATEGORIES = writable(new Set());
 export const SAVE_KNOWN_CATEGORIES_NAMES = writable(new Set());
-export const MAP_EMPTY = writable(false);
+export const SAVE_EMPTY = writable(false);
 
 const DEFAULT_SETTINGS = {
 	version: 7,
@@ -87,14 +87,21 @@ export function set_tr_bundle(bundle) {
 	tr_bundle.set(bundle);
 }
 
-SETTINGS.subscribe(({ hide_spoilers }) => {
-	const CLASS = "hide-spoilers";
-
+function toggle_body_class(name, enabled) {
 	let c = document.body.classList;
-	if (hide_spoilers) {
-		c.add(CLASS);
+	if (enabled) {
+		c.add(name);
 	} else {
-		c.remove(CLASS);
+		c.remove(name);
+	}
+}
+
+SETTINGS.subscribe(({ hide_spoilers }) =>
+	toggle_body_class("hide-spoilers", hide_spoilers),
+);
+SELECTED_CATEGORIES.subscribe((categories) => {
+	for (let [category, selected] of Object.entries(categories)) {
+		toggle_body_class("hide-" + category, !selected);
 	}
 });
 
