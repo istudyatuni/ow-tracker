@@ -22,4 +22,4 @@ jobs:
         run: cd frontend && yarn install --frozen-lockfile
 
       - name: check format
-        run: cd frontend && yarn format --check
+        run: cd frontend && yarn format:check
