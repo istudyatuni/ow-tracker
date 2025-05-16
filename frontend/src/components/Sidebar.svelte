@@ -66,17 +66,17 @@
           <ShowUnexplored />
         {:else}
           <br />
-          <HideDlc onchange={() => (changed = true)} />
+          <HideDlc />
         {/if}
 
-        <div class="buttons">
-          <SidebarApply disabled={!changed} />
+        {#if $SAVE_FOUND}
+          <div class="buttons">
+            <SidebarApply disabled={!changed} />
 
-          {#if $SAVE_FOUND}
             <button onclick={show_full_map}
               >{$t("sidebar-show-full-map-button")}</button>
-          {/if}
-        </div>
+          </div>
+        {/if}
       </div>
     </div>
 

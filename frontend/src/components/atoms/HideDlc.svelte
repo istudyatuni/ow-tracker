@@ -5,19 +5,12 @@
   const CATEGORY = "stranger";
 </script>
 
-<script>
-  let { onchange = () => {} } = $props();
-</script>
-
 <label>
   <input
     type="checkbox"
     name="hide-dlc"
     class={CATEGORY}
     bind:checked={$SETTINGS.hide_dlc}
-    onchange={(e) => {
-      SELECTED_CATEGORIES.set(CATEGORY, !e.target.checked);
-      onchange();
-    }} />
+    onchange={(e) => SELECTED_CATEGORIES.set(CATEGORY, !e.target.checked)} />
   {$t("hide-dlc-checkbox")}
 </label>
