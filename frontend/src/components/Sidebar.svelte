@@ -80,18 +80,38 @@
       </div>
     </div>
 
-    <select onchange={handle_select_lang}>
-      {#each Object.entries(LANGUAGE_NAMES) as [key, name]}
-        <option value={key} selected={$LANGUAGE === key}>{name}</option>
-      {/each}
-    </select>
-    <span class="icon">
-      <LanguageIcon width="25" height="25" />
-    </span>
-    <br />
+    <div class="block-wrapper">
+      <select onchange={handle_select_lang}>
+        {#each Object.entries(LANGUAGE_NAMES) as [key, name]}
+          <option value={key} selected={$LANGUAGE === key}>{name}</option>
+        {/each}
+      </select>
+      <span class="icon">
+        <LanguageIcon width="25" height="25" />
+      </span>
+      <br />
 
-    <a href="https://github.com/istudyatuni/ow-tracker" class="brand-icon"
-      ><GithubIcon width="35" height="35" /></a>
+      <div class="github-build">
+        <a href="https://github.com/istudyatuni/ow-tracker" class="brand-icon"
+          ><GithubIcon width="35" height="35" /></a>
+
+        <span class="build">
+          {$t("sidebar-build-prefix")}:
+          <span class="green build-version mono">
+            {#if import.meta.env.DEV}
+              dev
+            {:else}
+              <a
+                href={"https://github.com/istudyatuni/ow-tracker/commit/" +
+                  import.meta.env.VITE_BUILD_VERSION}
+                class="green">
+                {import.meta.env.VITE_BUILD_VERSION.slice(0, 6)}
+              </a>
+            {/if}
+          </span>
+        </span>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -135,5 +155,23 @@
   select {
     cursor: pointer;
     margin-bottom: 5px;
+  }
+  .github-build {
+    display: flex;
+    margin-top: 5px;
+
+    & > .build {
+      align-self: center;
+      margin-left: 1em;
+    }
+  }
+  .build-version {
+    padding: 2px 4px;
+    border-radius: 5px;
+
+    & > a {
+      color: inherit;
+      text-decoration: underline;
+    }
   }
 </style>

@@ -229,7 +229,8 @@ $categories-colors: (
     }
   }
 
-  button.#{$alt-name} {
+  button.#{$alt-name},
+  span.#{$alt-name} {
     background: #{$highlight}77;
 
     &:hover {

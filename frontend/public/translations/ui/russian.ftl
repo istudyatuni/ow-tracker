@@ -30,5 +30,6 @@ shiplog-category-other = Другое
 
 sidebar-apply-button = Применить
 sidebar-show-full-map-button = Показать полную карту
+sidebar-build-prefix = Сборка
 
 map-empty-popup = Карта пустая
