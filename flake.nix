@@ -16,7 +16,7 @@
             # rustc
             # cargo
             yarn
-            nodejs_23
+            nodePackages.nodejs
           ];
         };
       }
