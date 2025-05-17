@@ -23,6 +23,14 @@
   init_i18n();
   migrate_storage();
 
+  let hide_categories = $derived(
+    Object.fromEntries(
+      Object.entries($SELECTED_CATEGORIES).map(([category, selected]) => [
+        "hide-" + category,
+        !selected,
+      ]),
+    ),
+  );
   let facts = $derived(
     $OPENED_FACT
       ? get_facts_for($OPENED_FACT, $SETTINGS.show_ignored_facts)
@@ -42,14 +50,7 @@
   );
 </script>
 
-<main
-  class={Object.fromEntries(
-    Object.entries($SELECTED_CATEGORIES).map(([category, selected]) => [
-      "hide-" + category,
-      !selected,
-    ]),
-  )}
-  class:hide-spoilers={$SETTINGS.hide_spoilers}>
+<main class={hide_categories} class:hide-spoilers={$SETTINGS.hide_spoilers}>
   <Sidebar />
   <Map />
   <FactsPanel {facts} />
