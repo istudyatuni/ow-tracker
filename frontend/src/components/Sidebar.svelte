@@ -140,9 +140,10 @@
     border-radius: 10px;
     padding: 10px 10px;
     margin-bottom: 5px;
-    max-width: fit-content;
   }
   .block-wrapper {
+    max-width: fit-content;
+
     & > .buttons {
       margin-top: 10px;
     }
