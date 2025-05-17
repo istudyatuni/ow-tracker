@@ -43,7 +43,7 @@
   }
 </script>
 
-<div class="bar above-map">
+<div class="bar above-map-controls">
   <button onclick={() => (opened = !opened)}>
     {#if opened}
       <CloseIcon />

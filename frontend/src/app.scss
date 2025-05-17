@@ -120,8 +120,14 @@ input[type="checkbox"]:checked::after {
   transform: rotate(45deg);
 }
 
-.above-map {
+// information related to map itself, such as facts panel
+.above-map-info {
   z-index: 1000;
+}
+
+// elements which should be above all map elements, including facts panel
+.above-map-controls {
+  z-index: 1100;
 }
 
 .more-to-explore {

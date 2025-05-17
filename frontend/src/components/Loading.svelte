@@ -3,7 +3,7 @@
   import { LOADING, LOADING_STAGE, LOADING_TOTAL } from "@/lib/stores";
 </script>
 
-<div class="block above-map" class:hidden={$LOADING === null}>
+<div class="block above-map-info" class:hidden={$LOADING === null}>
   <label>
     {$t("loading-prefix")}
     {$t(`loading-stage-${$LOADING_STAGE}`)}

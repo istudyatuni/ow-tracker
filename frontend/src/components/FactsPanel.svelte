@@ -6,7 +6,7 @@
   let { facts = [] } = $props();
 </script>
 
-<div class="facts above-map" class:hidden={facts.length === 0}>
+<div class="facts above-map-info" class:hidden={facts.length === 0}>
   <ul>
     {#each facts as fact}
       <li
