@@ -4,7 +4,7 @@
 
 interface ViteTypeOptions {
   // Disallow unknown keys.
-  // strictImportMetaEnv: unknown
+  strictImportMetaEnv: unknown
 }
 
 interface ImportMetaEnv {
