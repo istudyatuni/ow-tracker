@@ -2,7 +2,11 @@ import { get, writable } from "svelte/store";
 
 import { localStore, sessionStore } from "svelte-storages";
 
-import { CATEGORIES, default_enabled_categories } from "@/lib/categories";
+import {
+	CATEGORIES,
+	CATEGORY,
+	default_enabled_categories,
+} from "@/lib/categories";
 import { detect_language } from "@/lib/language";
 
 export const LOADING = writable(null);
@@ -47,6 +51,12 @@ export const MAP_SIZE = writable([
 	[-900, -1600],
 	[3300, 1700],
 ]);
+
+export function hide_dlc_if_necessary() {
+	if (get(SETTINGS).hide_dlc) {
+		SELECTED_CATEGORIES.set(CATEGORY.STRANGER, false);
+	}
+}
 
 export function reset_selected_categories() {
 	for (let c of CATEGORIES) {

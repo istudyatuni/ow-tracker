@@ -14,6 +14,7 @@
 
   import { LANGUAGE_NAMES, save_language } from "@/lib/language";
   import {
+    hide_dlc_if_necessary,
     LANGUAGE,
     reset_selected_categories,
     SAVE_FOUND,
@@ -32,6 +33,8 @@
   }
   function show_full_map() {
     window.location.hash = "";
+    reset_selected_categories();
+    hide_dlc_if_necessary();
     window.location.reload();
   }
   function handle_file_upload() {
