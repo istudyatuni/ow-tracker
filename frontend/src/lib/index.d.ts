@@ -1,15 +1,8 @@
-import type { Readable } from "svelte/store";
-
-interface WritableKV<T> extends Readable<T> {
-	set(this: void, key: string, value: any): void;
-	delete(this: void, key: string): void;
-}
-
-type VersionedStore = {
+export type VersionedStore = {
 	version: number;
 };
 
-type SettingsStore = VersionedStore & {
+export type SettingsStore = VersionedStore & {
 	selected_categories_version: number;
 	/** Hide all spoilers */
 	hide_spoilers: boolean;
@@ -19,6 +12,6 @@ type SettingsStore = VersionedStore & {
 	show_ignored_facts: boolean;
 };
 
-type SessionSettingsStore = VersionedStore & {
+export type SessionSettingsStore = VersionedStore & {
 	welcome_popup_done: boolean;
 };
