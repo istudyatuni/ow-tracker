@@ -1,3 +1,5 @@
+/** @import { WritableKV, SettingsStore, SessionSettingsStore } from "." */
+
 import { get, writable } from "svelte/store";
 
 import { localStore, sessionStore } from "svelte-storages";
@@ -25,20 +27,24 @@ export const SAVE_FOUND_CATEGORIES = writable(new Set());
 export const SAVE_KNOWN_CATEGORIES_NAMES = writable(new Set());
 export const SAVE_EMPTY = writable(false);
 
+/** @type {SettingsStore} */
 const DEFAULT_SETTINGS = {
 	version: 7,
 	selected_categories_version: 1,
 	hide_spoilers: true,
-	// separate field for hiding "stranger" category when showing full map
 	hide_dlc: false,
 	consider_ignored_facts: false,
 	show_ignored_facts: false,
 };
+/** @type {SessionSettingsStore} */
 const DEFAULT_SESSION_SETTINGS = {
 	version: 1,
 	welcome_popup_done: false,
 };
+
+/** @type {WritableKV<SettingsStore>} */
 export const SETTINGS = localStore("ow-settings", DEFAULT_SETTINGS);
+/** @type {WritableKV<SessionSettingsStore>} */
 export const SESSION_SETTINGS = sessionStore(
 	"ow-settings",
 	DEFAULT_SESSION_SETTINGS,
