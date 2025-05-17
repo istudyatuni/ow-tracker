@@ -4,10 +4,6 @@
 </script>
 
 <label>
-  <input
-    type="checkbox"
-    name="show-spoilers"
-    class="gray"
-    bind:checked={$SETTINGS.hide_spoilers} />
+  <input type="checkbox" class="gray" bind:checked={$SETTINGS.hide_spoilers} />
   {$t("hide-spoilers-checkbox")}
 </label>

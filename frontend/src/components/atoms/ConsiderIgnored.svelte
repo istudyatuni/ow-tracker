@@ -10,7 +10,6 @@
 <label>
   <input
     type="checkbox"
-    name="consider-ignored"
     class="orange"
     {onchange}
     bind:checked={$SETTINGS.consider_ignored_facts} />

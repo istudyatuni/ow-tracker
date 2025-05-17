@@ -20,7 +20,6 @@
     <label>
       <input
         type="checkbox"
-        name={id}
         class={id}
         checked={$SELECTED_CATEGORIES[id]}
         onchange={(e) => SELECTED_CATEGORIES.set(id, e.target.checked)} />

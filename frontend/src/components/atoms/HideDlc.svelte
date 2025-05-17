@@ -8,7 +8,6 @@
 <label>
   <input
     type="checkbox"
-    name="hide-dlc"
     class={CATEGORY}
     bind:checked={$SETTINGS.hide_dlc}
     onchange={(e) => SELECTED_CATEGORIES.set(CATEGORY, !e.target.checked)} />

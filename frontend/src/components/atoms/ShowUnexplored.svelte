@@ -10,7 +10,6 @@
 <label>
   <input
     type="checkbox"
-    name="show-unexplored"
     class="orange"
     {onchange}
     bind:checked={$SETTINGS.show_ignored_facts} />
