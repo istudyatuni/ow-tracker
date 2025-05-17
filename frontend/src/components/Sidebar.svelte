@@ -89,7 +89,6 @@
       <span class="icon">
         <LanguageIcon width="25" height="25" />
       </span>
-      <br />
 
       <div class="github-build">
         <a href="https://github.com/istudyatuni/ow-tracker" class="brand-icon"
