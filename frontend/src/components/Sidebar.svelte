@@ -140,7 +140,7 @@
     border-radius: 10px;
     padding: 10px 10px;
     margin-bottom: 5px;
-    max-width: 25em;
+    max-width: fit-content;
   }
   .block-wrapper {
     &.categories {
