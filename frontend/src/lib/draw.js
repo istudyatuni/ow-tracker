@@ -89,12 +89,12 @@ export async function* generate_all_svg() {
 
 	/**
 	 * load ids data and rumors source ids
-	 * @type {Object.<string, { curiosity: string }>}
+	 * @type {Object<string, { curiosity: string }>}
 	 */
 	let library = {};
 	/**
 	 * rumor's source id -> [{entry_id, rumor_id}]
-	 * @type {Object.<string, Object.<string, string>[]>}
+	 * @type {Object<string, Object<string, string>[]>}
 	 */
 	let sources = {};
 	let entries_data = await (
@@ -111,12 +111,16 @@ export async function* generate_all_svg() {
 	 * facts by entry id
 	 *
 	 * `entry id -> [{ rumor_id, explore_id }]`
-	 * @type {Object.<string, { rumor: string[], explore: string[] }>}
+	 * @type {Object<string, { rumor: string[], explore: string[] }>}
 	 */
 	let entries_facts = {};
 
-	// rumors which should be shown on the same arrow
-	// [entry1_id, entry2_id] -> [rumor id]
+	/**
+	 * rumors which should be shown on the same arrow
+	 *
+	 * [entry1_id, entry2_id] -> [rumor id]
+	 * @type {Object<string, { entries: string[], rumors: string[] }>}
+	 */
 	let joined_rumors = {};
 
 	// cards where not all explore facts are opened
@@ -126,7 +130,7 @@ export async function* generate_all_svg() {
 	 * cards alternative names
 	 *
 	 * entry_id -> alt_name_id
-	 * @type {Object.<string, string>}
+	 * @type {Object<string, string>}
 	 */
 	let cards_alt_names = {};
 
@@ -172,12 +176,13 @@ export async function* generate_all_svg() {
 			if (opened_facts.has(fact.id)) {
 				// remember rumors on same arrow
 				if (fact.source_id !== undefined) {
-					let key = [e.id, fact.source_id].sort();
+					let entries = [e.id, fact.source_id].sort();
+					let key = entries.join(",");
 					if (joined_rumors[key] !== undefined) {
 						joined_rumors[key].rumors.push(fact.id);
 					} else {
 						joined_rumors[key] = {
-							entries: key,
+							entries,
 							rumors: [fact.id],
 						};
 					}
@@ -296,7 +301,7 @@ export async function* generate_all_svg() {
 
 	/**
 	 * load coordinates and images
-	 * @type {Object.<string, { coordinates: import('leaflet').LatLngTuple, sprite: string | null }>}
+	 * @type {Object<string, { coordinates: import('leaflet').LatLngTuple, sprite: string | null }>}
 	 */
 	let cards = {};
 	let [minX, maxX, minY, maxY] = [4000, -1000, 2000, -2000];
@@ -324,7 +329,7 @@ export async function* generate_all_svg() {
 
 	LOADING.update((n) => n + 1);
 
-	/** @type {Object.<string, string>} */
+	/** @type {Object<string, string>} */
 	let parents = await (
 		await fetch(import.meta.env.BASE_URL + "/parents.json")
 	).json();
@@ -333,7 +338,7 @@ export async function* generate_all_svg() {
 	let lang = detect_language();
 	LOADING.update((n) => n + 1);
 
-	/** @type {Object.<string, string>} */
+	/** @type {Object<string, string>} */
 	let tr = await load_tr(lang);
 
 	LOADING.set(0);
@@ -341,7 +346,7 @@ export async function* generate_all_svg() {
 	LOADING_STAGE.set("images");
 
 	// centers is filled inside of generate_cards
-	/** @type {Object.<string, import('leaflet').LatLngTuple>} */
+	/** @type {Object<string, import('leaflet').LatLngTuple>} */
 	let centers = {};
 	yield* generate_cards(
 		cards,
@@ -366,14 +371,14 @@ export async function* generate_all_svg() {
 }
 
 /**
- * @param {Object.<string, { coordinates: import('leaflet').LatLngTuple, sprite: string | null }>} cards
- * @param {Object.<string, { curiosity: string }>} library
- * @param {Object.<string, string>} parents
- * @param {Object.<string, import('leaflet').LatLngTuple>} centers
- * @param {Set.<string>} opened_cards
- * @param {Set.<string>} has_unexplored_cards
- * @param {Object.<string, string>} tr
- * @param {Object.<string, string>} cards_alt_names
+ * @param {Object<string, { coordinates: import('leaflet').LatLngTuple, sprite: string | null }>} cards
+ * @param {Object<string, { curiosity: string }>} library
+ * @param {Object<string, string>} parents
+ * @param {Object<string, import('leaflet').LatLngTuple>} centers
+ * @param {Set<string>} opened_cards
+ * @param {Set<string>} has_unexplored_cards
+ * @param {Object<string, string>} tr
+ * @param {Object<string, string>} cards_alt_names
  * @param {boolean} save_loaded
  * @yield {}
  */
@@ -443,11 +448,12 @@ async function* generate_cards(
 }
 
 /**
- * @param {Object.<string, Object.<string, string>[]>} sources
- * @param {Object.<string, { curiosity: string }>} library
- * @param {Set.<string>} opened_cards
- * @param {Set.<string>} opened_facts
- * @param {Object.<string, import('leaflet').LatLngTuple>} centers
+ * @param {Object<string, Object<string, string>[]>} sources
+ * @param {Object<string, { curiosity: string }>} library
+ * @param {Set<string>} opened_cards
+ * @param {Set<string>} opened_facts
+ * @param {Object<string, import('leaflet').LatLngTuple>} centers
+ * @param {Object<string, { entries: string[], rumors: string[] }>} joined_rumors
  * @param {boolean} save_loaded
  * @yield {}
  */
@@ -469,8 +475,7 @@ function* generate_arrows(
 		for (let { entry_id, rumor_id } of entry_ids) {
 			let entry_curiosity = library[entry_id].curiosity;
 
-			let key = [source_id, entry_id].sort();
-			// @ts-ignore
+			let key = [source_id, entry_id].sort().join(",");
 			let rumors = joined_rumors[key]?.rumors;
 			let should_join = rumors !== undefined;
 			let is_not_first_rumor = should_join && rumor_id !== rumors[0];
@@ -483,7 +488,7 @@ function* generate_arrows(
 				continue;
 			}
 			let svg = make_rumor_arrow(
-				should_join ? key.join(",") : rumor_id,
+				should_join ? key : rumor_id,
 				centers[source_id],
 				centers[entry_id],
 				// use both categories as class names so that the arrow is

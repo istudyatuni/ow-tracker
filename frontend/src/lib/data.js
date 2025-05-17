@@ -9,8 +9,9 @@ let opened_facts = new Set();
 let opened_cards_only_rumors = new Set();
 let has_unexplored_cards = new Set();
 let entries_facts = {};
-/** @type {Object.<string, string>} */
+/** @type {Object<string, string>} */
 let tr = {};
+/** @type {Object<string, { entries: string[], rumors: string[] }>} */
 let joined_rumors = {};
 
 export async function set_opened_facts(data) {
@@ -29,6 +30,7 @@ export async function set_entries_facts(data) {
 	entries_facts = data;
 }
 
+/** @param {Object<string, { entries: string[], rumors: string[] }>} data */
 export async function set_joined_rumors(data) {
 	joined_rumors = data;
 }

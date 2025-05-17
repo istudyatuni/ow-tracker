@@ -25,7 +25,7 @@
 
 <script>
   let opened = $state(false);
-  let changed = $state(false);
+  let need_reload = $state(false);
 
   function handle_select_lang(e) {
     save_language(e.target.value);
@@ -56,7 +56,7 @@
     <div class:hidden={!$SESSION_SETTINGS.welcome_popup_done}>
       <FileUpload upload={handle_file_upload} />
 
-      <div class="block-wrapper categories">
+      <div class="block-wrapper">
         <ShiplogCategories />
       </div>
 
@@ -64,7 +64,7 @@
         <HideSpoilers />
         {#if $SAVE_FOUND}
           <br />
-          <ConsiderIgnored onchange={() => (changed = true)} />
+          <ConsiderIgnored onchange={() => (need_reload = true)} />
           <br />
           <ShowUnexplored />
         {:else}
@@ -74,7 +74,7 @@
 
         {#if $SAVE_FOUND}
           <div class="buttons">
-            <SidebarApply disabled={!changed} />
+            <SidebarApply disabled={!need_reload} />
 
             <button onclick={show_full_map}
               >{$t("sidebar-show-full-map-button")}</button>
@@ -143,9 +143,6 @@
     max-width: fit-content;
   }
   .block-wrapper {
-    &.categories {
-      max-width: initial;
-    }
     & > .buttons {
       margin-top: 10px;
     }
