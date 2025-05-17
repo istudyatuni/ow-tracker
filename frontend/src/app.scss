@@ -3,10 +3,11 @@
 
 @import url("https://fonts.googleapis.com/css2?family=Flow+Circular&display=swap");
 
+$button-bg: #082638;
+$spoilers-font: "Flow Circular";
+
 :root {
   --bg: #02101b;
-  --button-bg: #082638;
-  --spoilers-font: "Flow Circular";
 
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -47,16 +48,21 @@ h1 {
   padding: 2em;
 }
 
+%pointer {
+  cursor: pointer;
+}
+
 button,
 select {
+  @extend %pointer;
+
   border-radius: 8px;
   border: 1px solid transparent;
   padding: 0.6em 1.2em;
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background: var(--button-bg);
-  cursor: pointer;
+  background: $button-bg;
   transition: border-color 0.25s;
 }
 
@@ -65,7 +71,7 @@ select:hover {
   border-color: #646cff;
 
   &[disabled] {
-    border-color: var(--button-bg);
+    border-color: $button-bg;
     cursor: default;
   }
 }
@@ -82,12 +88,13 @@ select {
 }
 
 input[type="checkbox"] {
+  @extend %pointer;
+
   appearance: none;
 
   width: 1.2em;
   height: 1.2em;
   border-radius: 4px;
-  cursor: pointer;
   position: relative;
   vertical-align: middle;
   transition:
@@ -142,28 +149,32 @@ input[type="checkbox"]:checked::after {
 
 rect.card,
 line.arrow {
+  @extend %pointer;
+
   pointer-events: auto;
-  cursor: pointer;
 }
+
+$arrow-color: gray;
+$arrow-color-hover: lightgray;
 
 // arrow line
 line.arrow {
-  stroke: gray;
+  stroke: $arrow-color;
 }
 
 // arrow head
 path.arrow {
-  fill: gray;
+  fill: $arrow-color;
   stroke: var(--bg);
   stroke-width: 4px;
   stroke-linejoin: round;
 }
 
 line.arrow:hover {
-  stroke: lightgray;
+  stroke: $arrow-color-hover;
 
   & + path.arrow {
-    fill: lightgray;
+    fill: $arrow-color-hover;
   }
 }
 
@@ -198,12 +209,11 @@ $categories-colors: (
     #e2e4da,
     "gray",
   ),
-  "other": (
-    #7f807a,
-    #e2e4da,
-    "gray",
-  ),
 );
+
+$other-color: map.get($categories-colors, "nomai-fate");
+// use "nomai-fate" colors for "other"
+$categories-colors: map.set($categories-colors, "other", $other-color);
 
 @each $name, $colors in $categories-colors {
   $c: list.nth($colors, 1);
@@ -213,7 +223,7 @@ $categories-colors: (
   input[type="checkbox"].#{$name},
   input[type="checkbox"].#{$alt-name} {
     border: 0.1px solid $c;
-    background-color: #{$c}44;
+    background-color: rgba($c, 0.4);
 
     &:checked {
       background-color: $c;
@@ -221,6 +231,7 @@ $categories-colors: (
     }
   }
 
+  // svg color by category
   .#{$name} {
     fill: $c;
 
@@ -229,26 +240,32 @@ $categories-colors: (
     }
   }
 
-  button.#{$alt-name},
+  %#{$alt-name}-bg {
+    background: rgba($highlight, 0.6);
+  }
+
   span.#{$alt-name} {
-    background: #{$highlight}77;
+    @extend %#{$alt-name}-bg;
+  }
+
+  button.#{$alt-name} {
+    @extend %#{$alt-name}-bg;
 
     &:hover {
       border-color: $highlight;
     }
   }
 
+  // hide cards and arrows by categories
   .hide-#{$name} svg.#{$name} {
-    display: none;
+    @extend .hidden;
   }
 }
-
-$other-color: map.get($categories-colors, "other");
 
 .hide-spoilers {
   & .spoiler,
   &.spoiler {
-    font-family: var(--spoilers-font);
+    font-family: $spoilers-font;
     font-size: 19px;
     line-height: 0.93em;
     user-select: none;
@@ -256,7 +273,7 @@ $other-color: map.get($categories-colors, "other");
 
   & image.spoiler,
   & .explore-star {
-    display: none;
+    @extend .hidden;
   }
 
   & .card {
