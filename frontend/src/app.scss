@@ -27,6 +27,7 @@ body,
   height: 100vh;
   margin: 0;
   padding: 0;
+  background-color: var(--bg);
 }
 
 a {
@@ -62,7 +63,7 @@ select {
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background: $button-bg;
+  background-color: $button-bg;
   transition: border-color 0.25s;
 }
 
@@ -245,7 +246,7 @@ $categories-colors: map.set($categories-colors, "other", $other-color);
   }
 
   %#{$alt-name}-bg {
-    background: rgba($highlight, 0.6);
+    background-color: rgba($highlight, 0.6);
   }
 
   span.#{$alt-name} {
