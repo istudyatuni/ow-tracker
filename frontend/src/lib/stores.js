@@ -62,24 +62,6 @@ export function close_fact() {
 	OPENED_FACT.set(null);
 }
 
-function toggle_body_class(name, enabled) {
-	let c = document.body.classList;
-	if (enabled) {
-		c.add(name);
-	} else {
-		c.remove(name);
-	}
-}
-
-SETTINGS.subscribe(({ hide_spoilers }) =>
-	toggle_body_class("hide-spoilers", hide_spoilers),
-);
-SELECTED_CATEGORIES.subscribe((categories) => {
-	for (let [category, selected] of Object.entries(categories)) {
-		toggle_body_class("hide-" + category, !selected);
-	}
-});
-
 export function migrate_storage() {
 	function migrate(store, default_kv) {
 		let s = get(store);

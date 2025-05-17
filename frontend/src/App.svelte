@@ -42,7 +42,14 @@
   );
 </script>
 
-<main>
+<main
+  class={Object.fromEntries(
+    Object.entries($SELECTED_CATEGORIES).map(([category, selected]) => [
+      "hide-" + category,
+      !selected,
+    ]),
+  )}
+  class:hide-spoilers={$SETTINGS.hide_spoilers}>
   <Sidebar />
   <Map />
   <FactsPanel {facts} />
