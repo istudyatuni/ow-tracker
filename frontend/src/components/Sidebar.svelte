@@ -142,7 +142,7 @@
   }
   .block-wrapper {
     &.categories {
-      max-width: 35em;
+      max-width: initial;
     }
     & > .buttons {
       margin-top: 10px;
