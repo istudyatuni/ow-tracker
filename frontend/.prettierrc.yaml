@@ -1,8 +1,13 @@
 plugins:
   - prettier-plugin-svelte
+  - "@homer0/prettier-plugin-jsdoc"
 overrides:
   - files: .svelte
     options:
       parser: svelte
 
 bracketSameLine: true
+
+jsdocFormatDotForArraysAndObjects: false
+jsdocUseInlineCommentForASingleTagBlock: true
+jsdocPrintWidth: 100

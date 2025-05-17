@@ -11,7 +11,7 @@ let has_unexplored_cards = new Set();
 let entries_facts = {};
 /** @type {Object<string, string>} */
 let tr = {};
-/** @type {Object<string, { entries: string[], rumors: string[] }>} */
+/** @type {Object<string, { entries: string[]; rumors: string[] }>} */
 let joined_rumors = {};
 
 export async function set_opened_facts(data) {
@@ -30,15 +30,15 @@ export async function set_entries_facts(data) {
 	entries_facts = data;
 }
 
-/** @param {Object<string, { entries: string[], rumors: string[] }>} data */
+/** @param {Object<string, { entries: string[]; rumors: string[] }>} data */
 export async function set_joined_rumors(data) {
 	joined_rumors = data;
 }
 
 /**
- * @param  {string} id
- * @param  {boolean} show_unexplored
- * @return {{text:string}[]}
+ * @param {string}  id
+ * @param {boolean} show_unexplored
+ * @returns {{ text: string }[]}
  */
 export function get_facts_for(id, show_unexplored) {
 	let is_joined = id.includes(",");
@@ -85,9 +85,7 @@ function has_more_to_explore(id) {
 	return !opened_cards_only_rumors.has(id) && has_unexplored_cards.has(id);
 }
 
-/**
- * @param  {string} lang
- */
+/** @param {string} lang */
 export async function load_tr(lang) {
 	tr = await (
 		await fetch(`${import.meta.env.BASE_URL}/translations/${lang}.json`)

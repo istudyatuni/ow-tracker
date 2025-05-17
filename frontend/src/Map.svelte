@@ -1,4 +1,6 @@
 <script>
+  /** @import {Map, LatLngTuple} from  "leaflet" */
+
   import { onMount } from "svelte";
   import { get } from "svelte/store";
 
@@ -16,7 +18,7 @@
 
   const MAP_PAD = 200;
 
-  /** @type {import('leaflet').Map} */
+  /** @type {Map} */
   let map;
 
   function map_bounds_to_leaflet(bounds) {
@@ -27,8 +29,8 @@
     ];
   }
   /**
-   * @param  {number[][]} bounds
-   * @return {import('leaflet').LatLngTuple}
+   * @param {number[][]} bounds
+   * @returns {LatLngTuple}
    */
   function bounds_center(bounds) {
     let b = [

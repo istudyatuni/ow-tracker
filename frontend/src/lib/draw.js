@@ -1,3 +1,5 @@
+/** @import {LatLngTuple} from  "leaflet" */
+
 import { get } from "svelte/store";
 
 import { expand_thin_bounds, make_rumor_arrow } from "@/lib/arrow";
@@ -52,8 +54,8 @@ const NORMAL_PANE = "overlayPane";
 const SMALL_PANE = "markerPane";
 
 /**
- * @param  {Array} entries
- * @param  {Object} result
+ * @param {Array}  entries
+ * @param {Object} result
  */
 function flatten_entries(entries, result) {
 	for (let e of entries || []) {
@@ -88,12 +90,14 @@ export async function* generate_all_svg() {
 	LOADING.update((n) => n + 1);
 
 	/**
-	 * load ids data and rumors source ids
+	 * Load ids data and rumors source ids.
+	 *
 	 * @type {Object<string, { curiosity: string }>}
 	 */
 	let library = {};
 	/**
-	 * rumor's source id -> [{entry_id, rumor_id}]
+	 * `rumor's source id -> [{entry_id, rumor_id}]`
+	 *
 	 * @type {Object<string, Object<string, string>[]>}
 	 */
 	let sources = {};
@@ -105,21 +109,21 @@ export async function* generate_all_svg() {
 	let opened_cards = new Set();
 	// cards ids where img is opened
 	let opened_card_imgs = new Set();
-	//
-	//
 	/**
-	 * facts by entry id
+	 * Facts by entry id
 	 *
 	 * `entry id -> [{ rumor_id, explore_id }]`
-	 * @type {Object<string, { rumor: string[], explore: string[] }>}
+	 *
+	 * @type {Object<string, { rumor: string[]; explore: string[] }>}
 	 */
 	let entries_facts = {};
 
 	/**
 	 * rumors which should be shown on the same arrow
 	 *
-	 * [entry1_id, entry2_id] -> [rumor id]
-	 * @type {Object<string, { entries: string[], rumors: string[] }>}
+	 * `[entry1_id, entry2_id] -> [rumor id]`
+	 *
+	 * @type {Object<string, { entries: string[]; rumors: string[] }>}
 	 */
 	let joined_rumors = {};
 
@@ -127,9 +131,10 @@ export async function* generate_all_svg() {
 	let has_unexplored_cards = new Set();
 
 	/**
-	 * cards alternative names
+	 * Cards alternative names
 	 *
-	 * entry_id -> alt_name_id
+	 * `entry_id -> alt_name_id`
+	 *
 	 * @type {Object<string, string>}
 	 */
 	let cards_alt_names = {};
@@ -300,8 +305,12 @@ export async function* generate_all_svg() {
 	LOADING.update((n) => n + 1);
 
 	/**
-	 * load coordinates and images
-	 * @type {Object<string, { coordinates: import('leaflet').LatLngTuple, sprite: string | null }>}
+	 * Load coordinates and images.
+	 *
+	 * @type {Object<
+	 * 	string,
+	 * 	{ coordinates: LatLngTuple; sprite: string | null }
+	 * >}
 	 */
 	let cards = {};
 	let [minX, maxX, minY, maxY] = [4000, -1000, 2000, -2000];
@@ -346,7 +355,7 @@ export async function* generate_all_svg() {
 	LOADING_STAGE.set("images");
 
 	// centers is filled inside of generate_cards
-	/** @type {Object<string, import('leaflet').LatLngTuple>} */
+	/** @type {Object<string, LatLngTuple>} */
 	let centers = {};
 	yield* generate_cards(
 		cards,
@@ -371,16 +380,19 @@ export async function* generate_all_svg() {
 }
 
 /**
- * @param {Object<string, { coordinates: import('leaflet').LatLngTuple, sprite: string | null }>} cards
+ * @param {Object<
+ * 	string,
+ * 	{ coordinates: LatLngTuple; sprite: string | null }
+ * >} cards
  * @param {Object<string, { curiosity: string }>} library
  * @param {Object<string, string>} parents
- * @param {Object<string, import('leaflet').LatLngTuple>} centers
+ * @param {Object<string, LatLngTuple>} centers
  * @param {Set<string>} opened_cards
  * @param {Set<string>} has_unexplored_cards
  * @param {Object<string, string>} tr
  * @param {Object<string, string>} cards_alt_names
  * @param {boolean} save_loaded
- * @yield {}
+ * @yields
  */
 async function* generate_cards(
 	cards,
@@ -452,10 +464,10 @@ async function* generate_cards(
  * @param {Object<string, { curiosity: string }>} library
  * @param {Set<string>} opened_cards
  * @param {Set<string>} opened_facts
- * @param {Object<string, import('leaflet').LatLngTuple>} centers
- * @param {Object<string, { entries: string[], rumors: string[] }>} joined_rumors
+ * @param {Object<string, LatLngTuple>} centers
+ * @param {Object<string, { entries: string[]; rumors: string[] }>} joined_rumors
  * @param {boolean} save_loaded
- * @yield {}
+ * @yields
  */
 function* generate_arrows(
 	sources,
@@ -506,7 +518,7 @@ function* generate_arrows(
 	}
 }
 
-/** @return {import('leaflet').LatLngTuple} */
+/** @returns {LatLngTuple} */
 export function coord_to_leaflet(x, y) {
 	const Y_CONV = 1;
 	return [y * Y_CONV, x];

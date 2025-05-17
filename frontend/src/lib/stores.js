@@ -1,5 +1,7 @@
-/** @import { SettingsStore, SessionSettingsStore } from "." */
-/** @import { WritableKV } from "svelte-storages" */
+/**
+ * @import {SettingsStore, SessionSettingsStore} from  "."
+ * @import {WritableKV}                          from  "svelte-storages"
+ */
 
 import { get, writable } from "svelte/store";
 

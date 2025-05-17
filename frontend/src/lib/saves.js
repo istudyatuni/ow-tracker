@@ -51,9 +51,9 @@ export function has_save_in_url() {
 }
 
 /**
- * @param  {string[]} keys
- * @param  {Set<string>} opened
- * @return {string|null}
+ * @param {string[]}    keys
+ * @param {Set<string>} opened
+ * @returns {string | null}
  */
 export function encode_save(keys, opened) {
 	keys = keys.sort();
@@ -80,9 +80,9 @@ export function encode_save(keys, opened) {
 }
 
 /**
- * @param  {string[]} keys
- * @param  {string} encoded
- * @return {Set<string>|null}
+ * @param {string[]} keys
+ * @param {string}   encoded
+ * @returns {Set<string> | null}
  */
 export function decode_save(keys, encoded) {
 	let bytes = [...atob(encoded)].map((char) => char.charCodeAt(0));

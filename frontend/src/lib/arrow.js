@@ -1,3 +1,5 @@
+/** @import {LatLngTuple, LatLngBoundsExpression} from  "leaflet" */
+
 import { SVG_NS } from "@/lib/card";
 
 const STROKE = 8;
@@ -10,12 +12,13 @@ const ARROW = {
 };
 
 /**
- * Make svg arrow from center1 to center2
- * @param  {string} id
- * @param  {import('leaflet').LatLngTuple} center1
- * @param  {import('leaflet').LatLngTuple} center2
- * @param  {string} category_class
- * @return {SVGElement}
+ * Make svg arrow from center1 to center2.
+ *
+ * @param {string}      id
+ * @param {LatLngTuple} center1
+ * @param {LatLngTuple} center2
+ * @param {string}      category_class
+ * @returns {SVGElement}
  */
 export function make_rumor_arrow(id, center1, center2, category_class) {
 	let [x1, y1] = center1;
@@ -59,9 +62,10 @@ export function make_rumor_arrow(id, center1, center2, category_class) {
 }
 
 /**
- * Add padding when bounds forms too thin rectangle
- * @param  {number[][]} bounds
- * @return {import('leaflet').LatLngBoundsExpression}
+ * Add padding when bounds forms too thin rectangle.
+ *
+ * @param {number[][]} bounds
+ * @returns {LatLngBoundsExpression}
  */
 export function expand_thin_bounds(bounds) {
 	const PAD = STROKE * 3;

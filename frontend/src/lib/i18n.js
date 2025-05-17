@@ -1,9 +1,11 @@
+/** @import {Writable} from  "svelte/store" */
+
 import { derived, writable } from "svelte/store";
 import { FluentBundle, FluentResource } from "@fluent/bundle";
 
 import { detect_language, language_to_code, LANGUAGES } from "@/lib/language";
 
-/** @type {import("svelte/store").Writable<import("@fluent/bundle").FluentBundle> | null} */
+/** @type {Writable<FluentBundle> | null} */
 const tr_bundle = writable(null);
 
 export async function init_i18n() {
@@ -29,8 +31,8 @@ export async function init_i18n() {
 }
 
 /**
- * @param  {FluentBundle} bundle
- * @return {(id: string, args?: Object<string, any>) => string}
+ * @param {FluentBundle} bundle
+ * @returns {(id: string, args?: Object<string, any>) => string}
  */
 function translator_fn(bundle) {
 	return (id, args = {}) => {

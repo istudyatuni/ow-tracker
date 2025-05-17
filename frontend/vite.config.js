@@ -38,8 +38,8 @@ export default defineConfig({
 });
 
 /**
- * @param  {string} id
- * @return {import('vite').Plugin}
+ * @param {string} id
+ * @returns {import("vite").Plugin}
  */
 function injectMetrikaPlugin(id) {
 	return {

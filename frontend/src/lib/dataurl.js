@@ -1,6 +1,6 @@
 /**
- * @param  {Blob} blob
- * @return {Promise}
+ * @param {Blob} blob
+ * @returns {Promise}
  */
 export async function to_data_url(blob) {
 	// https://stackoverflow.com/a/18650249

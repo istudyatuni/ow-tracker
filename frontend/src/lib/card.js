@@ -27,12 +27,12 @@ const QUESTION = {
 };
 
 /**
- * @param  {string} id Unique id, used for detecting clicked element
- * @param  {string} text
- * @param  {string} image_url
- * @param  {boolean} has_unexplored
- * @param  {string} category_class
- * @return {SVGElement}
+ * @param {string}  id              Unique id, used for detecting clicked element.
+ * @param {string}  text
+ * @param {string}  image_url
+ * @param {boolean} has_unexplored
+ * @param {string}  category_class
+ * @returns {SVGElement}
  */
 export function make_card_svg(
 	id,
