@@ -291,7 +291,8 @@ export async function generate_all_svg() {
 	SAVE_EMPTY.set(opened_cards.size === 0);
 
 	if (!get(SESSION_SETTINGS).welcome_popup_done) {
-		return [];
+		LOADING.set(null);
+		return function* () {};
 	}
 
 	cards_alt_names = Object.fromEntries(
