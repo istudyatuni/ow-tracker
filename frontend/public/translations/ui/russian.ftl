@@ -15,7 +15,6 @@ show-unexplored-checkbox = Показывать неисследованные �
 
 loading-prefix = Загрузка
 loading-stage-data = данных
-loading-stage-images = изображений
 
 file-upload-help-header = Где находятся файлы сохранений
 

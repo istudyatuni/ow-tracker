@@ -15,7 +15,6 @@ show-unexplored-checkbox = Show unexplored facts
 
 loading-prefix = Loading
 loading-stage-data = data
-loading-stage-images = images
 
 file-upload-help-header = Where are the save files located
 

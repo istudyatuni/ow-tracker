@@ -1,97 +1,63 @@
 <script>
-  /** @import {Map, LatLngTuple} from  "leaflet" */
+  /** @import {Map} from  "leaflet" */
 
-  import { onMount } from "svelte";
   import { get } from "svelte/store";
 
   import "leaflet/dist/leaflet.css";
   import L from "leaflet";
 
-  import { coord_to_leaflet, generate_all_svg } from "@/lib/draw";
-  import {
-    close_fact,
-    LOADING,
-    MAP_SIZE,
-    open_fact,
-    OPENED_FACT,
-  } from "@/lib/stores";
-
-  const MAP_PAD = 200;
+  import { generate_all_svg } from "@/lib/draw";
+  import { MAP_SIZE } from "@/lib/stores";
+  import { bounds_center, map_bounds_to_leaflet } from "@/lib/leaflet";
+  import Leaflet from "@/Leaflet.svelte";
+  import MapArrow from "@/components/MapArrow.svelte";
+  import MapCard from "@/components/MapCard.svelte";
 
   /** @type {Map} */
   let map;
 
-  function map_bounds_to_leaflet(bounds) {
-    // todo: scale MAP_PAD if number of cards is small
-    return [
-      coord_to_leaflet(bounds[0][0] - MAP_PAD, bounds[0][1] - MAP_PAD),
-      coord_to_leaflet(bounds[1][0] + MAP_PAD, bounds[1][1] + MAP_PAD),
-    ];
-  }
-  /**
-   * @param {number[][]} bounds
-   * @returns {LatLngTuple}
-   */
-  function bounds_center(bounds) {
-    let b = [
-      coord_to_leaflet(bounds[0][0], bounds[0][1]),
-      coord_to_leaflet(bounds[1][0], bounds[1][1]),
-    ];
-    return [b[0][0] / 2 + b[1][0] / 2, b[0][1] / 2 + b[1][1] / 2];
-  }
-
-  onMount(async () => {
-    let bounds = get(MAP_SIZE);
-
-    map = L.map("map", {
-      center: bounds_center(bounds),
-      zoom: -2,
-      minZoom: -2,
-      maxZoom: 2,
-      zoomDelta: 0.5,
-      // fix zoomDelta not work in chrome
-      wheelPxPerZoomLevel: 80,
-      crs: L.CRS.Simple,
-      attributionControl: false,
-      zoomControl: false,
-      maxBounds: map_bounds_to_leaflet(bounds),
-    }).on("click", (e) => {
-      // @ts-ignore
-      let id = e.originalEvent.target.id;
-
-      let cur_id = get(OPENED_FACT);
-      if (id === cur_id) {
-        close_fact();
-        return;
-      }
-
-      if (id !== "map") {
-        open_fact(id);
-      } else {
-        close_fact();
-      }
-    });
-
-    MAP_SIZE.subscribe((bounds) => {
-      map
-        .fitBounds(map_bounds_to_leaflet(bounds))
-        .setView(bounds_center(bounds));
-    });
-
-    for await (let { svg, coords, pane } of generate_all_svg()) {
-      L.svgOverlay(svg, coords, { pane }).addTo(map);
-    }
-
-    LOADING.set(null);
-  });
+  /** @type {import("leaflet").MapOptions} */
+  let mapOptions = {
+    zoom: -2,
+    minZoom: -2,
+    maxZoom: 2,
+    zoomDelta: 0.5,
+    // fix zoomDelta not work in chrome
+    wheelPxPerZoomLevel: 80,
+    crs: L.CRS.Simple,
+    attributionControl: false,
+    zoomControl: false,
+    maxBounds: map_bounds_to_leaflet(get(MAP_SIZE)),
+  };
 </script>
 
-<div id="map"></div>
+<div class="map">
+  {#await generate_all_svg()}
+    Loading
+  {:then generator}
+    <Leaflet
+      {map}
+      bounds={map_bounds_to_leaflet($MAP_SIZE)}
+      center={bounds_center($MAP_SIZE)}
+      options={mapOptions}>
+      {#each generator() as { options, coords: bounds, pane }}
+        {#if options.is_arrow}
+          <MapArrow {...options} {bounds} {pane} />
+        {:else}
+          <MapCard {...options} {bounds} {pane} />
+        {/if}
+      {/each}
+    </Leaflet>
+  {/await}
+</div>
 
-<style>
-  #map {
+<style lang="scss">
+  .map {
     width: 100%;
     height: 100vh;
-    background: var(--bg);
+
+    & :global(.leaflet-container) {
+      background: var(--bg);
+    }
   }
 </style>

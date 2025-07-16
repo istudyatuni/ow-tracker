@@ -2,8 +2,8 @@
 
 import { get } from "svelte/store";
 
-import { expand_thin_bounds, make_rumor_arrow } from "@/lib/arrow";
-import { CARD_HEIGHT, CARD_WIDTH, make_card_svg, STAR_SIZE } from "@/lib/card";
+import { expand_thin_bounds } from "@/lib/arrow";
+import { CARD_HEIGHT, CARD_WIDTH, STAR_SIZE } from "@/lib/card";
 import {
 	CATEGORIES,
 	CATEGORY,
@@ -18,12 +18,10 @@ import {
 	set_opened_cards_only_rumors,
 	set_opened_facts,
 } from "@/lib/data";
-import { to_data_url } from "@/lib/dataurl";
 import { detect_language } from "@/lib/language";
 import { get_save_from_browser_url, has_save_in_url } from "@/lib/saves";
 import {
 	LOADING,
-	LOADING_STAGE,
 	LOADING_TOTAL,
 	MAP_SIZE,
 	OPENED_FACTS_COUNT,
@@ -65,14 +63,14 @@ function flatten_entries(entries, result) {
 	return result;
 }
 
-export async function* generate_all_svg() {
+export async function generate_all_svg() {
 	let save_loaded = has_save_in_url();
 	SAVE_FOUND.set(save_loaded);
 
 	let consider_ignored = get(SETTINGS).consider_ignored_facts;
 
 	// number of fetches before fetching images
-	LOADING_TOTAL.set(5);
+	LOADING_TOTAL.set(4);
 	LOADING.set(0);
 
 	let save_keys = await (
@@ -345,38 +343,36 @@ export async function* generate_all_svg() {
 
 	// load translations
 	let lang = detect_language();
-	LOADING.update((n) => n + 1);
+	LOADING.set(null);
 
 	/** @type {Object<string, string>} */
 	let tr = await load_tr(lang);
 
-	LOADING.set(0);
-	LOADING_TOTAL.set(opened_card_imgs.size);
-	LOADING_STAGE.set("images");
-
-	// centers is filled inside of generate_cards
-	/** @type {Object<string, LatLngTuple>} */
-	let centers = {};
-	yield* generate_cards(
-		cards,
-		library,
-		parents,
-		centers,
-		opened_cards,
-		has_unexplored_cards,
-		tr,
-		cards_alt_names,
-		save_loaded,
-	);
-	yield* generate_arrows(
-		sources,
-		library,
-		opened_cards,
-		opened_facts,
-		centers,
-		joined_rumors,
-		save_loaded,
-	);
+	return function* () {
+		// centers is filled inside of generate_cards
+		/** @type {Object<string, LatLngTuple>} */
+		let centers = {};
+		yield* generate_cards(
+			cards,
+			library,
+			parents,
+			centers,
+			opened_cards,
+			has_unexplored_cards,
+			tr,
+			cards_alt_names,
+			save_loaded,
+		);
+		yield* generate_arrows(
+			sources,
+			library,
+			opened_cards,
+			opened_facts,
+			centers,
+			joined_rumors,
+			save_loaded,
+		);
+	};
 }
 
 /**
@@ -394,7 +390,7 @@ export async function* generate_all_svg() {
  * @param {boolean} save_loaded
  * @yields
  */
-async function* generate_cards(
+function* generate_cards(
 	cards,
 	library,
 	parents,
@@ -435,24 +431,19 @@ async function* generate_cards(
 			continue;
 		}
 
-		let img = await (async () => {
-			if (card.sprite === null) {
-				return null;
-			}
-			LOADING.update((n) => n + 1);
-			let img = await (await fetch(card.sprite)).blob();
-			return await to_data_url(img);
-		})();
 		let tr_id = cards_alt_names[id] || id;
-		let svg = make_card_svg(
-			id,
-			tr[tr_id].replaceAll("@@", "<br/>").replaceAll("$$", "-<br/>"),
-			img,
-			has_unexplored,
-			curiosity_to_category(curiosity),
-		);
 		yield {
-			svg,
+			// options for MapCard
+			options: {
+				is_arrow: false,
+				id,
+				text: tr[tr_id]
+					.replaceAll("@@", "<br/>")
+					.replaceAll("$$", "-<br/>"),
+				image_url: card.sprite,
+				has_unexplored,
+				category_class: curiosity_to_category(curiosity),
+			},
 			coords: [start_bounds, end_bounds],
 			pane: is_small ? SMALL_PANE : NORMAL_PANE,
 		};
@@ -499,21 +490,25 @@ function* generate_arrows(
 			if (save_loaded && !opened_facts.has(rumor_id)) {
 				continue;
 			}
-			let svg = make_rumor_arrow(
-				should_join ? key : rumor_id,
-				centers[source_id],
-				centers[entry_id],
-				// use both categories as class names so that the arrow is
-				// hidden if either of these categories is hidden
-				curiosity_to_category(source_curiosity) +
-					" " +
-					curiosity_to_category(entry_curiosity),
-			);
-			let coords = expand_thin_bounds([
-				centers[source_id],
-				centers[entry_id],
-			]);
-			yield { svg, coords, pane: RUMOR_PANE };
+			yield {
+				// options for MapArrow
+				options: {
+					is_arrow: true,
+					id: should_join ? key : rumor_id,
+					center1: centers[source_id],
+					center2: centers[entry_id],
+					// use both categories as class names so that the arrow is
+					// hidden if either of these categories is hidden
+					category_class: [source_curiosity, entry_curiosity]
+						.map(curiosity_to_category)
+						.join(" "),
+				},
+				coords: expand_thin_bounds([
+					centers[source_id],
+					centers[entry_id],
+				]),
+				pane: RUMOR_PANE,
+			};
 		}
 	}
 }

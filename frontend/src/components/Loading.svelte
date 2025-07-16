@@ -1,12 +1,12 @@
 <script module>
   import { t } from "@/lib/i18n";
-  import { LOADING, LOADING_STAGE, LOADING_TOTAL } from "@/lib/stores";
+  import { LOADING, LOADING_TOTAL } from "@/lib/stores";
 </script>
 
 <div class="block above-map-info" class:hidden={$LOADING === null}>
   <label>
     {$t("loading-prefix")}
-    {$t(`loading-stage-${$LOADING_STAGE}`)}
+    {$t(`loading-stage-data`)}
     <progress value={$LOADING} max={$LOADING_TOTAL}></progress>
   </label>
 </div>

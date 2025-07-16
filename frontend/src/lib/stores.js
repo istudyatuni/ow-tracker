@@ -16,7 +16,6 @@ import { detect_language } from "@/lib/language";
 
 export const LOADING = writable(null);
 export const LOADING_TOTAL = writable(0);
-export const LOADING_STAGE = writable("data");
 
 export const OPENED_FACT = writable(null);
 export const OPENED_FACTS_COUNT = writable(0);
