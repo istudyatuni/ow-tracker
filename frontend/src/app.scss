@@ -159,7 +159,9 @@ input[type="checkbox"]:checked::after {
 }
 
 rect.card,
-line.arrow {
+line.arrow,
+// "line.arrow +" is required to override leaflet's style for "svg path" with "pointer-events: none"
+line.arrow + path.arrow {
   @extend %pointer;
 
   pointer-events: auto;
@@ -181,7 +183,10 @@ path.arrow {
   stroke-linejoin: round;
 }
 
-line.arrow:hover {
+// hover on arrow line
+line.arrow:hover,
+// hover on arrow head
+line.arrow:has(+ path.arrow:hover) {
   stroke: $arrow-color-hover;
 
   & + path.arrow {
