@@ -1,5 +1,4 @@
 /** @import {LatLngTuple} from  "leaflet" */
-import { coord_to_leaflet } from "./draw";
 
 const MAP_PAD = 200;
 
@@ -20,4 +19,10 @@ export function bounds_center(bounds) {
 		coord_to_leaflet(bounds[1][0], bounds[1][1]),
 	];
 	return [b[0][0] / 2 + b[1][0] / 2, b[0][1] / 2 + b[1][1] / 2];
+}
+
+/** @returns {LatLngTuple} */
+export function coord_to_leaflet(x, y) {
+	const Y_CONV = 1;
+	return [y * Y_CONV, x];
 }

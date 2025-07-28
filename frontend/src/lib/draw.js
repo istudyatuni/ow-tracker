@@ -19,6 +19,7 @@ import {
 	set_opened_facts,
 } from "@/lib/data";
 import { detect_language } from "@/lib/language";
+import { coord_to_leaflet } from "@/lib/leaflet";
 import { get_save_from_browser_url, has_save_in_url } from "@/lib/saves";
 import {
 	LOADING,
@@ -512,10 +513,4 @@ function* generate_arrows(
 			};
 		}
 	}
-}
-
-/** @returns {LatLngTuple} */
-export function coord_to_leaflet(x, y) {
-	const Y_CONV = 1;
-	return [y * Y_CONV, x];
 }

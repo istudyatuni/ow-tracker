@@ -3,7 +3,6 @@
 
   import { get } from "svelte/store";
 
-  import "leaflet/dist/leaflet.css";
   import L from "leaflet";
 
   import { generate_all_svg } from "@/lib/draw";
