@@ -4,6 +4,8 @@
   import { getContext, onMount } from "svelte";
   import * as L from "leaflet";
 
+  import { close_fact, open_fact, OPENED_FACT } from "@/lib/stores";
+
   const SCALE = 0.95;
 
   const TEXT_HEIGHT = 100 * SCALE;
@@ -60,12 +62,28 @@
   onMount(() =>
     L.svgOverlay(self, bounds, { pane }).addTo(getContext("map")()),
   );
+
+  let opened = $derived($OPENED_FACT === id);
+
+  /** @param {Event} e */
+  function toggle_active_self(e) {
+    e.stopImmediatePropagation();
+    if (opened) {
+      close_fact();
+    } else {
+      open_fact(id);
+    }
+  }
 </script>
 
+<!-- svelte-ignore a11y_click_events_have_key_events -->
+<!-- svelte-ignore a11y_no_static_element_interactions -->
 <svg
   viewBox="0 0 {FULL_CARD_WIDTH + additional_width} {FULL_CARD_HEIGHT}"
   bind:this={self}
-  class={category_class}>
+  class={category_class}
+  onclick={toggle_active_self}
+  class:active={opened}>
   <rect
     x={left_shift}
     y="0"

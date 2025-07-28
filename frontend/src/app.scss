@@ -186,7 +186,9 @@ path.arrow {
 // hover on arrow line
 line.arrow:hover,
 // hover on arrow head
-line.arrow:has(+ path.arrow:hover) {
+line.arrow:has(+ path.arrow:hover),
+// connection is active
+svg.active > line.arrow {
   stroke: $arrow-color-hover;
 
   & + path.arrow {
@@ -251,7 +253,10 @@ $categories-colors: map.set($categories-colors, "other", $other-color);
   .#{$name} {
     fill: $c;
 
-    svg:hover > & {
+    // card is hovered
+    svg:hover > &,
+    // card is opened
+    svg.active > & {
       fill: $highlight;
     }
   }

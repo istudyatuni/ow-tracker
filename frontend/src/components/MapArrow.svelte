@@ -5,6 +5,7 @@
   import * as L from "leaflet";
 
   import { STROKE } from "@/lib/arrow";
+  import { close_fact, open_fact, OPENED_FACT } from "@/lib/stores";
 
   // arrowhead with width = 30 and height = 45
   const ARROW = {
@@ -37,12 +38,28 @@
   onMount(() =>
     L.svgOverlay(self, bounds, { pane }).addTo(getContext("map")()),
   );
+
+  let opened = $derived($OPENED_FACT === id);
+
+  /** @param {Event} e */
+  function toggle_active_self(e) {
+    e.stopImmediatePropagation();
+    if (opened) {
+      close_fact();
+    } else {
+      open_fact(id);
+    }
+  }
 </script>
 
+<!-- svelte-ignore a11y_click_events_have_key_events -->
+<!-- svelte-ignore a11y_no_static_element_interactions -->
 <svg
   viewBox="0 0 {rect_width} {rect_height}"
   bind:this={self}
-  class={category_class}>
+  class={category_class}
+  onclick={toggle_active_self}
+  class:active={opened}>
   <!--
     when `dx * dy < 0` one coordinate increases, other decreases,
     so `dx` and `dy` has different signs
