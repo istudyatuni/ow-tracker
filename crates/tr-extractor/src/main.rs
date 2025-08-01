@@ -294,6 +294,12 @@ fn clean_translations(
             value: translated,
         } in tr_entries
         {
+            // todo: check what "\\N" means. in some places it just has nothing in game
+            let translated = translated
+                .replace("\\n", "\n")
+                .replace("\\\n", "\n")
+                .replace("\\\\N", "");
+
             // todo: fix this case ("Escape Pod 3" detected as prefix)
             if original == "Escape Pod 3 Survivors" {
                 translation.insert(original, translated);
