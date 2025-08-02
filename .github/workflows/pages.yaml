@@ -35,7 +35,10 @@ jobs:
       - uses: DeterminateSystems/magic-nix-cache-action@main
 
       - name: install tools
-        run: nix profile add "nixpkgs#just" && just -V
+        run: |
+          nix profile add "nixpkgs#just" && just -V
+          nix profile add "nixpkgs#fd" && fd -V
+          nix profile add "nixpkgs#jq" && jq -V
 
       - uses: actions/setup-node@v4
         with:

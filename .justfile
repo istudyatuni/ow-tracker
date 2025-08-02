@@ -9,7 +9,7 @@ spoilers-font-file := "frontend/public/SpoilersAhead.otf"
 dev: download-spoilers-font (yarn "dev --host --port 8080")
 
 # build frontend
-build: download-spoilers-font (yarn-prod "build")
+build: download-spoilers-font minify-json (yarn-prod "build")
 
 # run frontend in prod mode
 preview: download-spoilers-font (yarn-prod "preview")
@@ -29,6 +29,24 @@ download-spoilers-font:
 	if [[ ! -e "{{ spoilers-font-file }}" ]]; then \
 		wget "{{ spoilers-font }}" -O "{{ spoilers-font-file }}"; \
 	fi
+
+minify-json:
+	#!/usr/bin/env bash
+	if [[ "$CI" == "" ]]; then
+		echo ignoring minifying in non-ci
+		exit
+	fi
+
+	set -euo pipefail
+
+	cd frontend
+	for p in $(fd .json public); do
+		echo minifying $p
+
+		tmp="$(mktemp)"
+		jq -c . "$p" > "$tmp"
+		mv "$tmp" "$p"
+	done
 
 # extract game translations
 extract-translations:
