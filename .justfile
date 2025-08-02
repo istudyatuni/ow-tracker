@@ -1,3 +1,5 @@
+set shell := ["/usr/bin/env", "bash", "-c"]
+
 spoilers-font := "https://github.com/istudyatuni/spoilers-ahead-font/raw/refs/heads/master/SpoilersAhead.otf"
 spoilers-font-file := "frontend/public/SpoilersAhead.otf"
 
@@ -8,8 +10,11 @@ spoilers-font-file := "frontend/public/SpoilersAhead.otf"
 # run frontend dev server
 dev: download-spoilers-font (yarn "dev --host --port 8080")
 
+[private]
+build-prepare: download-spoilers-font minify-json
+
 # build frontend
-build: download-spoilers-font minify-json (yarn-prod "build")
+build: build-prepare (yarn-prod "build")
 
 # run frontend in prod mode
 preview: download-spoilers-font (yarn-prod "preview")
