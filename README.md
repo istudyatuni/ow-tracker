@@ -20,7 +20,6 @@ Example (**SPOILERS!!**): [ship log after completing tutorial](https://istudyatu
 ### Known problems
 
 - Sometimes "more to explore" are hidden
-- "Spoiler" font doesn't work for Chinese, Japanese and Korean
 - Arrowheads are shifted from center in some places
 - Map doesn't center itself correctly when some categories are hidden
 
