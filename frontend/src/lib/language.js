@@ -28,6 +28,12 @@ export const LANGUAGE_NAMES = {
 	turkish: "Türkçe",
 };
 
+export const NEED_EXTENDED_SPOILER_FONT = new Set([
+	LANGUAGES.ChineseSimple,
+	LANGUAGES.Japanese,
+	LANGUAGES.Korean,
+]);
+
 export function detect_language() {
 	return (
 		get_language() ||

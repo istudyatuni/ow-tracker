@@ -3,7 +3,14 @@
 
 @import url("https://fonts.googleapis.com/css2?family=Flow+Circular&display=swap");
 
+// https://github.com/istudyatuni/spoilers-ahead-font
+@font-face {
+  font-family: "Spoilers Ahead";
+  src: url("/SpoilersAhead.otf") format("opentype");
+}
+
 $button-bg: #082638;
+$extended-spoilers-font: "Spoilers Ahead";
 $spoilers-font: "Flow Circular";
 
 :root {
@@ -161,7 +168,7 @@ input[type="checkbox"]:checked::after {
 rect.card,
 line.arrow,
 // "line.arrow +" is required to override leaflet's style for "svg path" with "pointer-events: none"
-line.arrow + path.arrow {
+line.arrow+path.arrow {
   @extend %pointer;
 
   pointer-events: auto;
@@ -188,7 +195,7 @@ line.arrow:hover,
 // hover on arrow head
 line.arrow:has(+ path.arrow:hover),
 // connection is active
-svg.active > line.arrow {
+svg.active>line.arrow {
   stroke: $arrow-color-hover;
 
   & + path.arrow {
@@ -254,9 +261,9 @@ $categories-colors: map.set($categories-colors, "other", $other-color);
     fill: $c;
 
     // card is hovered
-    svg:hover > &,
+    svg:hover>&,
     // card is opened
-    svg.active > & {
+    svg.active>& {
       fill: $highlight;
     }
   }
@@ -283,7 +290,7 @@ $categories-colors: map.set($categories-colors, "other", $other-color);
   }
 }
 
-.hide-spoilers {
+main.hide-spoilers {
   & .spoiler,
   &.spoiler {
     font-family: $spoilers-font;
@@ -303,6 +310,13 @@ $categories-colors: map.set($categories-colors, "other", $other-color);
 
   & svg:hover > .card {
     fill: list.nth($other-color, 2);
+  }
+}
+
+main.hide-spoilers.extended-spoiler-font {
+  & .spoiler,
+  &.spoiler {
+    font-family: $extended-spoilers-font;
   }
 }
 

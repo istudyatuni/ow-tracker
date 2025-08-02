@@ -35,8 +35,8 @@
 
     MAP_SIZE.subscribe((bounds) => {
       map
-        .fitBounds(map_bounds_to_leaflet(bounds))
-        .setView(bounds_center(bounds));
+        ?.fitBounds(map_bounds_to_leaflet(bounds))
+        ?.setView(bounds_center(bounds));
     });
 
     return {

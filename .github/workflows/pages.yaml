@@ -10,6 +10,9 @@ on:
       - "!frontend/scripts/**"
   workflow_dispatch:
 
+env:
+  JUST_COLOR: always
+
 jobs:
   build:
     # https://vite.dev/guide/static-deploy.html#github-pages
@@ -27,6 +30,12 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+
+      - uses: DeterminateSystems/nix-installer-action@main
+      - uses: DeterminateSystems/magic-nix-cache-action@main
+
+      - name: install tools
+        run: nix profile add "nixpkgs#just" && just -V
 
       - uses: actions/setup-node@v4
         with:

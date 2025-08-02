@@ -14,9 +14,11 @@
     SESSION_SETTINGS,
     SELECTED_CATEGORIES,
     SETTINGS,
+    LANGUAGE,
   } from "@/lib/stores";
   import { get_facts_for } from "@/lib/data";
   import { init_i18n, t } from "@/lib/i18n";
+  import { NEED_EXTENDED_SPOILER_FONT } from "./lib/language";
 </script>
 
 <script>
@@ -50,7 +52,10 @@
   );
 </script>
 
-<main class={hide_categories} class:hide-spoilers={$SETTINGS.hide_spoilers}>
+<main
+  class={hide_categories}
+  class:hide-spoilers={$SETTINGS.hide_spoilers}
+  class:extended-spoiler-font={NEED_EXTENDED_SPOILER_FONT.has($LANGUAGE)}>
   <Sidebar />
   <Map />
   <FactsPanel {facts} />

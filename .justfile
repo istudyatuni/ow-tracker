@@ -1,15 +1,18 @@
+spoilers-font := "https://github.com/istudyatuni/spoilers-ahead-font/raw/refs/heads/master/SpoilersAhead.otf"
+spoilers-font-file := "frontend/public/SpoilersAhead.otf"
+
 [private]
 @default:
 	just --list --unsorted
 
 # run frontend dev server
-dev: (yarn "dev --host --port 8080")
+dev: download-spoilers-font (yarn "dev --host --port 8080")
 
 # build frontend
-build: (yarn-prod "build")
+build: download-spoilers-font (yarn-prod "build")
 
 # run frontend in prod mode
-preview: (yarn-prod "preview")
+preview: download-spoilers-font (yarn-prod "preview")
 
 # format frontend code
 format: (yarn "format")
@@ -21,6 +24,11 @@ yarn cmd:
 [private]
 yarn-prod cmd:
 	export VITE_BUILD_VERSION=$(git rev-parse HEAD) && cd frontend && yarn {{cmd}}
+
+download-spoilers-font:
+	if [[ ! -e "{{ spoilers-font-file }}" ]]; then \
+		wget "{{ spoilers-font }}" -O "{{ spoilers-font-file }}"; \
+	fi
 
 # extract game translations
 extract-translations:
