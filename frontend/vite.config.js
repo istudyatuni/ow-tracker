@@ -18,6 +18,7 @@ export default defineConfig({
 				"translations/*.json",
 				"translations/ui/*.ftl",
 				"sprites/*.jpg",
+				"*.otf",
 			],
 		}),
 		Icons({ compiler: "svelte" }),
