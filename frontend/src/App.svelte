@@ -1,4 +1,5 @@
 <script module>
+  import Debug from "@/components/Debug.svelte";
   import FactsPanel from "@/components/FactsPanel.svelte";
   import Sidebar from "@/components/Sidebar.svelte";
   import Loading from "@/components/Loading.svelte";
@@ -18,7 +19,7 @@
   } from "@/lib/stores";
   import { get_facts_for } from "@/lib/data";
   import { init_i18n, t } from "@/lib/i18n";
-  import { NEED_EXTENDED_SPOILER_FONT } from "./lib/language";
+  import { NEED_EXTENDED_SPOILER_FONT } from "@/lib/language";
 </script>
 
 <script>
@@ -64,5 +65,9 @@
     <WelcomePopup />
   {:else if is_map_empty}
     <Popup>{$t("map-empty-popup")}</Popup>
+  {/if}
+
+  {#if import.meta.env.DEV}
+    <Debug />
   {/if}
 </main>

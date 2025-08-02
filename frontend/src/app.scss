@@ -60,8 +60,13 @@ h1 {
   cursor: pointer;
 }
 
+.pointer {
+  @extend %pointer;
+}
+
 button,
-select {
+select,
+input[type="text"] {
   @extend %pointer;
 
   border-radius: 8px;
@@ -72,6 +77,11 @@ select {
   font-family: inherit;
   background-color: $button-bg;
   transition: border-color 0.25s;
+}
+
+input[type="text"] {
+  cursor: text;
+  padding: 0.6em;
 }
 
 button:hover,
@@ -87,7 +97,8 @@ select:hover {
 button:focus,
 button:focus-visible,
 select:focus,
-select:focus-visible {
+select:focus-visible,
+input[type="text"]:focus {
   outline: 4px auto -webkit-focus-ring-color;
 }
 

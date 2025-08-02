@@ -17,6 +17,7 @@ import {
 	set_has_unexplored_cards,
 	set_opened_cards_only_rumors,
 	set_opened_facts,
+	set_all_save_keys,
 } from "@/lib/data";
 import { detect_language } from "@/lib/language";
 import { coord_to_leaflet } from "@/lib/leaflet";
@@ -85,6 +86,9 @@ export async function generate_all_svg() {
 	}
 	set_opened_facts(opened_facts);
 	OPENED_FACTS_COUNT.set(opened_facts.size);
+	if (import.meta.env.DEV) {
+		set_all_save_keys(save_keys);
+	}
 
 	LOADING.update((n) => n + 1);
 
