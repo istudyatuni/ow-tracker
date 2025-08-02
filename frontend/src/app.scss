@@ -290,7 +290,7 @@ $categories-colors: map.set($categories-colors, "other", $other-color);
   }
 }
 
-main.hide-spoilers {
+.hide-spoilers {
   & .spoiler,
   &.spoiler {
     font-family: $spoilers-font;
@@ -316,7 +316,7 @@ main.hide-spoilers {
   }
 }
 
-main.hide-spoilers.extended-spoiler-font {
+.hide-spoilers.extended-spoiler-font {
   & .spoiler,
   &.spoiler {
     font-family: $extended-spoilers-font;
