@@ -1,6 +1,5 @@
 // i guess global state shouldn't work this way..
 // todo: rewrite
-// todo: why set_ functions are async?
 
 const RUMOR_REGEX = /_R\d+$/;
 
@@ -19,23 +18,23 @@ let joined_rumors = {};
 let all_save_keys = new Set();
 let all_save_keys_list = [];
 
-export async function set_opened_facts(data) {
+export function set_opened_facts(data) {
 	opened_facts = data;
 }
 
-export async function set_opened_cards_only_rumors(data) {
+export function set_opened_cards_only_rumors(data) {
 	opened_cards_only_rumors = data;
 }
 
-export async function set_has_unexplored_cards(data) {
+export function set_has_unexplored_cards(data) {
 	has_unexplored_cards = data;
 }
 
-export async function set_entries_facts(data) {
+export function set_entries_facts(data) {
 	entries_facts = data;
 }
 
-export async function set_all_save_keys(data) {
+export function set_all_save_keys(data) {
 	console.assert(import.meta.env.DEV, "can be set only in dev mode");
 	all_save_keys = new Set(data);
 	all_save_keys_list = data;
@@ -50,7 +49,7 @@ export function save_key_valid(key) {
 }
 
 /** @param {Object<string, { entries: string[]; rumors: string[] }>} data */
-export async function set_joined_rumors(data) {
+export function set_joined_rumors(data) {
 	joined_rumors = data;
 }
 
