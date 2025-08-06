@@ -56,3 +56,12 @@ minify-json:
 # extract game translations
 extract-translations:
 	cargo r --release --package tr-extractor -- --write -vv --output-dir=frontend/public
+
+build-app-win:
+	cargo xwin b --release --package ow-tracker-companion --target=x86_64-pc-windows-msvc
+
+run-server:
+	cargo r --package ow-tracker-server
+
+run-app:
+	cargo r --package ow-tracker-companion

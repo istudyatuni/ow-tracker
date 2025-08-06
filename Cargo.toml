@@ -13,10 +13,14 @@ bon = "3.5.1"
 chrono = { version = "0.4.41", features = ["serde", "now"] }
 clap = { version = "4.5", features = ["derive"] }
 derive_builder = "0.20.2"
+directories = "6.0.0"
 dirs = "6.0.0"
+dotenvy_macro = "0.15.7"
 heck = "0.5.0"
+iced = "0.13.1"
 memmap2 = "0.9.5"
 redb = "2.6.2"
+reqwest = { version = "0.12.22", default-features = false, features = ["json", "rustls-tls", "blocking"] }
 serde = { version = "1.0.219", features = ["derive"] }
 serde-xml-rs = "0.7.0"
 serde_json = "1.0.140"

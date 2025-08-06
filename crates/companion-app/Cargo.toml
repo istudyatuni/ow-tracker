@@ -1,0 +1,22 @@
+[package]
+name = "ow-tracker-companion"
+version.workspace = true
+edition.workspace = true
+
+[[bin]]
+path = "src/main.rs"
+name = "ow-companion"
+
+[dependencies]
+directories.workspace = true
+dotenvy_macro.workspace = true
+iced.workspace = true
+reqwest.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+tracing-subscriber.workspace = true
+tracing.workspace = true
+uuid.workspace = true
+
+server.workspace = true
