@@ -1,7 +1,7 @@
 use std::path::PathBuf;
 
 use serde::{Deserialize, Serialize};
-use tracing::{error, info};
+use tracing::{debug, error};
 use uuid::Uuid;
 
 #[derive(Debug, Clone)]
@@ -10,9 +10,9 @@ pub struct Config {
     path: PathBuf,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize)]
+#[derive(Debug, Default, Clone, Deserialize, Serialize)]
 pub struct StoredConfig {
-    pub profiles: Vec<Profile>,
+    profiles: Vec<Profile>,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
@@ -30,7 +30,7 @@ impl Config {
 
         if !path.exists() {
             return Ok(Self {
-                config: StoredConfig { profiles: vec![] },
+                config: StoredConfig::default(),
                 path,
             });
         }
@@ -42,14 +42,27 @@ impl Config {
     pub fn profiles(&self) -> &[Profile] {
         &self.config.profiles
     }
+    pub fn find_profile(&self, name: &str) -> Option<Uuid> {
+        self.config
+            .profiles
+            .iter()
+            .find(|p| p.name == name)
+            .map(|p| p.id)
+    }
+    /*pub fn get_profile(&self, id: Uuid) -> Option<&Profile> {
+        self.config.profiles.iter().find(|p| p.id == id)
+    }*/
     pub fn add_register(&mut self, id: Uuid, name: &str) {
         self.config.profiles.push(Profile {
             id,
             name: name.to_string(),
         });
     }
+    pub fn remove_register(&mut self, id: Uuid) {
+        self.config.profiles.retain(|p| p.id != id);
+    }
     pub fn save_on_disk(&self) -> Result<(), ConfigError> {
-        info!("saving config to {}", self.path.display());
+        debug!("saving config to {}", self.path.display());
         Ok(std::fs::write(
             &self.path,
             serde_json::to_string(&self.config)?,

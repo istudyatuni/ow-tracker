@@ -60,6 +60,12 @@ extract-translations:
 build-app-win:
 	cargo xwin b --release --package ow-tracker-companion --target=x86_64-pc-windows-msvc
 
+build-app:
+	cargo b --release --package ow-tracker-companion
+
+build-server:
+	cargo b --release --package ow-tracker-server
+
 run-server:
 	cargo r --package ow-tracker-server
 

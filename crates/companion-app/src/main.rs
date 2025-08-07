@@ -3,17 +3,25 @@
     windows_subsystem = "windows"
 )]
 
+use std::ffi::OsStr;
 use std::path::PathBuf;
 use std::sync::LazyLock;
 
-use config::Config;
+use iced::widget::button::Style;
 use iced::widget::{Column, button, column, container, horizontal_space, row, text};
 use iced::{Element, Fill, Theme};
 use tracing::error;
 use uuid::Uuid;
 
+use config::{Config, Profile};
+use game::save_file_for_profile;
+use log::LogError;
+use saves::read_save_packed;
+
 mod config;
 mod game;
+mod log;
+mod saves;
 
 const SERVER_HOST: &str = dotenvy_macro::dotenv!("SERVER_HOST");
 static SERVER_PORT: LazyLock<u16> = LazyLock::new(|| {
@@ -47,6 +55,15 @@ fn update(state: &mut State, message: Message) {
                 .selected_profile
                 .as_ref()
                 .expect("selected_profile should be defined before register");
+            let install_dir = state
+                .install
+                .as_ref()
+                .expect("install dir should be defined before register");
+            let save_path = save_file_for_profile(install_dir, OsStr::new(selected_profile));
+
+            let Some(save_packed) = read_save_packed(&save_path) else {
+                return;
+            };
 
             let client = reqwest::blocking::Client::new();
             let Ok(resp) = client
@@ -57,19 +74,25 @@ fn update(state: &mut State, message: Message) {
                         .join("/api/register")
                         .expect("url path should be valid"),
                 )
-                .json(&server::RegisterRequest { save: Vec::new() })
+                .json(&common::server_models::RegisterRequest { save: save_packed })
                 .send()
-                .inspect_err(|e| error!("failed to send register request: {e}"))
+                .log_msg("failed to send register request")
             else {
                 return;
             };
+            if resp.error_for_status_ref().is_err() {
+                match resp.text() {
+                    Ok(text) => error!("error registering save: {text}"),
+                    Err(e) => error!("error registering save (failed to get response text: {e:?})"),
+                }
+                return;
+            }
             let Ok(resp) = resp
-                .json::<server::RegisterResponse>()
-                .inspect_err(|e| error!("failed to parse register response: {e}"))
+                .json::<common::server_models::RegisterResponse>()
+                .log_msg("failed to parse register response")
             else {
                 return;
             };
-            state.registered_id.replace(resp.id);
 
             let Some(config) = &mut state.config else {
                 error!("config not loaded, skipping saving");
@@ -77,23 +100,30 @@ fn update(state: &mut State, message: Message) {
             };
 
             config.add_register(resp.id, selected_profile);
-            if let Err(e) = config.save_on_disk() {
-                error!("failed to save config on dist: {e}");
-            }
+            let _ = config
+                .save_on_disk()
+                .log_msg("failed to save config on disk");
             state.selected_profile.take();
         }
         Message::SelectProfile(name) => {
-            if state
-                .selected_profile
-                .as_ref()
-                .is_some_and(|current| current == &name)
+            if let Some(ref current) = state.selected_profile
+                && current == &name
             {
-                state.selected_profile.take();
-            } else {
-                state.selected_profile.replace(name);
+                return;
             }
+            state.selected_profile.replace(name.clone());
         }
-        Message::ForgetRegister(_id) => todo!(),
+        Message::ForgetRegister(id) => {
+            let Some(config) = &mut state.config else {
+                error!("config not loaded, skipping forgetting");
+                return;
+            };
+
+            config.remove_register(id);
+            let _ = config
+                .save_on_disk()
+                .log_msg("failed to save config on disk");
+        }
     }
 }
 
@@ -126,29 +156,32 @@ fn view(state: &State) -> Element<Message> {
     let mut profiles = state.profiles.clone().unwrap();
 
     profiles.sort_unstable();
-    let profiles = profiles.iter().map(|p| {
+    let profiles = profiles.into_iter().map(|p| {
+        let cloned_p = p.clone();
         row![
             text(format!("- {p}")).width(200).size(20),
             row![
-                button(
-                    // todo: change button color, not text
-                    if state
-                        .selected_profile
-                        .as_ref()
-                        .is_some_and(|name| name == p)
-                    {
-                        "Unselect"
-                    } else {
-                        "Select"
-                    }
-                )
-                .on_press(Message::SelectProfile(p.to_string())),
+                button("Select")
+                    .style(move |theme: &Theme, _| {
+                        let p = &cloned_p;
+                        let palette = theme.palette();
+                        if state
+                            .selected_profile
+                            .as_ref()
+                            .is_some_and(|name| name == p)
+                        {
+                            Style::default().with_background(palette.success)
+                        } else {
+                            Style::default().with_background(palette.primary.scale_alpha(0.5))
+                        }
+                    })
+                    .on_press(Message::SelectProfile(p.to_string())),
                 horizontal_space().width(10),
                 button("Forget register").on_press_maybe(
                     config
                         .profiles()
                         .iter()
-                        .find(|profile| &profile.name == p)
+                        .find(|profile| profile.name == p)
                         .map(|p| Message::ForgetRegister(p.id))
                 ),
             ],
@@ -161,13 +194,20 @@ fn view(state: &State) -> Element<Message> {
         column![
             text("Game installation found!").size(20),
             text(install_dir.display().to_string()).width(600).size(20),
+            // todo: show something when no profiles found
             text("Found profiles:").size(20),
             Column::from_iter(profiles),
-            button("Register").on_press_maybe(if state.selected_profile.is_some() {
-                Some(Message::RegisterOnServer)
-            } else {
-                None
-            }),
+            button("Register").on_press_maybe(
+                if state
+                    .selected_profile
+                    .as_ref()
+                    .is_some_and(|p| config.find_profile(p).is_none())
+                {
+                    Some(Message::RegisterOnServer)
+                } else {
+                    None
+                }
+            ),
         ]
         .spacing(10),
     )
@@ -190,9 +230,11 @@ struct State {
     install: Option<PathBuf>,
     /// List of profiles names
     profiles: Option<Vec<String>>,
+    /// Profile, selected in UI
     selected_profile: Option<String>,
-    registered_id: Option<Uuid>,
+    watched_profiles: Vec<Profile>,
 
+    /// App's config
     config: Option<Config>,
 
     error: Option<Error>,
@@ -231,7 +273,7 @@ impl State {
             install: Some(install_dir),
             profiles: Some(profiles),
             selected_profile: None,
-            registered_id: None,
+            watched_profiles: vec![],
             config: Some(config),
             error: None,
         }

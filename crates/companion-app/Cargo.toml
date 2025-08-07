@@ -19,4 +19,4 @@ tracing-subscriber.workspace = true
 tracing.workspace = true
 uuid.workspace = true
 
-server.workspace = true
+common.workspace = true

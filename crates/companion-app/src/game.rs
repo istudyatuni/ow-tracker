@@ -1,5 +1,6 @@
 use std::{
     env::home_dir,
+    ffi::OsStr,
     path::{Path, PathBuf},
 };
 
@@ -48,7 +49,7 @@ pub fn find_profiles(path: &Path) -> Result<Vec<String>, FindProfilesError> {
         .filter(|p| {
             p.file_name().is_some_and(|name| path.join(name).exists())
                 && p.file_stem()
-                    .is_some_and(|stem| path.join(stem).join("data.owsave").exists())
+                    .is_some_and(|stem| save_file_for_profile(path, stem).exists())
         })
         .map(|p| p.file_stem().expect("checked above"))
         .map(|name| name.to_str().expect("save name can be utf only"))
@@ -56,6 +57,10 @@ pub fn find_profiles(path: &Path) -> Result<Vec<String>, FindProfilesError> {
         .collect::<Vec<_>>();
 
     Ok(entries)
+}
+
+pub fn save_file_for_profile(path: &Path, name: &OsStr) -> PathBuf {
+    path.join(name).join("data.owsave")
 }
 
 #[derive(Debug, thiserror::Error)]

@@ -45,6 +45,15 @@ pub fn is_allowed_to_override(old: &[Packed], new: &[Packed]) -> bool {
     })
 }
 
+/*/// Number of enabled keys in save
+pub fn enabled_num(packed: &[Packed]) -> u32 {
+    packed.iter().map(|num| num.count_ones()).sum()
+}
+
+pub fn learned_percent(count: u32) -> f32 {
+    count as f32 / KEYS_COUNT as f32 * 100_f32
+}*/
+
 #[cfg(test)]
 mod tests {
     use super::*;

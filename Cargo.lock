@@ -2902,6 +2902,11 @@ checksum = "b15813163c1d831bf4a13c3610c05c0d03b39feb07f7e09fa234dac9b15aaf39"
 [[package]]
 name = "ow-tracker-common"
 version = "0.0.0"
+dependencies = [
+ "chrono",
+ "serde",
+ "uuid",
+]
 
 [[package]]
 name = "ow-tracker-companion"
@@ -2910,7 +2915,7 @@ dependencies = [
  "directories",
  "dotenvy_macro",
  "iced",
- "ow-tracker-server",
+ "ow-tracker-common",
  "reqwest",
  "serde",
  "serde_json",
@@ -3275,7 +3280,7 @@ dependencies = [
  "once_cell",
  "socket2 0.5.10",
  "tracing",
- "windows-sys 0.59.0",
+ "windows-sys 0.52.0",
 ]
 
 [[package]]
@@ -4791,9 +4796,9 @@ dependencies = [
 
 [[package]]
 name = "webpki-roots"
-version = "1.0.1"
+version = "1.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8782dd5a41a24eed3a4f40b606249b3e236ca61adf1f25ea4d45c73de122b502"
+checksum = "7e8983c3ab33d6fb807cfcdad2491c4ea8cbc8ed839181c7dfd9c67c83e261b2"
 dependencies = [
  "rustls-pki-types",
 ]
