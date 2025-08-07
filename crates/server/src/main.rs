@@ -75,11 +75,18 @@ async fn main() -> anyhow::Result<()> {
 async fn register(
     store: State<Store>,
     Json(args): Json<RegisterRequest>,
-) -> Result<Json<RegisterResponse>, StatusCode> {
+) -> Result<Json<RegisterResponse>, ResponseError<&'static str>> {
+    if !saves::is_valid_number_of_keys(&args.save) {
+        return Err(ResponseError::StatusMessage((
+            StatusCode::BAD_REQUEST,
+            "invalid encoded save",
+        )));
+    }
+
     let id = Uuid::new_v4();
     if let Err(e) = store.0.save_register(id, args.save) {
         error!("failed to save register: {e}");
-        return Err(StatusCode::INTERNAL_SERVER_ERROR);
+        return Err(ResponseError::Status(StatusCode::INTERNAL_SERVER_ERROR));
     }
 
     Ok(Json(RegisterResponse { id }))
@@ -95,6 +102,7 @@ async fn update_register(
             "invalid encoded save",
         )));
     }
+
     let current_save = match store.0.get_register(args.id) {
         Ok(None) => return Err(ResponseError::Status(StatusCode::NOT_FOUND)),
         Ok(Some(save)) => save,
@@ -103,9 +111,17 @@ async fn update_register(
             return Err(ResponseError::Status(StatusCode::INTERNAL_SERVER_ERROR));
         }
     };
+
     if current_save.save == args.save {
         return Err(ResponseError::Status(StatusCode::NOT_MODIFIED));
     }
+    if !saves::is_allowed_to_override(&current_save.save, &args.save) {
+        return Err(ResponseError::StatusMessage((
+            StatusCode::BAD_REQUEST,
+            "can't remove keys from save",
+        )));
+    }
+
     if let Err(e) = store.0.save_register(args.id, args.save) {
         error!("failed to update register: {e}");
         return Err(ResponseError::Status(StatusCode::INTERNAL_SERVER_ERROR));

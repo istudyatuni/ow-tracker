@@ -28,6 +28,8 @@
             cargo-xwin
             yarn
             nodePackages.nodejs
+
+            cargo-nextest
           ];
           LD_LIBRARY_PATH = libPath;
         };
