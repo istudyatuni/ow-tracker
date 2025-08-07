@@ -601,8 +601,8 @@ mod tests {
                                 RumorFact::builder()
                                     .id("TH_ZERO_G_CAVE_R1".to_string())
                                     .source_id("5".to_string())
-                                    // .name("6".to_string())
-                                    // .name_priority(0)
+                                    .name("6".to_string())
+                                    .name_priority(0)
                                     .text("3".to_string())
                                     .build(),
                             ])
