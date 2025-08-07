@@ -29,3 +29,9 @@ pub struct GetRegisterResponse {
     pub save: Vec<u8>,
     pub updated: DateTime<Utc>,
 }
+
+#[derive(Debug, Serialize)]
+pub struct GetRegistersResponse {
+    pub registers: Vec<GetRegisterResponse>,
+    pub count: usize,
+}

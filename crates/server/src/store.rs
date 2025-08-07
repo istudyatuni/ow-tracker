@@ -1,7 +1,7 @@
 use std::{fmt::Display, path::Path, str::FromStr, sync::Arc};
 
 use chrono::{DateTime, Utc};
-use redb::{Database, Error, TableDefinition};
+use redb::{Database, Error, ReadableTable, TableDefinition};
 use serde::{Deserialize, Serialize};
 use tokio::sync::broadcast::{Receiver, Sender, channel, error::SendError};
 use uuid::Uuid;
@@ -47,6 +47,23 @@ impl Store {
             .map(|o| o.value().parse())
             .transpose()
             .unwrap())
+    }
+    #[cfg(debug_assertions)]
+    #[expect(clippy::result_large_err)]
+    pub fn list_registers(&self) -> Result<Vec<(Uuid, Registration)>, Error> {
+        let tx = self.db.begin_read()?;
+        let table = tx.open_table(REGISTER_TABLE)?;
+        Ok(table
+            .iter()
+            .map(|r| r.into_iter())?
+            .flatten()
+            .map(|(key, value)| {
+                (
+                    key.value().parse().expect("uuid should be valid in db"),
+                    value.value().parse().expect("json should be valid in db"),
+                )
+            })
+            .collect())
     }
 }
 

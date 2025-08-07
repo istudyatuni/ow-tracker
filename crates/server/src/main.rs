@@ -4,7 +4,7 @@ use axum::{
     Json, Router,
     extract::{Query, State},
     http::{Method, StatusCode},
-    routing::post,
+    routing::{get, post},
 };
 use tokio::net::TcpListener;
 use tower_http::{
@@ -61,6 +61,7 @@ async fn main() -> anyhow::Result<()> {
             "/api/register",
             post(register).put(update_register).get(get_register),
         )
+        .route("/api/registers", get(list_registers))
         .layer(cors)
         .layer(TraceLayer::new_for_http().make_span_with(DefaultMakeSpan::default()))
         .with_state(Store::new(db_path)?);
@@ -132,4 +133,32 @@ async fn get_register(
         save: save.save,
         updated: save.updated,
     }))
+}
+
+#[cfg(debug_assertions)]
+async fn list_registers(store: State<Store>) -> Result<Json<GetRegistersResponse>, StatusCode> {
+    let registers = match store.0.list_registers() {
+        Ok(registers) => registers,
+        Err(e) => {
+            error!("failed to get register: {e}");
+            return Err(StatusCode::INTERNAL_SERVER_ERROR);
+        }
+    };
+
+    Ok(Json(GetRegistersResponse {
+        count: registers.len(),
+        registers: registers
+            .into_iter()
+            .map(|(id, r)| GetRegisterResponse {
+                id,
+                save: r.save,
+                updated: r.updated,
+            })
+            .collect(),
+    }))
+}
+
+#[cfg(not(debug_assertions))]
+async fn list_registers(store: State<Store>) -> StatusCode {
+    StatusCode::NOT_FOUND
 }
