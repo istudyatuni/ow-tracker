@@ -12,7 +12,6 @@ directories.workspace = true
 dotenvy_macro.workspace = true
 iced.workspace = true
 notify.workspace = true
-reqwest.workspace = true
 serde.workspace = true
 serde_json.workspace = true
 thiserror.workspace = true
@@ -20,3 +19,10 @@ tracing.workspace = true
 uuid.workspace = true
 
 common.workspace = true
+
+[target.'cfg(windows)'.dependencies]
+# todo: fix "no-provider"
+reqwest = { version = "0.12.22", default-features = false, features = ["json", "rustls-tls-no-provider", "blocking"] }
+
+[target.'cfg(not(windows))'.dependencies]
+reqwest.workspace = true

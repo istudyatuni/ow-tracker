@@ -39,9 +39,5 @@ uuid = { version = "1.17.0", features = ["serde", "v4"] }
 common = { path = "crates/common", package = "ow-tracker-common" }
 server = { path = "crates/server", package = "ow-tracker-server" }
 
-[[workspace.target.'cfg(windows)'.dependencies]]
-# todo: fix "no-provider"
-reqwest = { version = "0.12.22", default-features = false, features = ["json", "rustls-tls-no-provider", "blocking"] }
-
 [profile.dev.package."iced"]
 inherits = "release"
