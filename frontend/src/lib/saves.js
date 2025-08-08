@@ -39,15 +39,40 @@ export function get_save_from_browser_url(keys) {
 	if (h.startsWith("#save")) {
 		encoded = h.split("save=")[1];
 	}
-	let opened = decode_save(keys, encoded);
+	let bytes = [...atob(encoded)].map((char) => char.charCodeAt(0));
+	let opened = decode_save(keys, bytes);
 	return opened;
 }
 
 export function has_save_in_url() {
 	let h = window.location.hash;
 	return (
-		h.includes("save=") && h.split("save=")[1].length == ENCODED_SAVE_LEN
+		(h.includes("save=") &&
+			h.split("save=")[1].length == ENCODED_SAVE_LEN) ||
+		has_profile_save_in_url()
 	);
+}
+
+export function has_profile_save_in_url() {
+	let h = window.location.hash;
+	return h.startsWith("#profile=");
+}
+
+export async function load_save_from_server(keys) {
+	let id = get_profile_id_from_url();
+	let url = import.meta.env.VITE_SERVER + "/api/register?id=" + id;
+	let r = await fetch(url);
+	if (!r.ok) {
+		console.error("failed to fetch:", await r.text());
+		return;
+	}
+	let encoded = (await r.json()).save;
+	return decode_save(keys, encoded);
+}
+
+function get_profile_id_from_url() {
+	let h = window.location.hash;
+	return h.split("profile=")[1];
 }
 
 /**
@@ -55,7 +80,7 @@ export function has_save_in_url() {
  * @param {Set<string>} opened
  * @returns {string | null}
  */
-export function encode_save(keys, opened) {
+function encode_save(keys, opened) {
 	keys = keys.sort();
 	let keys_count = keys.length;
 	if (keys_count != KEYS_COUNT && keys_count > 0) {
@@ -81,11 +106,10 @@ export function encode_save(keys, opened) {
 
 /**
  * @param {string[]} keys
- * @param {string}   encoded
+ * @param {number[]} bytes
  * @returns {Set<string> | null}
  */
-export function decode_save(keys, encoded) {
-	let bytes = [...atob(encoded)].map((char) => char.charCodeAt(0));
+function decode_save(keys, bytes) {
 	let unpacked = unpack_bools(bytes);
 	keys = keys.sort();
 	let keys_count = keys.length;

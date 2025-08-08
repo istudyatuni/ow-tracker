@@ -9,6 +9,7 @@ interface ViteTypeOptions {
 
 interface ImportMetaEnv {
 	readonly VITE_BUILD_VERSION: string;
+	readonly VITE_SERVER: string;
 }
 
 interface ImportMeta {

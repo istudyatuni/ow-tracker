@@ -21,7 +21,7 @@ import {
 } from "@/lib/data";
 import { detect_language } from "@/lib/language";
 import { coord_to_leaflet } from "@/lib/leaflet";
-import { get_save_from_browser_url, has_save_in_url } from "@/lib/saves";
+import { get_save_from_browser_url, has_profile_save_in_url, has_save_in_url, load_save_from_server } from "@/lib/saves";
 import {
 	LOADING,
 	LOADING_TOTAL,
@@ -80,7 +80,11 @@ export async function generate_all_svg() {
 	).json();
 	let opened_facts;
 	if (save_loaded) {
-		opened_facts = get_save_from_browser_url(save_keys);
+		if (has_profile_save_in_url()) {
+			opened_facts = await load_save_from_server(save_keys);
+		} else {
+			opened_facts = get_save_from_browser_url(save_keys);
+		}
 	} else {
 		opened_facts = new Set(save_keys);
 	}
