@@ -1,6 +1,7 @@
 use std::{
     env::home_dir,
     ffi::OsStr,
+    fmt::Display,
     path::{Path, PathBuf},
     sync::{Arc, Mutex},
     time::{Duration, Instant},
@@ -20,7 +21,24 @@ const LINUX_STEAM_GAME_DIR: &str =
     ".local/share/Steam/steamapps/compatdata/753640/pfx/drive_c/users/steamuser";
 const SAVE_DIR: &str = "AppData/LocalLow/Mobius Digital/Outer Wilds/SteamSaves";
 
-pub fn detect_install() -> Result<PathBuf, DetectError> {
+#[derive(Debug, Clone, Copy)]
+pub enum InstallType {
+    Steam,
+    #[expect(unused)]
+    EpicGames,
+}
+
+impl Display for InstallType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let s = match self {
+            InstallType::Steam => "Steam",
+            InstallType::EpicGames => "Epic Games",
+        };
+        s.fmt(f)
+    }
+}
+
+pub fn detect_install() -> Result<(InstallType, PathBuf), DetectError> {
     let Some(home) = home_dir() else {
         return Err(DetectError::NoHome);
     };
@@ -29,24 +47,30 @@ pub fn detect_install() -> Result<PathBuf, DetectError> {
 
     #[cfg(target_os = "windows")]
     {
-        search.push(home.join(SAVE_DIR));
+        search.push((InstallType::Steam, home.join(SAVE_DIR)));
     }
     #[cfg(target_os = "linux")]
     {
-        search.push(home.join(LINUX_STEAM_GAME_DIR).join(SAVE_DIR));
+        search.push((
+            InstallType::Steam,
+            home.join(LINUX_STEAM_GAME_DIR).join(SAVE_DIR),
+        ));
     }
     #[cfg(not(any(target_os = "windows", target_os = "linux")))]
     {
         compile_error!("unsupported os")
     }
 
-    for path in &search {
+    for (ty, path) in search {
+        debug!("searching install in {}", path.display());
         if path.exists() {
-            return Ok(path.clone());
+            debug!("install found");
+            return Ok((ty, path));
         }
     }
 
-    Err(DetectError::NotFound(search))
+    error!("install not found");
+    Err(DetectError::NotFound)
 }
 
 /// Find profiles names
@@ -232,7 +256,7 @@ pub enum DetectError {
     #[error("home folder not found")]
     NoHome,
     #[error("game folder not found")]
-    NotFound(Vec<PathBuf>),
+    NotFound,
 }
 
 #[derive(Debug, thiserror::Error)]

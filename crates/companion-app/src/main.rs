@@ -18,7 +18,7 @@ use tracing_subscriber::util::SubscriberInitExt;
 use uuid::Uuid;
 
 use config::Config;
-use game::{FileUpdateEvent, WatchAction, file_watcher, save_file_for_profile};
+use game::{FileUpdateEvent, InstallType, WatchAction, file_watcher, save_file_for_profile};
 use log::LogError;
 use saves::read_save_packed;
 
@@ -68,7 +68,7 @@ fn update(state: &mut State, message: Message) {
                 .install
                 .as_ref()
                 .expect("install dir should be defined before register");
-            let save_path = save_file_for_profile(install_dir, OsStr::new(selected_profile));
+            let save_path = save_file_for_profile(&install_dir.1, OsStr::new(selected_profile));
 
             let Some(save_packed) = read_save_packed(&save_path) else {
                 return;
@@ -203,16 +203,7 @@ fn view(state: &State) -> Element<Message> {
     if let Some(ref err) = state.error {
         let inner: Element<_> = match err {
             Error::GameFind(e) => match e {
-                game::DetectError::NotFound(path_bufs) => {
-                    let errors = path_bufs
-                        .iter()
-                        .map(|p| text(format!("- {}", p.display())).size(20).into());
-                    column![
-                        text("Game installation not found, searched at").size(20),
-                        Column::from_vec(errors.collect()),
-                    ]
-                    .into()
-                }
+                game::DetectError::NotFound => text("Game installation not found").size(20).into(),
                 _ => text("Game installation not found: {e}").size(20).into(),
             },
             Error::ProfilesFind(e) => text(format!("Failed to find profiles: {e}"))
@@ -264,8 +255,10 @@ fn view(state: &State) -> Element<Message> {
 
     container(
         column![
-            text("Game installation found!").size(20),
-            text(install_dir.display().to_string()).width(600).size(20),
+            row![
+                text("Game installation found! Type: ").size(20),
+                text(install_dir.0.to_string()).size(20),
+            ],
             // todo: show something when no profiles found
             text("Found profiles:").size(20),
             Column::from_iter(profiles),
@@ -290,7 +283,7 @@ fn view(state: &State) -> Element<Message> {
 }
 
 fn subscription(state: &State) -> Subscription<Message> {
-    let Some(ref dir) = state.install else {
+    let Some((_, ref dir)) = state.install else {
         error!("install dir is not set, skipping subscription");
         return Subscription::none();
     };
@@ -316,7 +309,7 @@ enum Message {
 #[derive(Debug)]
 struct State {
     /// Game installation
-    install: Option<PathBuf>,
+    install: Option<(InstallType, PathBuf)>,
     /// List of profiles names
     profiles: Option<Vec<String>>,
     /// Profile, selected in UI
@@ -344,7 +337,7 @@ impl State {
                 };
             }
         };
-        let profiles = match game::find_profiles(&install_dir) {
+        let profiles = match game::find_profiles(&install_dir.1) {
             Ok(profiles) => profiles,
             Err(e) => {
                 return Self {
