@@ -3,18 +3,22 @@
     windows_subsystem = "windows"
 )]
 
+use std::any::TypeId;
 use std::ffi::OsStr;
 use std::path::PathBuf;
-use std::sync::LazyLock;
+use std::sync::{Arc, LazyLock, Mutex, mpsc};
 
 use iced::widget::button::Style;
 use iced::widget::{Column, button, column, container, horizontal_space, row, text};
-use iced::{Element, Fill, Theme};
-use tracing::error;
+use iced::{Element, Fill, Subscription, Theme};
+use reqwest::StatusCode;
+use tracing::{Level, debug, error, trace};
+use tracing_subscriber::layer::SubscriberExt;
+use tracing_subscriber::util::SubscriberInitExt;
 use uuid::Uuid;
 
-use config::{Config, Profile};
-use game::save_file_for_profile;
+use config::Config;
+use game::{FileUpdateEvent, WatchAction, file_watcher, save_file_for_profile};
 use log::LogError;
 use saves::read_save_packed;
 
@@ -33,15 +37,20 @@ static SERVER_ADDRESS: LazyLock<String> =
     LazyLock::new(|| format!("{SERVER_HOST}:{}", *SERVER_PORT));
 
 pub fn main() -> iced::Result {
-    let _ = tracing::subscriber::set_global_default(
-        tracing_subscriber::FmtSubscriber::builder()
-            .with_target(false)
-            .with_max_level(tracing::Level::DEBUG)
-            .finish(),
-    )
-    .inspect_err(|e| eprintln!("failed to initialize logging: {e}"));
+    let filter = tracing_subscriber::filter::Targets::new()
+        .with_default(Level::ERROR)
+        .with_target(env!("CARGO_CRATE_NAME"), tracing::Level::TRACE);
+    tracing_subscriber::registry()
+        .with(filter)
+        .with(
+            tracing_subscriber::fmt::layer()
+                .with_file(true)
+                .with_line_number(true),
+        )
+        .init();
 
     iced::application("Outer Wilds Tracker - Companion App", update, view)
+        .subscription(subscription)
         .window_size((1200.0, 800.0))
         .resizable(false)
         .theme(|_| Theme::Nord)
@@ -65,6 +74,7 @@ fn update(state: &mut State, message: Message) {
                 return;
             };
 
+            debug!("sending register request");
             let client = reqwest::blocking::Client::new();
             let Ok(resp) = client
                 .post(
@@ -89,10 +99,15 @@ fn update(state: &mut State, message: Message) {
             }
             let Ok(resp) = resp
                 .json::<common::server_models::RegisterResponse>()
-                .log_msg("failed to parse register response")
+                .log_msg("register response")
             else {
                 return;
             };
+
+            state
+                .send_file_watches
+                .send(WatchAction::watch(selected_profile))
+                .unwrap();
 
             let Some(config) = &mut state.config else {
                 error!("config not loaded, skipping saving");
@@ -104,6 +119,53 @@ fn update(state: &mut State, message: Message) {
                 .save_on_disk()
                 .log_msg("failed to save config on disk");
             state.selected_profile.take();
+        }
+        Message::FileUpdated(FileUpdateEvent::Update { name, path }) => {
+            debug!("updating file {name}");
+
+            let Some(config) = &mut state.config else {
+                error!("config not loaded, skipping saving");
+                return;
+            };
+
+            let Some(save_packed) = read_save_packed(&path) else {
+                return;
+            };
+
+            let Some(id) = config.find_profile(&name) else {
+                debug!("ignoring file update for non-tracked profile");
+                return;
+            };
+
+            debug!("sending register update request");
+            let client = reqwest::blocking::Client::new();
+            let Ok(resp) = client
+                .put(
+                    (*SERVER_ADDRESS)
+                        .parse::<reqwest::Url>()
+                        .expect("server url should be valid")
+                        .join("/api/register")
+                        .expect("url path should be valid"),
+                )
+                .json(&common::server_models::UpdateRegisterRequest {
+                    id,
+                    save: save_packed,
+                })
+                .send()
+                .log_msg("failed to send update request")
+            else {
+                return;
+            };
+            if resp.error_for_status_ref().is_err() {
+                match resp.text() {
+                    Ok(text) => error!("error updating save: {text}"),
+                    Err(e) => error!("error updating save (failed to get response text: {e:?})"),
+                }
+                return;
+            }
+            if resp.status() == StatusCode::NOT_MODIFIED {
+                trace!("save not modified");
+            }
         }
         Message::SelectProfile(name) => {
             if let Some(ref current) = state.selected_profile
@@ -118,6 +180,16 @@ fn update(state: &mut State, message: Message) {
                 error!("config not loaded, skipping forgetting");
                 return;
             };
+
+            state
+                .send_file_watches
+                .send(WatchAction::unwatch(
+                    config
+                        .get_profile(id)
+                        .map(|p| &p.name)
+                        .expect("profile should be in config when unwatch"),
+                ))
+                .unwrap();
 
             config.remove_register(id);
             let _ = config
@@ -217,10 +289,27 @@ fn view(state: &State) -> Element<Message> {
     .into()
 }
 
+fn subscription(state: &State) -> Subscription<Message> {
+    let Some(ref dir) = state.install else {
+        error!("install dir is not set, skipping subscription");
+        return Subscription::none();
+    };
+    Subscription::run_with_id(
+        TypeId::of::<FileUpdateEvent>(),
+        file_watcher(
+            dir.to_owned(),
+            state.send_file_watches.clone(),
+            Arc::clone(&state.file_watches_receiver),
+        ),
+    )
+    .map(Message::FileUpdated)
+}
+
 #[derive(Debug, Clone)]
 enum Message {
     RegisterOnServer,
     SelectProfile(String),
+    FileUpdated(FileUpdateEvent),
     ForgetRegister(Uuid),
 }
 
@@ -232,7 +321,11 @@ struct State {
     profiles: Option<Vec<String>>,
     /// Profile, selected in UI
     selected_profile: Option<String>,
-    watched_profiles: Vec<Profile>,
+
+    /// Send when file should be un/watched
+    send_file_watches: mpsc::Sender<WatchAction>,
+    /// Receiver for file watch thread
+    file_watches_receiver: Arc<Mutex<mpsc::Receiver<WatchAction>>>,
 
     /// App's config
     config: Option<Config>,
@@ -269,11 +362,17 @@ impl State {
                 };
             }
         };
+
+        let (tx, rx) = mpsc::channel();
+        for profile in config.profiles() {
+            tx.send(WatchAction::watch(&profile.name)).unwrap();
+        }
         Self {
             install: Some(install_dir),
             profiles: Some(profiles),
             selected_profile: None,
-            watched_profiles: vec![],
+            send_file_watches: tx,
+            file_watches_receiver: Arc::new(Mutex::new(rx)),
             config: Some(config),
             error: None,
         }

@@ -12,7 +12,7 @@ pub struct RegisterResponse {
     pub id: Uuid,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct UpdateRegisterRequest {
     pub id: Uuid,
     pub save: Vec<u8>,

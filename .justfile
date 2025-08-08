@@ -70,7 +70,7 @@ run-server:
 	cargo r --package ow-tracker-server
 
 run-app:
-	cargo r --package ow-tracker-companion
+	cargo r --package ow-tracker-companion || :
 
 test *args:
 	cargo nextest run {{ args }}

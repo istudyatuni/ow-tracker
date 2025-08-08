@@ -49,9 +49,9 @@ impl Config {
             .find(|p| p.name == name)
             .map(|p| p.id)
     }
-    /*pub fn get_profile(&self, id: Uuid) -> Option<&Profile> {
+    pub fn get_profile(&self, id: Uuid) -> Option<&Profile> {
         self.config.profiles.iter().find(|p| p.id == id)
-    }*/
+    }
     pub fn add_register(&mut self, id: Uuid, name: &str) {
         self.config.profiles.push(Profile {
             id,
