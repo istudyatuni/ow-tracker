@@ -1,11 +1,7 @@
-#![cfg_attr(target_os = "windows", allow(unused))]
-
 use reqwest::{StatusCode, Url};
 
 use tracing::{debug, error, trace};
 use uuid::Uuid;
-#[cfg(target_os = "windows")]
-use tracing::warn;
 
 use common::saves::Packed;
 use common::server_models::*;
@@ -19,12 +15,6 @@ fn server_url() -> Url {
 }
 
 pub fn send_register(save: Vec<Packed>) -> Result<RegisterResponse, ()> {
-    #[cfg(target_os = "windows")]
-    {
-        warn!("network requests disabled on windows for now");
-        return Ok(RegisterResponse { id: Uuid::new_v4() });
-    }
-
     debug!("sending register request");
     let client = reqwest::blocking::Client::new();
     let Ok(resp) = client
@@ -57,12 +47,6 @@ pub fn send_register(save: Vec<Packed>) -> Result<RegisterResponse, ()> {
 }
 
 pub fn send_register_update(id: Uuid, save: Vec<Packed>) -> Result<(), ()> {
-    #[cfg(target_os = "windows")]
-    {
-        warn!("network requests disabled on windows for now");
-        return Ok(());
-    }
-
     debug!("sending register update request");
     let client = reqwest::blocking::Client::new();
     let Ok(resp) = client
