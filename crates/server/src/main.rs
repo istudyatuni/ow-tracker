@@ -8,8 +8,7 @@ use axum::{
 };
 use tokio::net::TcpListener;
 use tower_http::{
-    cors::CorsLayer,
-    trace::{DefaultMakeSpan, TraceLayer},
+    cors::CorsLayer, limit::RequestBodyLimitLayer, trace::{DefaultMakeSpan, TraceLayer}
 };
 use tracing::{error, info};
 use uuid::Uuid;
@@ -64,6 +63,7 @@ async fn main() -> anyhow::Result<()> {
         .route("/api/registers", get(list_registers))
         .layer(cors)
         .layer(TraceLayer::new_for_http().make_span_with(DefaultMakeSpan::default()))
+        .layer(RequestBodyLimitLayer::new(1024))
         .with_state(Store::new(db_path)?);
 
     let listener = TcpListener::bind(format!("0.0.0.0:{}", *SERVER_PORT)).await?;
