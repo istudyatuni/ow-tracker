@@ -29,6 +29,8 @@ impl Config {
         };
 
         if !path.exists() {
+            std::fs::create_dir_all(path.parent().expect("config path should have dir name"))?;
+
             return Ok(Self {
                 config: StoredConfig::default(),
                 path,

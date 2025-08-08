@@ -11,7 +11,11 @@ use iced::{
     futures::{SinkExt, Stream, StreamExt, channel::mpsc},
     stream,
 };
-use notify::{Event, EventKind, RecommendedWatcher, RecursiveMode, Watcher, event::RemoveKind};
+#[cfg(target_os = "windows")]
+use notify::event::ModifyKind;
+#[cfg(target_os = "linux")]
+use notify::event::RemoveKind;
+use notify::{Event, EventKind, RecommendedWatcher, RecursiveMode, Watcher};
 use tracing::{debug, error, trace, warn};
 
 use crate::log::LogError;
@@ -100,6 +104,7 @@ pub fn save_file_for_profile(path: &Path, name: &OsStr) -> PathBuf {
 
 pub fn file_watcher(
     install_dir: PathBuf,
+    #[cfg_attr(target_os = "windows", expect(unused))]
     watch_actions_sender: std::sync::mpsc::Sender<WatchAction>,
     watch_actions_receiver: Arc<Mutex<std::sync::mpsc::Receiver<WatchAction>>>,
 ) -> impl Stream<Item = FileUpdateEvent> {
@@ -151,16 +156,18 @@ pub fn file_watcher(
                     continue;
                 }
             };
-            // todo: check how game writes save file
-            //
-            // - linux: remove + create
-            // - windows: ?
+
             trace!(
                 "notified about event: kind = {:?}, paths len = {}",
                 res.kind,
                 res.paths.len()
             );
+            #[cfg(target_os = "linux")]
             if !matches!(res.kind, EventKind::Remove(RemoveKind::File)) {
+                continue;
+            }
+            #[cfg(target_os = "windows")]
+            if !matches!(res.kind, EventKind::Modify(ModifyKind::Any)) {
                 continue;
             }
 
@@ -180,10 +187,9 @@ pub fn file_watcher(
                     .to_string();
                 debug!("got event for \"{name}\"");
 
+                // on linux watcher stops tracking deleted file, but on windows does not
+                #[cfg(target_os = "linux")]
                 if matches!(res.kind, EventKind::Remove(RemoveKind::File)) {
-                    // let name = name.clone();
-                    // let path = path.clone();
-                    // let watch_actions_sender = watch_actions_sender.clone();
                     std::thread::scope(|s| {
                         s.spawn(|| {
                             std::thread::sleep(Duration::from_secs(1));
