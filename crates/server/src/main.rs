@@ -1,23 +1,26 @@
-use std::sync::LazyLock;
+use std::{convert::Infallible, sync::LazyLock, time::Duration};
 
 use axum::{
     Json, Router,
     extract::{Query, State},
     http::{Method, StatusCode},
+    response::{Sse, sse},
     routing::{get, post},
 };
+use futures_util::{SinkExt, Stream};
+use iced_futures::stream;
 use tokio::net::TcpListener;
 use tower_http::{
     cors::CorsLayer,
     limit::RequestBodyLimitLayer,
     trace::{DefaultMakeSpan, TraceLayer},
 };
-use tracing::{error, info};
+use tracing::{debug, error, info};
 use uuid::Uuid;
 
 use common::saves;
 use common::server_models::*;
-use store::Store;
+use store::{Store, Watches};
 
 use response::ResponseError;
 
@@ -53,11 +56,16 @@ async fn main() -> anyhow::Result<()> {
         .allow_origin([ALLOW_ORIGIN.parse().unwrap()])
         .allow_methods([Method::GET]);
     let app = Router::new()
-        .route(
-            "/api/register",
-            post(register).put(update_register).get(get_register),
+        .nest(
+            "/api",
+            Router::new()
+                .route(
+                    "/register",
+                    post(register).put(update_register).get(get_register),
+                )
+                .route("/registers", get(list_registers))
+                .route("/watch", get(watch_updates)),
         )
-        .route("/api/registers", get(list_registers))
         .layer(cors)
         .layer(TraceLayer::new_for_http().make_span_with(DefaultMakeSpan::default()))
         .layer(RequestBodyLimitLayer::new(1024))
@@ -90,7 +98,8 @@ async fn register(
 }
 
 async fn update_register(
-    store: State<Store>,
+    State(store): State<Store>,
+    State(watch): State<Watches>,
     Json(args): Json<UpdateRegisterRequest>,
 ) -> Result<(), ResponseError<&'static str>> {
     if !saves::is_valid_number_of_keys(&args.save) {
@@ -100,7 +109,7 @@ async fn update_register(
         )));
     }
 
-    let current_save = match store.0.get_register(args.id) {
+    let current_save = match store.get_register(args.id) {
         Ok(None) => return Err(ResponseError::Status(StatusCode::NOT_FOUND)),
         Ok(Some(save)) => save,
         Err(e) => {
@@ -119,10 +128,15 @@ async fn update_register(
         )));
     }
 
-    if let Err(e) = store.0.save_register(args.id, args.save) {
+    if let Err(e) = store.save_register(args.id, args.save) {
         error!("failed to update register: {e}");
         return Err(ResponseError::Status(StatusCode::INTERNAL_SERVER_ERROR));
     }
+
+    watch
+        .send(args.id)
+        .await
+        .expect("should be able to post watch update");
 
     Ok(())
 }
@@ -174,4 +188,29 @@ async fn list_registers(store: State<Store>) -> Result<Json<GetRegistersResponse
 #[cfg(not(debug_assertions))]
 async fn list_registers(store: State<Store>) -> StatusCode {
     StatusCode::NOT_FOUND
+}
+
+async fn watch_updates(
+    State(mut watch): State<Watches>,
+    Query(args): Query<GetRegisterRequest>,
+) -> Sse<impl Stream<Item = Result<sse::Event, Infallible>>> {
+    let stream = stream::channel(100, async move |mut output| {
+        while let Ok(id) = watch.rx.recv().await {
+            if args.id != id {
+                continue;
+            }
+
+            debug!("sending watch update for {id}");
+            output
+                .send(Ok(sse::Event::default().data("save-updated")))
+                .await
+                .unwrap();
+        }
+    });
+
+    Sse::new(stream).keep_alive(
+        sse::KeepAlive::new()
+            .interval(Duration::from_secs(1))
+            .text("keeped alive"),
+    )
 }

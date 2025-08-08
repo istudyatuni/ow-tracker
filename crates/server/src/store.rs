@@ -1,5 +1,7 @@
 use std::{fmt::Display, path::Path, str::FromStr, sync::Arc};
 
+use async_broadcast::{self as channel, SendError};
+use axum::extract::FromRef;
 use chrono::{DateTime, Utc};
 use redb::{Database, Error, ReadableTable, TableDefinition};
 use serde::{Deserialize, Serialize};
@@ -13,6 +15,8 @@ const REGISTER_TABLE: TableDefinition<String, String> = TableDefinition::new("re
 #[derive(Debug, Clone)]
 pub struct Store {
     db: Arc<Database>,
+    // storing it here because axum can't handle multiple states
+    watches: Watches,
 }
 
 impl Store {
@@ -25,7 +29,10 @@ impl Store {
         tx.open_table(REGISTER_TABLE)?;
         tx.commit()?;
 
-        Ok(Self { db: Arc::new(db) })
+        Ok(Self {
+            db: Arc::new(db),
+            watches: Watches::new(),
+        })
     }
     #[expect(clippy::result_large_err)]
     pub fn save_register(&self, id: Uuid, save: Vec<Packed>) -> Result<(), Error> {
@@ -93,5 +100,27 @@ impl FromStr for Registration {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         serde_json::from_str(s)
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct Watches {
+    tx: channel::Sender<Uuid>,
+    pub rx: channel::Receiver<Uuid>,
+}
+
+impl Watches {
+    fn new() -> Self {
+        let (tx, rx) = channel::broadcast(100);
+        Self { tx, rx }
+    }
+    pub async fn send(&self, id: Uuid) -> Result<(), SendError<Uuid>> {
+        self.tx.broadcast(id).await.map(|_| ())
+    }
+}
+
+impl FromRef<Store> for Watches {
+    fn from_ref(store: &Store) -> Self {
+        store.watches.clone()
     }
 }
