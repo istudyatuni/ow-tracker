@@ -21,12 +21,18 @@ import {
 } from "@/lib/data";
 import { detect_language } from "@/lib/language";
 import { coord_to_leaflet } from "@/lib/leaflet";
-import { get_save_from_browser_url, has_profile_save_in_url, has_save_in_url, load_save_from_server } from "@/lib/saves";
+import {
+	get_save_from_browser_url,
+	has_profile_save_in_url,
+	has_save_in_url,
+	load_save_from_server,
+} from "@/lib/saves";
 import {
 	LOADING,
 	LOADING_TOTAL,
 	MAP_SIZE,
 	OPENED_FACTS_COUNT,
+	PROFILE_SAVE_FOUND,
 	SAVE_EMPTY,
 	SAVE_FOUND,
 	SAVE_FOUND_CATEGORIES,
@@ -66,8 +72,11 @@ function flatten_entries(entries, result) {
 }
 
 export async function generate_all_svg() {
-	let save_loaded = has_save_in_url();
-	SAVE_FOUND.set(save_loaded);
+	let save_found = has_save_in_url();
+	let profile_save_found = has_profile_save_in_url();
+	let save_loaded = save_found || profile_save_found;
+	SAVE_FOUND.set(save_found);
+	PROFILE_SAVE_FOUND.set(profile_save_found);
 
 	let consider_ignored = get(SETTINGS).consider_ignored_facts;
 
@@ -79,12 +88,10 @@ export async function generate_all_svg() {
 		await fetch(import.meta.env.BASE_URL + "/save_keys.json")
 	).json();
 	let opened_facts;
-	if (save_loaded) {
-		if (has_profile_save_in_url()) {
-			opened_facts = await load_save_from_server(save_keys);
-		} else {
-			opened_facts = get_save_from_browser_url(save_keys);
-		}
+	if (save_found) {
+		opened_facts = get_save_from_browser_url(save_keys);
+	} else if (profile_save_found) {
+		opened_facts = await load_save_from_server(save_keys);
 	} else {
 		opened_facts = new Set(save_keys);
 	}

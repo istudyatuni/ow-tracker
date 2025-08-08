@@ -47,9 +47,7 @@ export function get_save_from_browser_url(keys) {
 export function has_save_in_url() {
 	let h = window.location.hash;
 	return (
-		(h.includes("save=") &&
-			h.split("save=")[1].length == ENCODED_SAVE_LEN) ||
-		has_profile_save_in_url()
+		h.includes("save=") && h.split("save=")[1].length == ENCODED_SAVE_LEN
 	);
 }
 
