@@ -11,18 +11,19 @@ use std::sync::{Arc, LazyLock, Mutex, mpsc};
 use iced::widget::button::Style;
 use iced::widget::{Column, button, column, container, horizontal_space, row, text};
 use iced::{Element, Fill, Subscription, Theme};
-use reqwest::StatusCode;
-use tracing::{debug, error, trace};
+use tracing::{debug, error};
 use uuid::Uuid;
 
 use config::Config;
 use game::{FileUpdateEvent, InstallType, WatchAction, file_watcher, save_file_for_profile};
 use log::LogError;
+use request::{send_register, send_register_update};
 use saves::read_save_packed;
 
 mod config;
 mod game;
 mod log;
+mod request;
 mod saves;
 
 const SERVER_HOST: &str = dotenvy_macro::dotenv!("SERVER_HOST");
@@ -62,33 +63,7 @@ fn update(state: &mut State, message: Message) {
                 return;
             };
 
-            debug!("sending register request");
-            let client = reqwest::blocking::Client::new();
-            let Ok(resp) = client
-                .post(
-                    (*SERVER_ADDRESS)
-                        .parse::<reqwest::Url>()
-                        .expect("server url should be valid")
-                        .join("/api/register")
-                        .expect("url path should be valid"),
-                )
-                .json(&common::server_models::RegisterRequest { save: save_packed })
-                .send()
-                .log_msg("failed to send register request")
-            else {
-                return;
-            };
-            if resp.error_for_status_ref().is_err() {
-                match resp.text() {
-                    Ok(text) => error!("error registering save: {text}"),
-                    Err(e) => error!("error registering save (failed to get response text: {e:?})"),
-                }
-                return;
-            }
-            let Ok(resp) = resp
-                .json::<common::server_models::RegisterResponse>()
-                .log_msg("register response")
-            else {
+            let Ok(resp) = send_register(save_packed) else {
                 return;
             };
 
@@ -125,35 +100,7 @@ fn update(state: &mut State, message: Message) {
                 return;
             };
 
-            debug!("sending register update request");
-            let client = reqwest::blocking::Client::new();
-            let Ok(resp) = client
-                .put(
-                    (*SERVER_ADDRESS)
-                        .parse::<reqwest::Url>()
-                        .expect("server url should be valid")
-                        .join("/api/register")
-                        .expect("url path should be valid"),
-                )
-                .json(&common::server_models::UpdateRegisterRequest {
-                    id,
-                    save: save_packed,
-                })
-                .send()
-                .log_msg("failed to send update request")
-            else {
-                return;
-            };
-            if resp.error_for_status_ref().is_err() {
-                match resp.text() {
-                    Ok(text) => error!("error updating save: {text}"),
-                    Err(e) => error!("error updating save (failed to get response text: {e:?})"),
-                }
-                return;
-            }
-            if resp.status() == StatusCode::NOT_MODIFIED {
-                trace!("save not modified");
-            }
+            let _ = send_register_update(id, save_packed);
         }
         Message::SelectProfile(name) => {
             if let Some(ref current) = state.selected_profile
