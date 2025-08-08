@@ -2979,6 +2979,8 @@ version = "0.0.0"
 dependencies = [
  "chrono",
  "serde",
+ "tracing",
+ "tracing-subscriber",
  "uuid",
 ]
 
@@ -2996,7 +2998,6 @@ dependencies = [
  "serde_json",
  "thiserror 2.0.12",
  "tracing",
- "tracing-subscriber",
  "uuid",
 ]
 
@@ -3015,7 +3016,6 @@ dependencies = [
  "tokio",
  "tower-http",
  "tracing",
- "tracing-subscriber",
  "uuid",
 ]
 

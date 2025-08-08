@@ -8,7 +8,9 @@ use axum::{
 };
 use tokio::net::TcpListener;
 use tower_http::{
-    cors::CorsLayer, limit::RequestBodyLimitLayer, trace::{DefaultMakeSpan, TraceLayer}
+    cors::CorsLayer,
+    limit::RequestBodyLimitLayer,
+    trace::{DefaultMakeSpan, TraceLayer},
 };
 use tracing::{error, info};
 use uuid::Uuid;
@@ -32,20 +34,15 @@ const ALLOW_ORIGIN: &str = dotenvy_macro::dotenv!("ALLOW_ORIGIN");
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
-    tracing::subscriber::set_global_default(
-        tracing_subscriber::FmtSubscriber::builder()
-            .with_target(false)
-            .with_max_level(tracing::Level::DEBUG)
-            .finish(),
-    )?;
+    common::logger::init_logging(env!("CARGO_CRATE_NAME"));
 
     let db_path = std::env::var("DB_PATH")
         .inspect_err(|e| {
             use std::env::VarError;
             match e {
                 VarError::NotPresent => info!("DB_PATH is not set, using {DB_PATH}"),
-                VarError::NotUnicode(_) => {
-                    error!("DB_PATH constains non-utf value, using {DB_PATH}")
+                VarError::NotUnicode(value) => {
+                    error!("DB_PATH constains non-utf value: \"{value:?}\", using {DB_PATH}")
                 }
             }
         })

@@ -12,9 +12,7 @@ use iced::widget::button::Style;
 use iced::widget::{Column, button, column, container, horizontal_space, row, text};
 use iced::{Element, Fill, Subscription, Theme};
 use reqwest::StatusCode;
-use tracing::{Level, debug, error, trace};
-use tracing_subscriber::layer::SubscriberExt;
-use tracing_subscriber::util::SubscriberInitExt;
+use tracing::{debug, error, trace};
 use uuid::Uuid;
 
 use config::Config;
@@ -37,17 +35,7 @@ static SERVER_ADDRESS: LazyLock<String> =
     LazyLock::new(|| format!("{SERVER_HOST}:{}", *SERVER_PORT));
 
 pub fn main() -> iced::Result {
-    let filter = tracing_subscriber::filter::Targets::new()
-        .with_default(Level::ERROR)
-        .with_target(env!("CARGO_CRATE_NAME"), tracing::Level::TRACE);
-    tracing_subscriber::registry()
-        .with(filter)
-        .with(
-            tracing_subscriber::fmt::layer()
-                .with_file(true)
-                .with_line_number(true),
-        )
-        .init();
+    common::logger::init_logging(env!("CARGO_CRATE_NAME"));
 
     iced::application("Outer Wilds Tracker - Companion App", update, view)
         .subscription(subscription)
