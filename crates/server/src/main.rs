@@ -78,7 +78,7 @@ async fn main() -> anyhow::Result<()> {
 }
 
 async fn register(
-    store: State<Store>,
+    State(store): State<Store>,
     Json(args): Json<RegisterRequest>,
 ) -> Result<Json<RegisterResponse>, ResponseError<&'static str>> {
     if !saves::is_valid_number_of_keys(&args.save) {
@@ -89,7 +89,7 @@ async fn register(
     }
 
     let id = Uuid::new_v4();
-    if let Err(e) = store.0.save_register(id, args.save) {
+    if let Err(e) = store.save_register(id, args.save) {
         error!("failed to save register: {e}");
         return Err(ResponseError::Status(StatusCode::INTERNAL_SERVER_ERROR));
     }
@@ -142,11 +142,11 @@ async fn update_register(
 }
 
 async fn get_register(
-    store: State<Store>,
+    State(store): State<Store>,
     Query(args): Query<GetRegisterRequest>,
 ) -> Result<Json<GetRegisterResponse>, StatusCode> {
     let id = args.id;
-    let save = match store.0.get_register(id) {
+    let save = match store.get_register(id) {
         Ok(None) => return Err(StatusCode::NOT_FOUND),
         Ok(Some(save)) => save,
         Err(e) => {
@@ -163,8 +163,10 @@ async fn get_register(
 }
 
 #[cfg(debug_assertions)]
-async fn list_registers(store: State<Store>) -> Result<Json<GetRegistersResponse>, StatusCode> {
-    let registers = match store.0.list_registers() {
+async fn list_registers(
+    State(store): State<Store>,
+) -> Result<Json<GetRegistersResponse>, StatusCode> {
+    let registers = match store.list_registers() {
         Ok(registers) => registers,
         Err(e) => {
             error!("failed to get register: {e}");
