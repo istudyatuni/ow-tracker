@@ -14,7 +14,6 @@ fn server_url() -> Url {
         .expect("server url should be valid")
 }
 
-// todo: pass name
 pub fn auth() -> Result<AuthResponse, ()> {
     debug!("sending auth request");
     let client = reqwest::blocking::Client::new();
@@ -44,6 +43,7 @@ pub fn auth() -> Result<AuthResponse, ()> {
     Ok(resp)
 }
 
+// todo: pass name
 pub fn send_register(key: Uuid, save: Vec<Packed>) -> Result<RegisterResponse, ()> {
     debug!("sending register request");
     let client = reqwest::blocking::Client::new();
