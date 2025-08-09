@@ -75,6 +75,11 @@ function flatten_entries(entries, result) {
 	return result;
 }
 
+function finish_generate() {
+	LOADING.set(null);
+	return function* () {};
+}
+
 export async function generate_all_svg() {
 	let save_found = has_save_in_url();
 	let profile_save_found = has_profile_save_in_url();
@@ -100,9 +105,7 @@ export async function generate_all_svg() {
 			opened_facts = await load_save_from_server(save_keys);
 		} catch (e) {
 			console.error("server not available:", e);
-			PROFILE_SAVE_LOADING_FAILED.set(true);
-			LOADING.set(null);
-			return function* () {};
+			return finish_generate();
 		}
 
 		let id = get_profile_id_from_url();
@@ -326,8 +329,7 @@ export async function generate_all_svg() {
 	SAVE_EMPTY.set(opened_cards.size === 0);
 
 	if (!get(SESSION_SETTINGS).welcome_popup_done) {
-		LOADING.set(null);
-		return function* () {};
+		return finish_generate();
 	}
 
 	cards_alt_names = Object.fromEntries(
