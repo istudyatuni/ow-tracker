@@ -22,7 +22,6 @@ use uuid::Uuid;
 use config::Config;
 use game::{FileUpdateEvent, InstallType, WatchAction, file_watcher, save_file_for_profile};
 use log::LogError;
-use request::{send_register, send_register_update};
 use saves::read_save_packed;
 
 mod config;
@@ -59,6 +58,11 @@ fn update(state: &mut State, message: Message) -> Task<Message> {
 
     match message {
         Message::RegisterOnServer => {
+            debug_assert!(
+                state.server_ok,
+                "should not be called if server not available"
+            );
+
             let selected_profile = state
                 .selected_profile
                 .as_ref()
@@ -82,7 +86,7 @@ fn update(state: &mut State, message: Message) -> Task<Message> {
                 return none;
             };
 
-            let Ok(resp) = send_register(key, save_packed) else {
+            let Ok(resp) = request::send_register(key, save_packed) else {
                 return none;
             };
 
@@ -98,6 +102,11 @@ fn update(state: &mut State, message: Message) -> Task<Message> {
             state.selected_profile.take();
         }
         Message::FileUpdated(FileUpdateEvent::Update { name, path }) => {
+            debug_assert!(
+                state.server_ok,
+                "should not be called if server not available"
+            );
+
             debug!("updating file {name}");
 
             let Some(config) = &mut state.config else {
@@ -114,11 +123,11 @@ fn update(state: &mut State, message: Message) -> Task<Message> {
                 return none;
             };
             let Some(key) = config.auth_key() else {
-                error!("not authorized, skipping register");
+                error!("not authorized, skipping register update");
                 return none;
             };
 
-            let _ = send_register_update(id, key, save_packed);
+            let _ = request::send_register_update(id, key, save_packed);
         }
         Message::SelectProfile(name) => {
             if let Some(ref current) = state.selected_profile
@@ -269,10 +278,9 @@ fn view(state: &State) -> Element<'_, Message> {
             server_ok_block,
             row![
                 button("Register").on_press_maybe(
-                    if state
-                        .selected_profile
-                        .as_ref()
-                        .is_some_and(|p| config.find_profile(p).is_none())
+                    if state.server_ok
+                        && let Some(ref p) = state.selected_profile
+                        && config.find_profile(p).is_none()
                     {
                         Some(Message::RegisterOnServer)
                     } else {
@@ -292,6 +300,9 @@ fn view(state: &State) -> Element<'_, Message> {
 }
 
 fn subscription(state: &State) -> Subscription<Message> {
+    if !state.server_ok {
+        return Subscription::none();
+    }
     let Some((_, ref dir)) = state.install else {
         error!("install dir is not set, skipping subscription");
         return Subscription::none();
@@ -377,22 +388,23 @@ impl State {
 
         let server_ok = request::ping().is_ok();
 
-        if config.auth_key().is_none()
-            && let Ok(res) = request::auth()
-        {
+        if config.auth_key().is_some() {
+            trace!("already registered, skipping auth");
+        } else if server_ok && let Ok(res) = request::auth() {
             trace!("saving auth");
             config.set_auth_key(res.key);
             let _ = config
                 .save_on_disk()
                 .log_msg("failed to save config on disk");
-        } else {
-            trace!("already registered, skipping auth");
         };
 
         let (tx, rx) = mpsc::channel();
-        for profile in config.profiles() {
-            tx.send(WatchAction::watch(&profile.name)).unwrap();
+        if server_ok {
+            for profile in config.profiles() {
+                tx.send(WatchAction::watch(&profile.name)).unwrap();
+            }
         }
+
         Self {
             install: Some(install_dir),
             profiles: Some(profiles),
