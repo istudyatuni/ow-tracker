@@ -357,13 +357,28 @@ struct State {
 }
 
 impl State {
+    // hack to prevent recursion default -> new -> default -> ...
+    fn default() -> Self {
+        let (tx, rx) = mpsc::channel();
+        Self {
+            install: None,
+            profiles: None,
+            selected_profile: None,
+            send_file_watches: tx,
+            file_watches_receiver: Arc::new(Mutex::new(rx)),
+            copied_toast_hide: None,
+            server_ok: false,
+            config: None,
+            error: None,
+        }
+    }
     fn new() -> Self {
         let install_dir = match game::detect_install() {
             Ok(dir) => dir,
             Err(e) => {
                 return Self {
                     error: Some(Error::GameFind(e)),
-                    ..Default::default()
+                    ..Self::default()
                 };
             }
         };
@@ -372,7 +387,7 @@ impl State {
             Err(e) => {
                 return Self {
                     error: Some(Error::ProfilesFind(e)),
-                    ..Default::default()
+                    ..Self::default()
                 };
             }
         };
@@ -381,28 +396,39 @@ impl State {
             Err(e) => {
                 return Self {
                     error: Some(Error::Config(e)),
-                    ..Default::default()
+                    ..Self::default()
                 };
             }
         };
 
         let server_ok = request::ping().is_ok();
 
+        let mut need_save_config = false;
         if config.auth_key().is_some() {
             trace!("already registered, skipping auth");
         } else if server_ok && let Ok(res) = request::auth() {
             trace!("saving auth");
             config.set_auth_key(res.key);
-            let _ = config
-                .save_on_disk()
-                .log_msg("failed to save config on disk");
+            need_save_config = true;
         };
+
+        if let Ok(server_config) = request::get_server_config(&format!("{WEB_ADDRESS}/config.json"))
+        {
+            config.set_addresses(server_config);
+            need_save_config = true;
+        }
 
         let (tx, rx) = mpsc::channel();
         if server_ok {
             for profile in config.profiles() {
                 tx.send(WatchAction::watch(&profile.name)).unwrap();
             }
+        }
+
+        if need_save_config {
+            let _ = config
+                .save_on_disk()
+                .log_msg("failed to save config on disk");
         }
 
         Self {

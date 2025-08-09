@@ -16,7 +16,16 @@ pub struct Config {
 pub struct StoredConfig {
     #[serde(skip_serializing_if = "Auth::is_empty")]
     auth: Auth,
+    addresses: Option<LoadedConfig>,
     profiles: Vec<Profile>,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize)]
+pub struct LoadedConfig {
+    #[serde(rename = "server_address")]
+    server: String,
+    #[serde(rename = "web_address")]
+    web: String,
 }
 
 #[derive(Debug, Default, Clone, Deserialize, Serialize)]
@@ -45,6 +54,7 @@ impl Config {
         trace!("config path: {}", path.display());
 
         if !path.exists() {
+            trace!("config not exists, using default");
             std::fs::create_dir_all(path.parent().expect("config path should have dir name"))?;
 
             return Ok(Self {
@@ -53,8 +63,10 @@ impl Config {
             });
         }
 
+        trace!("loading config");
         let config: StoredConfig = serde_json::from_str(&std::fs::read_to_string(&path)?)?;
 
+        trace!("config loaded");
         Ok(Self { config, path })
     }
     pub fn auth_key(&self) -> Option<Uuid> {
@@ -62,6 +74,9 @@ impl Config {
     }
     pub fn set_auth_key(&mut self, key: Uuid) {
         self.config.auth.key = Some(key);
+    }
+    pub fn set_addresses(&mut self, addresses: LoadedConfig) {
+        self.config.addresses.replace(addresses);
     }
     pub fn profiles(&self) -> &[Profile] {
         &self.config.profiles

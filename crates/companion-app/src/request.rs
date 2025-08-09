@@ -6,6 +6,7 @@ use uuid::Uuid;
 use common::saves::Packed;
 use common::server_models::*;
 
+use crate::config::LoadedConfig;
 use crate::log::LogError;
 
 fn server_url() -> Url {
@@ -53,7 +54,10 @@ pub fn auth() -> Result<AuthResponse, ()> {
         }
         return Err(());
     }
-    let Ok(resp) = resp.json::<AuthResponse>().log_msg("auth response") else {
+    let Ok(resp) = resp
+        .json::<AuthResponse>()
+        .log_msg("failed to deserialize auth response")
+    else {
         return Err(());
     };
 
@@ -83,7 +87,10 @@ pub fn send_register(key: Uuid, save: Vec<Packed>) -> Result<RegisterResponse, (
         }
         return Err(());
     }
-    let Ok(resp) = resp.json::<RegisterResponse>().log_msg("register response") else {
+    let Ok(resp) = resp
+        .json::<RegisterResponse>()
+        .log_msg("failed to deserialize register response")
+    else {
         return Err(());
     };
 
@@ -117,4 +124,26 @@ pub fn send_register_update(id: Uuid, key: Uuid, save: Vec<Packed>) -> Result<()
     }
 
     Ok(())
+}
+
+pub fn get_server_config(url: &str) -> Result<LoadedConfig, ()> {
+    debug!("sending register request");
+    let Ok(resp) = reqwest::blocking::get(url).log_msg("failed to get server config") else {
+        return Err(());
+    };
+    if resp.error_for_status_ref().is_err() {
+        match resp.text() {
+            Ok(text) => error!("error getting server config: {text}"),
+            Err(e) => error!("error getting server config (failed to get response text: {e:?})"),
+        }
+        return Err(());
+    }
+    let Ok(resp) = resp
+        .json::<LoadedConfig>()
+        .log_msg("failed to deserialize server config")
+    else {
+        return Err(());
+    };
+
+    Ok(resp)
 }

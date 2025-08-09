@@ -5,6 +5,8 @@ pub fn init_logging(crate_name: &str) {
     Builder::new()
         .with_crate_name(crate_name)
         .with_crate_level(Level::TRACE)
+        .with_file(cfg!(debug_assertions))
+        .with_line_number(cfg!(debug_assertions))
         .init();
 }
 
