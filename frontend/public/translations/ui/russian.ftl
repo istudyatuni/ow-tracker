@@ -32,3 +32,4 @@ sidebar-show-full-map-button = Показать полную карту
 sidebar-build-prefix = Сборка
 
 map-empty-popup = Карта пустая
+server-error-popup = Не получилось загрузить профиль

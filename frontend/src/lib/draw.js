@@ -34,6 +34,7 @@ import {
 	MAP_SIZE,
 	OPENED_FACTS_COUNT,
 	PROFILE_SAVE_FOUND,
+	PROFILE_SAVE_LOADING_FAILED,
 	SAVE_EMPTY,
 	SAVE_FOUND,
 	SAVE_FOUND_CATEGORIES,
@@ -93,7 +94,14 @@ export async function generate_all_svg() {
 	if (save_found) {
 		opened_facts = get_save_from_browser_url(save_keys);
 	} else if (profile_save_found) {
-		opened_facts = await load_save_from_server(save_keys);
+		try {
+			opened_facts = await load_save_from_server(save_keys);
+		} catch (e) {
+			console.error("server not available:", e);
+			PROFILE_SAVE_LOADING_FAILED.set(true);
+			LOADING.set(null);
+			return function* () {};
+		}
 
 		let id = get_profile_id_from_url();
 		listen_profile_update(id);

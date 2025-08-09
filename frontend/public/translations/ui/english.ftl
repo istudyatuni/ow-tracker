@@ -32,3 +32,4 @@ sidebar-show-full-map-button = Show full map
 sidebar-build-prefix = Build
 
 map-empty-popup = Map is empty
+server-error-popup = Cannot load profile

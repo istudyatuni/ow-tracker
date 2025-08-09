@@ -1,11 +1,12 @@
 <script module>
   import Debug from "@/components/Debug.svelte";
   import FactsPanel from "@/components/FactsPanel.svelte";
-  import Sidebar from "@/components/Sidebar.svelte";
   import Loading from "@/components/Loading.svelte";
-  import Popup from "@/components/Popup.svelte";
-  import WelcomePopup from "@/components/WelcomePopup.svelte";
   import Map from "@/Map.svelte";
+  import Popup from "@/components/Popup.svelte";
+  import ServerErrorPopup from "@/components/ServerErrorPopup.svelte";
+  import Sidebar from "@/components/Sidebar.svelte";
+  import WelcomePopup from "@/components/WelcomePopup.svelte";
 
   import {
     migrate_storage,
@@ -16,6 +17,7 @@
     SELECTED_CATEGORIES,
     SETTINGS,
     LANGUAGE,
+    PROFILE_SAVE_LOADING_FAILED,
   } from "@/lib/stores";
   import { get_facts_for } from "@/lib/data";
   import { init_i18n, t } from "@/lib/i18n";
@@ -63,6 +65,8 @@
   <Loading />
   {#if !$SESSION_SETTINGS.welcome_popup_done}
     <WelcomePopup />
+  {:else if $PROFILE_SAVE_LOADING_FAILED}
+    <ServerErrorPopup />
   {:else if is_map_empty}
     <Popup>{$t("map-empty-popup")}</Popup>
   {/if}
