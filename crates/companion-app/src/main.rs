@@ -226,6 +226,21 @@ fn view(state: &State) -> Element<'_, Message> {
         .into()
     });
 
+    let server_ok_block: Element<_> = if state.server_ok {
+        Space::new(0, 0).into()
+    } else {
+        text("Server unavailable")
+            .font(Font {
+                style: font::Style::Italic,
+                ..Default::default()
+            })
+            .style(|theme: &Theme| widget::text::Style {
+                color: Some(theme.palette().danger),
+            })
+            .size(20)
+            .into()
+    };
+
     let copied_block: Element<_> = if state.copied_toast_hide.is_some() {
         text("Copied")
             .font(Font {
@@ -251,6 +266,7 @@ fn view(state: &State) -> Element<'_, Message> {
             // todo: show something when no profiles found
             text("Found profiles:").size(20),
             Column::from_iter(profiles),
+            server_ok_block,
             row![
                 button("Register").on_press_maybe(
                     if state
@@ -320,6 +336,9 @@ struct State {
     /// Handle to hide "copied" toast
     copied_toast_hide: Option<Handle>,
 
+    /// If server behaves good
+    server_ok: bool,
+
     /// App's config
     config: Option<Config>,
 
@@ -356,6 +375,8 @@ impl State {
             }
         };
 
+        let server_ok = request::ping().is_ok();
+
         if config.auth_key().is_none()
             && let Ok(res) = request::auth()
         {
@@ -379,6 +400,7 @@ impl State {
             send_file_watches: tx,
             file_watches_receiver: Arc::new(Mutex::new(rx)),
             copied_toast_hide: None,
+            server_ok,
             config: Some(config),
             error: None,
         }

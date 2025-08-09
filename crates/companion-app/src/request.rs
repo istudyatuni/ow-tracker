@@ -14,6 +14,23 @@ fn server_url() -> Url {
         .expect("server url should be valid")
 }
 
+pub fn ping() -> Result<(), ()> {
+    debug!("sending ping request");
+    let client = reqwest::blocking::Client::new();
+    let Ok(resp) = client
+        .get(
+            server_url()
+                .join("/api/ping")
+                .expect("url path should be valid"),
+        )
+        .send()
+        .log_msg("failed to send ping request")
+    else {
+        return Err(());
+    };
+    resp.error_for_status().map(|_| ()).map_err(|_| ())
+}
+
 pub fn auth() -> Result<AuthResponse, ()> {
     debug!("sending auth request");
     let client = reqwest::blocking::Client::new();
