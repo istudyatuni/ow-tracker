@@ -2,7 +2,14 @@ pub type Packed = u8;
 
 const PACKED_SIZE: usize = Packed::BITS as usize;
 
-const KEYS_COUNT: usize = 374;
+pub const KEYS_COUNT: usize = 374;
+const PACKED_LEN: usize = {
+    if KEYS_COUNT % PACKED_SIZE == 0 {
+        KEYS_COUNT / PACKED_SIZE
+    } else {
+        KEYS_COUNT / PACKED_SIZE + 1
+    }
+};
 
 pub fn pack_bools(bools: &[bool]) -> Vec<Packed> {
     let mut bytes = Vec::with_capacity(bools.len() / PACKED_SIZE + 1);
@@ -21,7 +28,7 @@ pub fn pack_bools(bools: &[bool]) -> Vec<Packed> {
 /// Check if save contains valid number of keys
 pub fn is_valid_number_of_keys(packed: &[Packed]) -> bool {
     packed.len() == KEYS_COUNT / 8 + 1
-        && packed.len() * PACKED_SIZE >= KEYS_COUNT
+        && packed.len() == PACKED_LEN
         && packed
             .last()
             // check that last number does not fill zeros to the right of KEYS_COUNT
@@ -43,6 +50,20 @@ pub fn is_allowed_to_override(old: &[Packed], new: &[Packed]) -> bool {
             o == 0 || n == 1
         })
     })
+}
+
+#[cfg(debug_assertions)]
+pub fn has_bool_enabled(save: &[Packed], index: usize) -> bool {
+    index < KEYS_COUNT
+        && save.len() == PACKED_LEN
+        && (save[index / PACKED_SIZE] >> (PACKED_SIZE - index % PACKED_SIZE - 1)) & 1 == 1
+}
+
+#[cfg(debug_assertions)]
+pub fn enable_bool(save: &[Packed], index: usize) -> Vec<Packed> {
+    let mut save = save.to_vec();
+    save[index / PACKED_SIZE] |= 1 << (PACKED_SIZE - index % PACKED_SIZE - 1);
+    save
 }
 
 /*/// Number of enabled keys in save
@@ -84,6 +105,44 @@ mod tests {
             let old = pack_bools(&old.iter().map(|&n| n != 0).collect::<Vec<_>>());
             let new = pack_bools(&new.iter().map(|&n| n != 0).collect::<Vec<_>>());
             assert_eq!(is_allowed_to_override(&old, &new), expected);
+        }
+    }
+    #[test]
+    fn test_has_bool_enabled() {
+        fn generate_bool(num: usize) -> Vec<bool> {
+            assert!(num < KEYS_COUNT);
+            let mut res = (0..KEYS_COUNT).map(|_| false).collect::<Vec<_>>();
+            res[num] = true;
+            res
+        }
+
+        for index in 0..KEYS_COUNT {
+            let save = pack_bools(&generate_bool(index));
+            eprintln!("packed save: {save:?}");
+            assert!(has_bool_enabled(&save, index), "checking for index {index}");
+            for i in (0..KEYS_COUNT).filter(|&i| i != index) {
+                assert!(
+                    !has_bool_enabled(&save, i),
+                    "checking {i} for test {index}, value: {}",
+                    save[i / PACKED_SIZE],
+                );
+            }
+        }
+    }
+    #[test]
+    fn test_enable_bool() {
+        let empty_save = (0..KEYS_COUNT).map(|_| false).collect::<Vec<_>>();
+
+        for i in 0..KEYS_COUNT {
+            assert!(!has_bool_enabled(&pack_bools(&empty_save), i));
+            assert!(has_bool_enabled(
+                &enable_bool(&pack_bools(&empty_save), i),
+                i
+            ));
+            assert!(!has_bool_enabled(
+                &enable_bool(&pack_bools(&empty_save), i),
+                i + 1
+            ));
         }
     }
 }

@@ -18,6 +18,13 @@ pub struct UpdateRegisterRequest {
     pub save: Vec<u8>,
 }
 
+#[cfg(debug_assertions)]
+#[derive(Debug, Deserialize)]
+pub struct UpdateRegisterFactRequest {
+    pub id: Uuid,
+    pub num: usize,
+}
+
 #[derive(Debug, Deserialize)]
 pub struct GetRegisterRequest {
     pub id: Uuid,

@@ -5,17 +5,17 @@ use axum::{
     extract::{Query, State},
     http::{Method, StatusCode},
     response::{Sse, sse},
-    routing::{get, post},
+    routing::{get, patch, post},
 };
 use futures_util::{SinkExt, Stream};
 use iced_futures::stream;
-use tokio::net::TcpListener;
+use tokio::{net::TcpListener, sync::broadcast::error::TryRecvError};
 use tower_http::{
     cors::CorsLayer,
     limit::RequestBodyLimitLayer,
     trace::{DefaultMakeSpan, TraceLayer},
 };
-use tracing::{debug, error, info};
+use tracing::{error, info, trace};
 use uuid::Uuid;
 
 use common::saves;
@@ -63,6 +63,7 @@ async fn main() -> anyhow::Result<()> {
                     "/register",
                     post(register).put(update_register).get(get_register),
                 )
+                .route("/register/fact", patch(update_register_fact))
                 .route("/registers", get(list_registers))
                 .route("/watch", get(watch_updates))
                 .fallback(async || StatusCode::NOT_FOUND),
@@ -98,6 +99,7 @@ async fn register(
     Ok(Json(RegisterResponse { id }))
 }
 
+/// Update registered save
 async fn update_register(
     State(store): State<Store>,
     State(watch): State<Watches>,
@@ -140,6 +142,50 @@ async fn update_register(
         .expect("should be able to post watch update");
 
     Ok(())
+}
+
+/// Enable fact in registered save
+#[cfg(debug_assertions)]
+async fn update_register_fact(
+    State(store): State<Store>,
+    State(watch): State<Watches>,
+    Json(args): Json<UpdateRegisterFactRequest>,
+) -> Result<(), ResponseError<&'static str>> {
+    if args.num >= saves::KEYS_COUNT {
+        return Err(ResponseError::StatusMessage((
+            StatusCode::BAD_REQUEST,
+            "num is too big",
+        )));
+    }
+
+    let current_save = match store.get_register(args.id) {
+        Ok(None) => return Err(ResponseError::Status(StatusCode::NOT_FOUND)),
+        Ok(Some(save)) => save,
+        Err(e) => {
+            error!("failed to get register when updating by num: {e}");
+            return Err(ResponseError::Status(StatusCode::INTERNAL_SERVER_ERROR));
+        }
+    };
+
+    if saves::has_bool_enabled(&current_save.save, args.num) {
+        return Err(ResponseError::Status(StatusCode::NOT_MODIFIED));
+    }
+    if let Err(e) = store.save_register(args.id, saves::enable_bool(&current_save.save, args.num)) {
+        error!("failed to update register by num: {e}");
+        return Err(ResponseError::Status(StatusCode::INTERNAL_SERVER_ERROR));
+    }
+
+    watch
+        .send(args.id)
+        .await
+        .expect("should be able to post watch update");
+
+    Ok(())
+}
+
+#[cfg(not(debug_assertions))]
+async fn update_register_fact() -> StatusCode {
+    StatusCode::NOT_FOUND
 }
 
 async fn get_register(
@@ -189,7 +235,7 @@ async fn list_registers(
 }
 
 #[cfg(not(debug_assertions))]
-async fn list_registers(store: State<Store>) -> StatusCode {
+async fn list_registers() -> StatusCode {
     StatusCode::NOT_FOUND
 }
 
@@ -198,12 +244,16 @@ async fn watch_updates(
     Query(args): Query<GetRegisterRequest>,
 ) -> Sse<impl Stream<Item = Result<sse::Event, Infallible>>> {
     let stream = stream::channel(100, async move |mut output| {
-        while let Ok(id) = watch.rx.recv().await {
-            if args.id != id {
-                continue;
-            }
-
-            debug!("sending watch update for {id}");
+        trace!("starting watch channel");
+        loop {
+            tokio::time::sleep(Duration::from_secs(1)).await;
+            let id = match watch.rx.try_recv() {
+                Ok(id) if args.id != id => continue,
+                Ok(id) => id,
+                Err(TryRecvError::Empty) => continue,
+                Err(_) => break,
+            };
+            trace!("sending watch update for {id}");
             output
                 .send(Ok(sse::Event::default().data("save-updated")))
                 .await

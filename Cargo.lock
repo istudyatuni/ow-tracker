@@ -3110,7 +3110,6 @@ name = "ow-tracker-server"
 version = "0.0.0"
 dependencies = [
  "anyhow",
- "async-broadcast",
  "axum",
  "chrono",
  "dotenvy_macro",

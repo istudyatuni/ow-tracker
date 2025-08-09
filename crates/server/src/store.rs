@@ -1,9 +1,10 @@
 use std::{fmt::Display, path::Path, str::FromStr, sync::Arc};
 
-use async_broadcast::{self as channel, SendError};
 use axum::extract::FromRef;
 use chrono::{DateTime, Utc};
-use redb::{Database, Error, ReadableTable, TableDefinition};
+#[cfg(debug_assertions)]
+use redb::ReadableTable;
+use redb::{Database, Error, TableDefinition};
 use serde::{Deserialize, Serialize};
 use tokio::sync::broadcast::{Receiver, Sender, channel, error::SendError};
 use uuid::Uuid;
@@ -103,24 +104,33 @@ impl FromStr for Registration {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub struct Watches {
-    tx: channel::Sender<Uuid>,
-    pub rx: channel::Receiver<Uuid>,
+    tx: Sender<Uuid>,
+    pub rx: Receiver<Uuid>,
 }
 
 impl Watches {
     fn new() -> Self {
-        let (tx, rx) = channel::broadcast(100);
+        let (tx, rx) = channel(100);
         Self { tx, rx }
     }
     pub async fn send(&self, id: Uuid) -> Result<(), SendError<Uuid>> {
-        self.tx.broadcast(id).await.map(|_| ())
+        self.tx.send(id).map(|_| ())
     }
 }
 
 impl FromRef<Store> for Watches {
     fn from_ref(store: &Store) -> Self {
         store.watches.clone()
+    }
+}
+
+impl Clone for Watches {
+    fn clone(&self) -> Self {
+        Self {
+            tx: self.tx.clone(),
+            rx: self.rx.resubscribe(),
+        }
     }
 }
