@@ -64,7 +64,8 @@ async fn main() -> anyhow::Result<()> {
                     post(register).put(update_register).get(get_register),
                 )
                 .route("/registers", get(list_registers))
-                .route("/watch", get(watch_updates)),
+                .route("/watch", get(watch_updates))
+                .fallback(async || StatusCode::NOT_FOUND),
         )
         .layer(cors)
         .layer(TraceLayer::new_for_http().make_span_with(DefaultMakeSpan::default()))
