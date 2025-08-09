@@ -11,10 +11,11 @@ use std::any::TypeId;
 use std::ffi::OsStr;
 use std::path::PathBuf;
 use std::sync::{Arc, LazyLock, Mutex, mpsc};
+use std::time::Duration;
 
-use iced::widget::button::Style;
-use iced::widget::{Column, button, column, container, row, text};
-use iced::{Element, Fill, Subscription, Task, Theme, clipboard};
+use iced::task::Handle;
+use iced::widget::{self, Column, Space, button, column, container, row, text};
+use iced::{Element, Fill, Font, Subscription, Task, Theme, clipboard, font};
 use tracing::{debug, error, trace};
 use uuid::Uuid;
 
@@ -39,6 +40,8 @@ static SERVER_PORT: LazyLock<u16> = LazyLock::new(|| {
 });
 static SERVER_ADDRESS: LazyLock<String> =
     LazyLock::new(|| format!("{SERVER_HOST}:{}", *SERVER_PORT));
+
+const COPIED_TOAST_DURATION: Duration = Duration::from_secs(2);
 
 pub fn main() -> iced::Result {
     common::logger::init_logging(env!("CARGO_CRATE_NAME"));
@@ -127,7 +130,22 @@ fn update(state: &mut State, message: Message) -> Task<Message> {
         }
         Message::ShareProfile(id) => {
             let url = format!("{WEB_ORIGIN}/ow-tracker?profile={id}");
-            return clipboard::write(url);
+
+            return clipboard::write(url)
+                .chain(Task::done(Message::HideProfileShared))
+                .chain(Task::done(Message::ShowProfileShared));
+        }
+        Message::ShowProfileShared => {
+            let (task, abort) = Task::future(async {
+                std::thread::sleep(COPIED_TOAST_DURATION);
+                Message::HideProfileShared
+            })
+            .abortable();
+            state.copied_toast_hide.replace(abort);
+            return task;
+        }
+        Message::HideProfileShared => {
+            state.copied_toast_hide.take();
         }
         Message::ForgetRegister(id) => {
             let Some(config) = &mut state.config else {
@@ -190,9 +208,10 @@ fn view(state: &State) -> Element<'_, Message> {
                             .as_ref()
                             .is_some_and(|name| name == p)
                         {
-                            Style::default().with_background(palette.success)
+                            widget::button::Style::default().with_background(palette.success)
                         } else {
-                            Style::default().with_background(palette.primary.scale_alpha(0.5))
+                            widget::button::Style::default()
+                                .with_background(palette.primary.scale_alpha(0.5))
                         }
                     })
                     .on_press(Message::SelectProfile(p.to_string())),
@@ -207,6 +226,21 @@ fn view(state: &State) -> Element<'_, Message> {
         .into()
     });
 
+    let copied_block: Element<_> = if state.copied_toast_hide.is_some() {
+        text("Copied")
+            .font(Font {
+                style: font::Style::Italic,
+                ..Default::default()
+            })
+            .style(|theme: &Theme| widget::text::Style {
+                color: Some(theme.palette().success),
+            })
+            .size(20)
+            .into()
+    } else {
+        Space::new(0, 0).into()
+    };
+
     container(
         column![
             row![
@@ -217,17 +251,21 @@ fn view(state: &State) -> Element<'_, Message> {
             // todo: show something when no profiles found
             text("Found profiles:").size(20),
             Column::from_iter(profiles),
-            button("Register").on_press_maybe(
-                if state
-                    .selected_profile
-                    .as_ref()
-                    .is_some_and(|p| config.find_profile(p).is_none())
-                {
-                    Some(Message::RegisterOnServer)
-                } else {
-                    None
-                }
-            ),
+            row![
+                button("Register").on_press_maybe(
+                    if state
+                        .selected_profile
+                        .as_ref()
+                        .is_some_and(|p| config.find_profile(p).is_none())
+                    {
+                        Some(Message::RegisterOnServer)
+                    } else {
+                        None
+                    }
+                ),
+                copied_block,
+            ]
+            .spacing(10),
         ]
         .spacing(10),
     )
@@ -259,6 +297,8 @@ enum Message {
     SelectProfile(String),
     FileUpdated(FileUpdateEvent),
     ShareProfile(Uuid),
+    ShowProfileShared,
+    HideProfileShared,
     ForgetRegister(Uuid),
 }
 
@@ -275,6 +315,9 @@ struct State {
     send_file_watches: mpsc::Sender<WatchAction>,
     /// Receiver for file watch thread
     file_watches_receiver: Arc<Mutex<mpsc::Receiver<WatchAction>>>,
+
+    /// Handle to hide "copied" toast
+    copied_toast_hide: Option<Handle>,
 
     /// App's config
     config: Option<Config>,
@@ -334,6 +377,7 @@ impl State {
             selected_profile: None,
             send_file_watches: tx,
             file_watches_receiver: Arc::new(Mutex::new(rx)),
+            copied_toast_hide: None,
             config: Some(config),
             error: None,
         }
