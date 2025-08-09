@@ -109,17 +109,20 @@ impl Config {
     }
 }
 
-#[cfg(debug_assertions)]
 fn config_path() -> Option<PathBuf> {
-    Some(PathBuf::from("target/config.json"))
+    config_path_dir().map(|p| p.join("config.json"))
+}
+
+#[cfg(debug_assertions)]
+fn config_path_dir() -> Option<PathBuf> {
+    Some(PathBuf::from("target"))
 }
 
 #[cfg(not(debug_assertions))]
-fn config_path() -> Option<PathBuf> {
+fn config_path_dir() -> Option<PathBuf> {
     use directories::ProjectDirs;
 
-    ProjectDirs::from("", "", "Outer Wilds Tracker Companion")
-        .map(|d| d.config_dir().to_owned().join("config.json"))
+    ProjectDirs::from("", "", "Outer Wilds Tracker Companion").map(|d| d.config_dir().to_owned())
 }
 
 #[derive(Debug, thiserror::Error)]
