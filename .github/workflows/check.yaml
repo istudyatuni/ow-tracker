@@ -4,10 +4,12 @@ on:
   push:
     paths:
       - .github/workflows/check.yaml
+      - crates/**
       - frontend/**
+      - Cargo.lock
 
 jobs:
-  check:
+  check-frontend:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -23,3 +25,35 @@ jobs:
 
       - name: check format
         run: cd frontend && yarn format:check
+
+  check-rust:
+    runs-on: ubuntu-latest
+    env:
+      SERVER_HOST: http://localhost
+      SERVER_PORT: "3000"
+      DB_PATH: db.redb
+      WEB_ORIGIN: http://localhost:8080
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          components: clippy,rustfmt
+      - uses: Swatinem/rust-cache@v2
+
+      - uses: DeterminateSystems/nix-installer-action@main
+      - uses: DeterminateSystems/magic-nix-cache-action@main
+
+      - name: install tools
+        run: |
+          nix profile add "nixpkgs#just" && just -V
+          nix profile add "nixpkgs#cargo-nextest" && cargo nextest -V
+
+      - name: check
+        run: |
+          touch .env
+          just check
+
+      - name: test
+        run: just test
