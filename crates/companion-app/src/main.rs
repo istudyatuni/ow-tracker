@@ -31,7 +31,7 @@ mod log;
 mod request;
 mod saves;
 
-const WEB_ORIGIN: &str = dotenvy_macro::dotenv!("WEB_ORIGIN");
+const WEB_ADDRESS: &str = dotenvy_macro::dotenv!("WEB_ADDRESS");
 const SERVER_HOST: &str = dotenvy_macro::dotenv!("SERVER_HOST");
 static SERVER_PORT: LazyLock<u16> = LazyLock::new(|| {
     dotenvy_macro::dotenv!("SERVER_PORT")
@@ -129,7 +129,7 @@ fn update(state: &mut State, message: Message) -> Task<Message> {
             state.selected_profile.replace(name.clone());
         }
         Message::ShareProfile(id) => {
-            let url = format!("{WEB_ORIGIN}/ow-tracker#profile={id}");
+            let url = format!("{WEB_ADDRESS}#profile={id}");
 
             return clipboard::write(url)
                 .chain(Task::done(Message::HideProfileShared))
