@@ -284,6 +284,7 @@ fn subscription(state: &State) -> Subscription<Message> {
         TypeId::of::<FileUpdateEvent>(),
         file_watcher(
             dir.to_owned(),
+            #[cfg(target_os = "linux")]
             state.send_file_watches.clone(),
             Arc::clone(&state.file_watches_receiver),
         ),

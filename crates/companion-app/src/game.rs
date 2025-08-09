@@ -104,7 +104,8 @@ pub fn save_file_for_profile(path: &Path, name: &OsStr) -> PathBuf {
 
 pub fn file_watcher(
     install_dir: PathBuf,
-    #[cfg_attr(target_os = "windows", expect(unused))]
+    #[rustfmt::skip]
+    #[cfg(target_os = "linux")]
     watch_actions_sender: std::sync::mpsc::Sender<WatchAction>,
     watch_actions_receiver: Arc<Mutex<std::sync::mpsc::Receiver<WatchAction>>>,
 ) -> impl Stream<Item = FileUpdateEvent> {
