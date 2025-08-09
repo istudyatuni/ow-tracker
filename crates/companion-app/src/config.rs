@@ -10,10 +10,11 @@ pub struct Config {
     path: PathBuf,
 }
 
+// "default" is required to not crash deserializer if some field not found
 #[derive(Debug, Default, Clone, Deserialize, Serialize)]
+#[serde(default)]
 pub struct StoredConfig {
-    // "default" is required to not crash deserializer if auth not found
-    #[serde(skip_serializing_if = "Auth::is_empty", default)]
+    #[serde(skip_serializing_if = "Auth::is_empty")]
     auth: Auth,
     profiles: Vec<Profile>,
 }
