@@ -2,6 +2,8 @@ set shell := ["/usr/bin/env", "bash", "-c"]
 
 spoilers-font := "https://github.com/istudyatuni/spoilers-ahead-font/raw/refs/heads/master/SpoilersAhead.otf"
 spoilers-font-file := "frontend/public/SpoilersAhead.otf"
+linux-static-target := "x86_64-unknown-linux-musl"
+win-target := "x86_64-pc-windows-msvc"
 
 [private]
 @default:
@@ -37,7 +39,7 @@ run-app:
 
 # build companion app for windows
 build-app-win:
-	cargo xwin b --release --package ow-tracker-companion --target=x86_64-pc-windows-msvc
+	cargo xwin b --release --package ow-tracker-companion --target={{ win-target }}
 
 # build companion app for linux
 build-app:
@@ -59,12 +61,20 @@ build-server:
 		ghcr.io/rust-cross/rust-musl-cross:x86_64-musl \
 		cargo build --release \
 			--package ow-tracker-server \
-			--target=x86_64-unknown-linux-musl \
+			--target={{ linux-static-target }} \
 			--config build.rustc-wrapper="''"
 
 # run rust tests
 test *args:
 	cargo nextest run {{ args }}
+
+# check rust code
+check:
+	cargo fmt --check
+	cargo clippy -- -D clippy::all
+
+# not work
+# cargo xwin clippy --package ow-tracker-companion -- -D clippy::all --target={{ win-target }}
 
 # download spoilers font
 download-spoilers-font:
