@@ -28,6 +28,8 @@
             cargo-xwin
             yarn
             nodePackages.nodejs
+            sd
+            dotenvy
 
             cargo-nextest
           ];

@@ -4,6 +4,7 @@ spoilers-font := "https://github.com/istudyatuni/spoilers-ahead-font/raw/refs/he
 spoilers-font-file := "frontend/public/SpoilersAhead.otf"
 linux-static-target := "x86_64-unknown-linux-musl"
 win-target := "x86_64-pc-windows-msvc"
+app-config-file := "frontend/dist/config.json"
 
 [private]
 @default:
@@ -26,7 +27,7 @@ build-prepare: download-spoilers-font minify-json
 build-web: build-prepare (yarn-prod "build")
 
 # build frontend in ci
-build-web-ci: build-prepare (yarn-prod-ci "build")
+build-web-ci: build-prepare (yarn-prod-ci "build") write-config
 
 [private]
 yarn cmd:
@@ -107,6 +108,15 @@ minify-json:
 		jq -c . "$p" > "$tmp"
 		mv "$tmp" "$p"
 	done
+
+[private]
+write-config:
+	dotenvy just write-config-impl
+
+[private]
+write-config-impl:
+	sd '\$server_address' "$SERVER_HOST:$SERVER_PORT" {{ app-config-file }}
+	sd '\$web_address' "$WEB_ADDRESS" {{ app-config-file }}
 
 # extract game translations
 extract-translations:
