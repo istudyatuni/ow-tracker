@@ -138,7 +138,7 @@ fn update(state: &mut State, message: Message) {
     }
 }
 
-fn view(state: &State) -> Element<Message> {
+fn view(state: &State) -> Element<'_, Message> {
     if let Some(ref err) = state.error {
         let inner: Element<_> = match err {
             Error::GameFind(e) => match e {
