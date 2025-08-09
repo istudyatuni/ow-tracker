@@ -4,6 +4,7 @@ spoilers-font := "https://github.com/istudyatuni/spoilers-ahead-font/raw/refs/he
 spoilers-font-file := "frontend/public/SpoilersAhead.otf"
 linux-static-target := "x86_64-unknown-linux-musl"
 win-target := "x86_64-pc-windows-msvc"
+app-config-file-source := "frontend/public/config.json"
 app-config-file := "frontend/dist/config.json"
 
 [private]
@@ -15,7 +16,7 @@ format: (yarn "format")
 	cargo fmt
 
 # run frontend dev server
-run-web: download-spoilers-font (yarn "dev --host --port 8080")
+run-web: download-spoilers-font write-config-dev (yarn "dev --host --port 8080")
 
 # run frontend in prod mode
 run-web-preview: download-spoilers-font (yarn-prod "preview")
@@ -111,6 +112,12 @@ minify-json:
 
 [private]
 write-config:
+	dotenvy just write-config-impl
+
+[private]
+write-config-dev:
+	mkdir -p frontend/dist
+	cp {{ app-config-file-source }} {{ app-config-file }}
 	dotenvy just write-config-impl
 
 [private]
