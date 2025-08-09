@@ -59,6 +59,19 @@ mod tests {
     use super::*;
 
     #[test]
+    fn test_pack_bools() {
+        let table = [
+            (&[1, 1, 1, 1, 1, 1, 1, 1], vec![255]),
+            (&[0, 1, 1, 1, 1, 1, 1, 1], vec![127]),
+            (&[0, 1, 0, 0, 0, 0, 0, 0], vec![64]),
+            (&[0, 0, 0, 0, 0, 0, 0, 0], vec![0]),
+        ];
+        for (bools, expected) in table {
+            let bools = bools.iter().map(|&n| n != 0).collect::<Vec<_>>();
+            assert_eq!(pack_bools(&bools), expected);
+        }
+    }
+    #[test]
     fn test_is_subset_of_old() {
         let table = [
             (&[1, 1, 1, 1, 1, 1, 1, 1], &[1, 1, 1, 1, 1, 1, 1, 1], true),
