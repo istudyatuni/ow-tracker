@@ -68,7 +68,7 @@ export async function load_save_from_server(keys) {
 	return decode_save(keys, encoded);
 }
 
-function get_profile_id_from_url() {
+export function get_profile_id_from_url() {
 	let h = window.location.hash;
 	return h.split("profile=")[1];
 }

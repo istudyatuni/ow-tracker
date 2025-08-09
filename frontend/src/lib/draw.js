@@ -22,6 +22,7 @@ import {
 import { detect_language } from "@/lib/language";
 import { coord_to_leaflet } from "@/lib/leaflet";
 import {
+	get_profile_id_from_url,
 	get_save_from_browser_url,
 	has_profile_save_in_url,
 	has_save_in_url,
@@ -40,6 +41,7 @@ import {
 	SESSION_SETTINGS,
 	SETTINGS,
 } from "@/lib/stores";
+import { listen_profile_update } from "@/lib/watch";
 
 const DEFAULT_MULT = 0.7;
 const BIG_MULT = 1.2;
@@ -92,6 +94,9 @@ export async function generate_all_svg() {
 		opened_facts = get_save_from_browser_url(save_keys);
 	} else if (profile_save_found) {
 		opened_facts = await load_save_from_server(save_keys);
+
+		let id = get_profile_id_from_url();
+		listen_profile_update(id);
 	} else {
 		opened_facts = new Set(save_keys);
 	}
