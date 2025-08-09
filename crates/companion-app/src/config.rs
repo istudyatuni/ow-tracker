@@ -1,7 +1,7 @@
 use std::path::PathBuf;
 
 use serde::{Deserialize, Serialize};
-use tracing::{debug, error};
+use tracing::{debug, error, trace};
 use uuid::Uuid;
 
 #[derive(Debug, Clone)]
@@ -41,6 +41,7 @@ impl Config {
             error!("config dir not found");
             return Err(ConfigError::NotFound);
         };
+        trace!("config path: {}", path.display());
 
         if !path.exists() {
             std::fs::create_dir_all(path.parent().expect("config path should have dir name"))?;
@@ -84,7 +85,7 @@ impl Config {
         self.config.profiles.retain(|p| p.id != id);
     }
     pub fn save_on_disk(&self) -> Result<(), ConfigError> {
-        debug!("saving config to {}", self.path.display());
+        debug!("saving config");
         Ok(std::fs::write(
             &self.path,
             serde_json::to_string(&self.config)?,
