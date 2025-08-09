@@ -4,7 +4,7 @@ use axum::{
     Json, Router,
     extract::{Query, State},
     http::{Method, StatusCode},
-    response::{Sse, sse},
+    response::{Redirect, Sse, sse},
     routing::{get, patch, post},
 };
 use futures_util::{SinkExt, Stream};
@@ -33,7 +33,7 @@ static SERVER_PORT: LazyLock<u16> = LazyLock::new(|| {
         .expect("server port should be a valid number")
 });
 const DB_PATH: &str = dotenvy_macro::dotenv!("DB_PATH");
-const ALLOW_ORIGIN: &str = dotenvy_macro::dotenv!("ALLOW_ORIGIN");
+const WEB_ORIGIN: &str = dotenvy_macro::dotenv!("WEB_ORIGIN");
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
@@ -57,9 +57,10 @@ async fn main() -> anyhow::Result<()> {
         .unwrap_or(DB_PATH.to_string());
 
     let cors = CorsLayer::new()
-        .allow_origin([ALLOW_ORIGIN.parse().unwrap()])
+        .allow_origin([WEB_ORIGIN.parse().unwrap()])
         .allow_methods([Method::GET]);
     let app = Router::new()
+        .route("/", get(async || Redirect::to(WEB_ORIGIN)))
         .nest(
             "/api",
             Router::new()
