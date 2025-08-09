@@ -27,6 +27,7 @@ import {
 	has_profile_save_in_url,
 	has_save_in_url,
 	load_save_from_server,
+	PROFILE_LOADING_STATUS,
 } from "@/lib/saves";
 import {
 	LITERAL_SAVE_FOUND,
@@ -35,7 +36,7 @@ import {
 	MAP_SIZE,
 	OPENED_FACTS_COUNT,
 	PROFILE_SAVE_FOUND,
-	PROFILE_SAVE_LOADING_FAILED,
+	PROFILE_SAVE_LOADING_STATUS,
 	SAVE_EMPTY,
 	SAVE_FOUND,
 	SAVE_FOUND_CATEGORIES,
@@ -103,8 +104,12 @@ export async function generate_all_svg() {
 	} else if (profile_save_found) {
 		try {
 			opened_facts = await load_save_from_server(save_keys);
+			if (opened_facts == null) {
+				return finish_generate();
+			}
 		} catch (e) {
 			console.error("server not available:", e);
+			PROFILE_SAVE_LOADING_STATUS.set(PROFILE_LOADING_STATUS.unavailable);
 			return finish_generate();
 		}
 

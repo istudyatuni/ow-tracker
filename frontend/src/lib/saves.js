@@ -1,9 +1,17 @@
+import { PROFILE_SAVE_LOADING_STATUS } from "@/lib/stores";
+
 const V15_KEYS_COUNT = 374;
 const V16_KEYS_COUNT = 374;
 export const KEYS_COUNT = V16_KEYS_COUNT;
 const GAME_VERSION = "1.1.16";
 const ENCODING_VERSION = 1;
 const ENCODED_SAVE_LEN = 64;
+
+export const PROFILE_LOADING_STATUS = {
+	not_found: "not_found",
+	failed: "failed",
+	unavailable: "unavailable",
+};
 
 export function get_save_opened_facts(facts_data) {
 	// todo: not sure if read and newlyRevealed affect showing
@@ -61,8 +69,13 @@ export async function load_save_from_server(keys) {
 	let url = import.meta.env.VITE_SERVER + "/api/register?id=" + id;
 	let r = await fetch(url);
 	if (!r.ok) {
+		if (r.status == 404) {
+			PROFILE_SAVE_LOADING_STATUS.set(PROFILE_LOADING_STATUS.not_found);
+			return null;
+		}
 		console.error("failed to fetch:", await r.text());
-		return;
+		PROFILE_SAVE_LOADING_STATUS.set(PROFILE_LOADING_STATUS.failed);
+		return null;
 	}
 	let encoded = (await r.json()).save;
 	return decode_save(keys, encoded);

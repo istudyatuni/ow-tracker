@@ -32,4 +32,7 @@ sidebar-show-full-map-button = Show full map
 sidebar-build-prefix = Build
 
 map-empty-popup = Map is empty
-server-error-popup = Cannot load profile
+-profile-load-error-popup = Cannot load profile
+profile-load-error-popup-server-unavailable = { -profile-load-error-popup }, server unavailable
+profile-load-error-popup-failed = { -profile-load-error-popup }
+profile-load-error-popup-not-found = { -profile-load-error-popup }, profile not found
