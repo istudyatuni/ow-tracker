@@ -50,9 +50,7 @@ jobs:
         run: cd frontend && yarn install --frozen-lockfile
 
       - name: build
-        run: |
-          just build-prepare
-          cd frontend && yarn build
+        run: just build-web-ci
 
       - uses: actions/configure-pages@v5
 

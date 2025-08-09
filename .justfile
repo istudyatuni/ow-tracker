@@ -25,13 +25,20 @@ build-prepare: download-spoilers-font minify-json
 # build frontend
 build-web: build-prepare (yarn-prod "build")
 
+# build frontend in ci
+build-web-ci: build-prepare (yarn-prod-ci "build")
+
 [private]
 yarn cmd:
 	cd frontend && yarn {{cmd}}
 
 [private]
 yarn-prod cmd:
-	export VITE_BUILD_VERSION=$(git rev-parse HEAD) && cd frontend && yarn {{cmd}}
+	export VITE_BUILD_VERSION=$(git rev-parse HEAD) && just yarn-prod-ci {{cmd}}
+
+[private]
+yarn-prod-ci cmd:
+	cd frontend && yarn {{cmd}}
 
 # run companion app
 run-app:
