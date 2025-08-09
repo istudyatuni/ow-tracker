@@ -13,8 +13,8 @@ use std::path::PathBuf;
 use std::sync::{Arc, LazyLock, Mutex, mpsc};
 
 use iced::widget::button::Style;
-use iced::widget::{Column, button, column, container, horizontal_space, row, text};
-use iced::{Element, Fill, Subscription, Theme};
+use iced::widget::{Column, button, column, container, row, text};
+use iced::{Element, Fill, Subscription, Task, Theme, clipboard};
 use tracing::{debug, error, trace};
 use uuid::Uuid;
 
@@ -30,6 +30,7 @@ mod log;
 mod request;
 mod saves;
 
+const WEB_ORIGIN: &str = dotenvy_macro::dotenv!("WEB_ORIGIN");
 const SERVER_HOST: &str = dotenvy_macro::dotenv!("SERVER_HOST");
 static SERVER_PORT: LazyLock<u16> = LazyLock::new(|| {
     dotenvy_macro::dotenv!("SERVER_PORT")
@@ -50,7 +51,9 @@ pub fn main() -> iced::Result {
         .run()
 }
 
-fn update(state: &mut State, message: Message) {
+fn update(state: &mut State, message: Message) -> Task<Message> {
+    let none = Task::none();
+
     match message {
         Message::RegisterOnServer => {
             let selected_profile = state
@@ -64,20 +67,20 @@ fn update(state: &mut State, message: Message) {
             let save_path = save_file_for_profile(&install_dir.1, OsStr::new(selected_profile));
 
             let Some(save_packed) = read_save_packed(&save_path) else {
-                return;
+                return none;
             };
 
             let Some(config) = &mut state.config else {
                 error!("config not loaded, skipping saving");
-                return;
+                return none;
             };
             let Some(key) = config.auth_key() else {
                 error!("not authorized, skipping register");
-                return;
+                return none;
             };
 
             let Ok(resp) = send_register(key, save_packed) else {
-                return;
+                return none;
             };
 
             state
@@ -96,20 +99,20 @@ fn update(state: &mut State, message: Message) {
 
             let Some(config) = &mut state.config else {
                 error!("config not loaded, skipping saving");
-                return;
+                return none;
             };
 
             let Some(save_packed) = read_save_packed(&path) else {
-                return;
+                return none;
             };
 
             let Some(id) = config.find_profile(&name) else {
                 debug!("ignoring file update for non-tracked profile");
-                return;
+                return none;
             };
             let Some(key) = config.auth_key() else {
                 error!("not authorized, skipping register");
-                return;
+                return none;
             };
 
             let _ = send_register_update(id, key, save_packed);
@@ -118,14 +121,18 @@ fn update(state: &mut State, message: Message) {
             if let Some(ref current) = state.selected_profile
                 && current == &name
             {
-                return;
+                return none;
             }
             state.selected_profile.replace(name.clone());
+        }
+        Message::ShareProfile(id) => {
+            let url = format!("{WEB_ORIGIN}/ow-tracker?profile={id}");
+            return clipboard::write(url);
         }
         Message::ForgetRegister(id) => {
             let Some(config) = &mut state.config else {
                 error!("config not loaded, skipping forgetting");
-                return;
+                return none;
             };
 
             state
@@ -144,6 +151,8 @@ fn update(state: &mut State, message: Message) {
                 .log_msg("failed to save config on disk");
         }
     }
+
+    none
 }
 
 fn view(state: &State) -> Element<'_, Message> {
@@ -168,6 +177,7 @@ fn view(state: &State) -> Element<'_, Message> {
     profiles.sort_unstable();
     let profiles = profiles.into_iter().map(|p| {
         let cloned_p = p.clone();
+        let profile_register = config.profiles().iter().find(|profile| profile.name == p);
         row![
             text(format!("- {p}")).width(200).size(20),
             row![
@@ -186,15 +196,12 @@ fn view(state: &State) -> Element<'_, Message> {
                         }
                     })
                     .on_press(Message::SelectProfile(p.to_string())),
-                horizontal_space().width(10),
-                button("Forget register").on_press_maybe(
-                    config
-                        .profiles()
-                        .iter()
-                        .find(|profile| profile.name == p)
-                        .map(|p| Message::ForgetRegister(p.id))
-                ),
-            ],
+                button("Forget register")
+                    .on_press_maybe(profile_register.map(|p| Message::ForgetRegister(p.id))),
+                button("Share")
+                    .on_press_maybe(profile_register.map(|p| Message::ShareProfile(p.id))),
+            ]
+            .spacing(10),
         ]
         .width(500)
         .into()
@@ -251,6 +258,7 @@ enum Message {
     RegisterOnServer,
     SelectProfile(String),
     FileUpdated(FileUpdateEvent),
+    ShareProfile(Uuid),
     ForgetRegister(Uuid),
 }
 
