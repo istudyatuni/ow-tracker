@@ -7,20 +7,21 @@ spoilers-font-file := "frontend/public/SpoilersAhead.otf"
 @default:
 	just --list --unsorted
 
+# format all code
+format: (yarn "format")
+	cargo fmt
+
 # run frontend dev server
-dev: download-spoilers-font (yarn "dev --host --port 8080")
+run-web: download-spoilers-font (yarn "dev --host --port 8080")
+
+# run frontend in prod mode
+run-web-preview: download-spoilers-font (yarn-prod "preview")
 
 [private]
 build-prepare: download-spoilers-font minify-json
 
 # build frontend
-build: build-prepare (yarn-prod "build")
-
-# run frontend in prod mode
-preview: download-spoilers-font (yarn-prod "preview")
-
-# format frontend code
-format: (yarn "format")
+build-web: build-prepare (yarn-prod "build")
 
 [private]
 yarn cmd:
@@ -30,11 +31,48 @@ yarn cmd:
 yarn-prod cmd:
 	export VITE_BUILD_VERSION=$(git rev-parse HEAD) && cd frontend && yarn {{cmd}}
 
+# run companion app
+run-app:
+	cargo r --package ow-tracker-companion || :
+
+# build companion app for windows
+build-app-win:
+	cargo xwin b --release --package ow-tracker-companion --target=x86_64-pc-windows-msvc
+
+# build companion app for linux
+build-app:
+	cargo b --release --package ow-tracker-companion
+
+# run server
+run-server:
+	cargo r --package ow-tracker-server
+
+# build server with static linking
+build-server:
+	@# CARGO_HOME and /tmp/.cargo is used to use local cargo download cache
+	docker run --rm -it \
+		-v "$(pwd)":/build \
+		-w /build \
+		--env-file .env \
+		--env=CARGO_HOME=/tmp/.cargo \
+		-v "$HOME/.cargo":/tmp/.cargo \
+		ghcr.io/rust-cross/rust-musl-cross:x86_64-musl \
+		cargo build --release \
+			--package ow-tracker-server \
+			--target=x86_64-unknown-linux-musl \
+			--config build.rustc-wrapper="''"
+
+# run rust tests
+test *args:
+	cargo nextest run {{ args }}
+
+# download spoilers font
 download-spoilers-font:
 	if [[ ! -e "{{ spoilers-font-file }}" ]]; then \
 		wget "{{ spoilers-font }}" -O "{{ spoilers-font-file }}"; \
 	fi
 
+# minify json in assets
 minify-json:
 	#!/usr/bin/env bash
 	if [[ "$CI" == "" ]]; then
@@ -56,32 +94,3 @@ minify-json:
 # extract game translations
 extract-translations:
 	cargo r --release --package tr-extractor -- --write -vv --output-dir=frontend/public
-
-build-app-win:
-	cargo xwin b --release --package ow-tracker-companion --target=x86_64-pc-windows-msvc
-
-build-app:
-	cargo b --release --package ow-tracker-companion
-
-build-server:
-	@# CARGO_HOME and /tmp/.cargo is used to use local cargo download cache
-	docker run --rm -it \
-		-v "$(pwd)":/build \
-		-w /build \
-		--env-file .env \
-		--env=CARGO_HOME=/tmp/.cargo \
-		-v "$HOME/.cargo":/tmp/.cargo \
-		ghcr.io/rust-cross/rust-musl-cross:x86_64-musl \
-		cargo build --release \
-			--package ow-tracker-server \
-			--target=x86_64-unknown-linux-musl \
-			--config build.rustc-wrapper="''"
-
-run-server:
-	cargo r --package ow-tracker-server
-
-run-app:
-	cargo r --package ow-tracker-companion || :
-
-test *args:
-	cargo nextest run {{ args }}
