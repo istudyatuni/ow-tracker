@@ -49,7 +49,7 @@ pub fn main() -> iced::Result {
     iced::application("Outer Wilds Tracker - Companion App", update, view)
         .subscription(subscription)
         .window_size((1200.0, 800.0))
-        .resizable(false)
+        .resizable(cfg!(not(debug_assertions)))
         .theme(|_| Theme::Nord)
         .run()
 }
