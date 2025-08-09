@@ -29,6 +29,7 @@ shiplog-category-other = Other
 
 sidebar-apply-button = Apply
 sidebar-show-full-map-button = Show full map
+sidebar-watch-auto-reload-checkbox = Auto reload
 sidebar-build-prefix = Build
 
 map-empty-popup = Map is empty

@@ -23,6 +23,7 @@ export const SAVE_FOUND = writable(null);
 export const LITERAL_SAVE_FOUND = writable(null);
 export const PROFILE_SAVE_FOUND = writable(null);
 export const PROFILE_SAVE_LOADING_STATUS = writable(null);
+export const PROFILE_WATCH_UPDATES = writable(true);
 export const LANGUAGE = writable(detect_language());
 export const SELECTED_CATEGORIES = localStore(
 	"show-categories",

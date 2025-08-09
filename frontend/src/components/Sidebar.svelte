@@ -16,6 +16,8 @@
   import {
     hide_dlc_if_necessary,
     LANGUAGE,
+    PROFILE_SAVE_FOUND,
+    PROFILE_WATCH_UPDATES,
     reset_selected_categories,
     SAVE_FOUND,
     SESSION_SETTINGS,
@@ -81,6 +83,18 @@
           </div>
         {/if}
       </div>
+
+      {#if $PROFILE_SAVE_FOUND}
+        <div class="block-wrapper">
+          <label>
+            <input
+              type="checkbox"
+              class="other"
+              bind:checked={$PROFILE_WATCH_UPDATES} />
+            {$t("sidebar-watch-auto-reload-checkbox")}
+          </label>
+        </div>
+      {/if}
     </div>
 
     <div class="block-wrapper">

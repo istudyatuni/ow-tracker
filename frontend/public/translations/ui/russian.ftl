@@ -29,6 +29,7 @@ shiplog-category-other = Другое
 
 sidebar-apply-button = Применить
 sidebar-show-full-map-button = Показать полную карту
+sidebar-watch-auto-reload-checkbox = Перезагружать автоматически
 sidebar-build-prefix = Сборка
 
 map-empty-popup = Карта пустая
