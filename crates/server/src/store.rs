@@ -12,6 +12,7 @@ use uuid::Uuid;
 use common::saves::Packed;
 
 const REGISTER_TABLE: TableDefinition<String, String> = TableDefinition::new("registrations");
+const USERS_TABLE: TableDefinition<String, String> = TableDefinition::new("users");
 
 #[derive(Debug, Clone)]
 pub struct Store {
@@ -36,11 +37,33 @@ impl Store {
         })
     }
     #[expect(clippy::result_large_err)]
-    pub fn save_register(&self, id: Uuid, save: Vec<Packed>) -> Result<(), Error> {
+    pub fn save_user(&self, id: Uuid, name: Option<String>) -> Result<(), Error> {
+        let tx = self.db.begin_write()?;
+        {
+            let mut table = tx.open_table(USERS_TABLE)?;
+            table.insert(id.to_string(), User::new(name).to_string())?;
+        }
+        tx.commit()?;
+
+        Ok(())
+    }
+    #[expect(unused)]
+    #[expect(clippy::result_large_err)]
+    pub fn get_user(&self, id: Uuid) -> Result<Option<User>, Error> {
+        let tx = self.db.begin_read()?;
+        let table = tx.open_table(USERS_TABLE)?;
+        Ok(table
+            .get(id.to_string())?
+            .map(|o| o.value().parse())
+            .transpose()
+            .unwrap())
+    }
+    #[expect(clippy::result_large_err)]
+    pub fn save_register(&self, id: Uuid, user: Uuid, save: Vec<Packed>) -> Result<(), Error> {
         let tx = self.db.begin_write()?;
         {
             let mut table = tx.open_table(REGISTER_TABLE)?;
-            table.insert(id.to_string(), Registration::new(save).to_string())?;
+            table.insert(id.to_string(), Registration::new(save, user).to_string())?;
         }
         tx.commit()?;
 
@@ -75,34 +98,58 @@ impl Store {
     }
 }
 
+/// Implement Display and FromStr traits for Serialize/Deserialize-d type
+macro_rules! serde_with_default_traits {
+    () => {};
+    ($name:ty) => {
+        impl Display for $name {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                f.write_str(&serde_json::to_string(self).unwrap())
+            }
+        }
+
+        impl FromStr for $name {
+            type Err = serde_json::Error;
+
+            fn from_str(s: &str) -> Result<Self, Self::Err> {
+                serde_json::from_str(s)
+            }
+        }
+    };
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct User {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    name: Option<String>,
+}
+
+impl User {
+    fn new(name: Option<String>) -> Self {
+        Self { name }
+    }
+}
+
+serde_with_default_traits!(User);
+
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Registration {
     pub save: Vec<Packed>,
+    pub user: Uuid,
     pub updated: DateTime<Utc>,
 }
 
 impl Registration {
-    fn new(save: Vec<Packed>) -> Self {
+    fn new(save: Vec<Packed>, user: Uuid) -> Self {
         Self {
             save,
+            user,
             updated: Utc::now(),
         }
     }
 }
 
-impl Display for Registration {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.write_str(&serde_json::to_string(self).unwrap())
-    }
-}
-
-impl FromStr for Registration {
-    type Err = serde_json::Error;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        serde_json::from_str(s)
-    }
-}
+serde_with_default_traits!(Registration);
 
 #[derive(Debug)]
 pub struct Watches {

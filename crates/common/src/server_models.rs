@@ -3,6 +3,16 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 #[derive(Debug, Deserialize, Serialize)]
+pub struct AuthRequest {
+    pub name: Option<String>,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct AuthResponse {
+    pub key: Uuid,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
 pub struct RegisterRequest {
     pub save: Vec<u8>,
 }

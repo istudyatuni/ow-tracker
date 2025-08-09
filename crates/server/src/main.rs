@@ -64,6 +64,7 @@ async fn main() -> anyhow::Result<()> {
         .nest(
             "/api",
             Router::new()
+                .route("/auth", post(auth))
                 .route(
                     "/register",
                     post(register).put(update_register).get(get_register),
@@ -86,6 +87,19 @@ async fn main() -> anyhow::Result<()> {
     Ok(())
 }
 
+async fn auth(
+    State(store): State<Store>,
+    Json(args): Json<AuthRequest>,
+) -> Result<Json<AuthResponse>, ResponseError<&'static str>> {
+    let id = Uuid::new_v4();
+    if let Err(e) = store.save_user(id, args.name) {
+        error!("failed to save user: {e}");
+        return Err(ResponseError::Status(StatusCode::INTERNAL_SERVER_ERROR));
+    }
+
+    Ok(Json(AuthResponse { key: id }))
+}
+
 async fn register(
     State(store): State<Store>,
     Json(args): Json<RegisterRequest>,
@@ -98,7 +112,7 @@ async fn register(
     }
 
     let id = Uuid::new_v4();
-    if let Err(e) = store.save_register(id, args.save) {
+    if let Err(e) = store.save_register(id, args.key, args.save) {
         error!("failed to save register: {e}");
         return Err(ResponseError::Status(StatusCode::INTERNAL_SERVER_ERROR));
     }
@@ -128,6 +142,9 @@ async fn update_register(
         }
     };
 
+    if current_save.user != args.key {
+        return Err(ResponseError::Status(StatusCode::UNAUTHORIZED));
+    }
     if current_save.save == args.save {
         return Err(ResponseError::Status(StatusCode::NOT_MODIFIED));
     }
@@ -138,7 +155,7 @@ async fn update_register(
         )));
     }
 
-    if let Err(e) = store.save_register(args.id, args.save) {
+    if let Err(e) = store.save_register(args.id, args.key, args.save) {
         error!("failed to update register: {e}");
         return Err(ResponseError::Status(StatusCode::INTERNAL_SERVER_ERROR));
     }
@@ -174,10 +191,17 @@ async fn update_register_fact(
         }
     };
 
+    if current_save.user != args.key {
+        return Err(ResponseError::Status(StatusCode::UNAUTHORIZED));
+    }
     if saves::has_bool_enabled(&current_save.save, args.num) {
         return Err(ResponseError::Status(StatusCode::NOT_MODIFIED));
     }
-    if let Err(e) = store.save_register(args.id, saves::enable_bool(&current_save.save, args.num)) {
+    if let Err(e) = store.save_register(
+        args.id,
+        args.key,
+        saves::enable_bool(&current_save.save, args.num),
+    ) {
         error!("failed to update register by num: {e}");
         return Err(ResponseError::Status(StatusCode::INTERNAL_SERVER_ERROR));
     }
