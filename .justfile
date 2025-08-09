@@ -64,7 +64,18 @@ build-app:
 	cargo b --release --package ow-tracker-companion
 
 build-server:
-	cargo b --release --package ow-tracker-server
+	@# CARGO_HOME and /tmp/.cargo is used to use local cargo download cache
+	docker run --rm -it \
+		-v "$(pwd)":/build \
+		-w /build \
+		--env-file .env \
+		--env=CARGO_HOME=/tmp/.cargo \
+		-v "$HOME/.cargo":/tmp/.cargo \
+		ghcr.io/rust-cross/rust-musl-cross:x86_64-musl \
+		cargo build --release \
+			--package ow-tracker-server \
+			--target=x86_64-unknown-linux-musl \
+			--config build.rustc-wrapper="''"
 
 run-server:
 	cargo r --package ow-tracker-server

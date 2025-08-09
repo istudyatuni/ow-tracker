@@ -15,7 +15,7 @@ use tower_http::{
     limit::RequestBodyLimitLayer,
     trace::{DefaultMakeSpan, TraceLayer},
 };
-use tracing::{error, info, trace};
+use tracing::{Level, debug, error, info, trace};
 use uuid::Uuid;
 
 use common::saves;
@@ -37,7 +37,11 @@ const ALLOW_ORIGIN: &str = dotenvy_macro::dotenv!("ALLOW_ORIGIN");
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
-    common::logger::init_logging(env!("CARGO_CRATE_NAME"));
+    common::logger::Builder::new()
+        .with_crate_name(env!("CARGO_CRATE_NAME"))
+        .with_crate_level(Level::TRACE)
+        // .with_target("tower_http", Level::DEBUG)
+        .init();
 
     let db_path = std::env::var("DB_PATH")
         .inspect_err(|e| {
@@ -73,7 +77,10 @@ async fn main() -> anyhow::Result<()> {
         .layer(RequestBodyLimitLayer::new(1024))
         .with_state(Store::new(db_path)?);
 
-    let listener = TcpListener::bind(format!("0.0.0.0:{}", *SERVER_PORT)).await?;
+    let url = format!("0.0.0.0:{}", *SERVER_PORT);
+    debug!("http listen on {url}");
+    let listener = TcpListener::bind(url).await?;
+
     axum::serve(listener, app).await?;
 
     Ok(())

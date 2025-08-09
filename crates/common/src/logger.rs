@@ -1,4 +1,4 @@
-use tracing::Level;
+use tracing::{Level, level_filters::LevelFilter};
 use tracing_subscriber::{filter::Targets, layer::SubscriberExt, util::SubscriberInitExt};
 
 pub fn init_logging(crate_name: &str) {
@@ -55,6 +55,20 @@ impl Builder {
     #[must_use]
     pub fn with_crate_level(mut self, level: Level) -> Self {
         self.crate_level = level;
+        self
+    }
+    #[must_use]
+    pub fn with_target(mut self, name: &str, level: Level) -> Self {
+        self.targets = self.targets.with_target(name, level);
+        self
+    }
+    #[must_use]
+    pub fn with_targets<T, L>(mut self, list: impl IntoIterator<Item = (T, L)>) -> Self
+    where
+        String: From<T>,
+        LevelFilter: From<L>,
+    {
+        self.targets = self.targets.with_targets(list);
         self
     }
     #[must_use]
