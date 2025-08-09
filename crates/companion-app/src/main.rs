@@ -129,7 +129,7 @@ fn update(state: &mut State, message: Message) -> Task<Message> {
             state.selected_profile.replace(name.clone());
         }
         Message::ShareProfile(id) => {
-            let url = format!("{WEB_ORIGIN}/ow-tracker?profile={id}");
+            let url = format!("{WEB_ORIGIN}/ow-tracker#profile={id}");
 
             return clipboard::write(url)
                 .chain(Task::done(Message::HideProfileShared))
