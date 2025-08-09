@@ -15,7 +15,7 @@ use std::sync::{Arc, LazyLock, Mutex, mpsc};
 use iced::widget::button::Style;
 use iced::widget::{Column, button, column, container, horizontal_space, row, text};
 use iced::{Element, Fill, Subscription, Theme};
-use tracing::{debug, error};
+use tracing::{debug, error, trace};
 use uuid::Uuid;
 
 use config::Config;
@@ -67,7 +67,16 @@ fn update(state: &mut State, message: Message) {
                 return;
             };
 
-            let Ok(resp) = send_register(save_packed) else {
+            let Some(config) = &mut state.config else {
+                error!("config not loaded, skipping saving");
+                return;
+            };
+            let Some(key) = config.auth_key() else {
+                error!("not authorized, skipping register");
+                return;
+            };
+
+            let Ok(resp) = send_register(key, save_packed) else {
                 return;
             };
 
@@ -75,11 +84,6 @@ fn update(state: &mut State, message: Message) {
                 .send_file_watches
                 .send(WatchAction::watch(selected_profile))
                 .unwrap();
-
-            let Some(config) = &mut state.config else {
-                error!("config not loaded, skipping saving");
-                return;
-            };
 
             config.add_register(resp.id, selected_profile);
             let _ = config
@@ -103,8 +107,12 @@ fn update(state: &mut State, message: Message) {
                 debug!("ignoring file update for non-tracked profile");
                 return;
             };
+            let Some(key) = config.auth_key() else {
+                error!("not authorized, skipping register");
+                return;
+            };
 
-            let _ = send_register_update(id, save_packed);
+            let _ = send_register_update(id, key, save_packed);
         }
         Message::SelectProfile(name) => {
             if let Some(ref current) = state.selected_profile
@@ -286,7 +294,7 @@ impl State {
                 };
             }
         };
-        let config = match Config::new() {
+        let mut config = match Config::new() {
             Ok(c) => c,
             Err(e) => {
                 return Self {
@@ -294,6 +302,18 @@ impl State {
                     ..Default::default()
                 };
             }
+        };
+
+        if config.auth_key().is_none()
+            && let Ok(res) = request::auth()
+        {
+            trace!("saving auth");
+            config.set_auth_key(res.key);
+            let _ = config
+                .save_on_disk()
+                .log_msg("failed to save config on disk");
+        } else {
+            trace!("already registered, skipping auth");
         };
 
         let (tx, rx) = mpsc::channel();

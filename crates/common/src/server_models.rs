@@ -14,6 +14,7 @@ pub struct AuthResponse {
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct RegisterRequest {
+    pub key: Uuid,
     pub save: Vec<u8>,
 }
 
@@ -25,6 +26,7 @@ pub struct RegisterResponse {
 #[derive(Debug, Deserialize, Serialize)]
 pub struct UpdateRegisterRequest {
     pub id: Uuid,
+    pub key: Uuid,
     pub save: Vec<u8>,
 }
 
@@ -32,6 +34,7 @@ pub struct UpdateRegisterRequest {
 #[derive(Debug, Deserialize)]
 pub struct UpdateRegisterFactRequest {
     pub id: Uuid,
+    pub key: Uuid,
     pub num: usize,
 }
 

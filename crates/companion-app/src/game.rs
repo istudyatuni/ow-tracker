@@ -66,9 +66,9 @@ pub fn detect_install() -> Result<(InstallType, PathBuf), DetectError> {
     }
 
     for (ty, path) in search {
-        debug!("searching install in {}", path.display());
+        // debug!("searching install in {}", path.display());
         if path.exists() {
-            debug!("install found");
+            // debug!("install found");
             return Ok((ty, path));
         }
     }

@@ -12,7 +12,21 @@ pub struct Config {
 
 #[derive(Debug, Default, Clone, Deserialize, Serialize)]
 pub struct StoredConfig {
+    // "default" is required to not crash deserializer if auth not found
+    #[serde(skip_serializing_if = "Auth::is_empty", default)]
+    auth: Auth,
     profiles: Vec<Profile>,
+}
+
+#[derive(Debug, Default, Clone, Deserialize, Serialize)]
+pub struct Auth {
+    pub key: Option<Uuid>,
+}
+
+impl Auth {
+    fn is_empty(&self) -> bool {
+        self.key.is_none()
+    }
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
@@ -40,6 +54,12 @@ impl Config {
         let config: StoredConfig = serde_json::from_str(&std::fs::read_to_string(&path)?)?;
 
         Ok(Self { config, path })
+    }
+    pub fn auth_key(&self) -> Option<Uuid> {
+        self.config.auth.key
+    }
+    pub fn set_auth_key(&mut self, key: Uuid) {
+        self.config.auth.key = Some(key);
     }
     pub fn profiles(&self) -> &[Profile] {
         &self.config.profiles

@@ -14,7 +14,37 @@ fn server_url() -> Url {
         .expect("server url should be valid")
 }
 
-pub fn send_register(save: Vec<Packed>) -> Result<RegisterResponse, ()> {
+// todo: pass name
+pub fn auth() -> Result<AuthResponse, ()> {
+    debug!("sending auth request");
+    let client = reqwest::blocking::Client::new();
+    let Ok(resp) = client
+        .post(
+            server_url()
+                .join("/api/auth")
+                .expect("url path should be valid"),
+        )
+        .json(&AuthRequest { name: None })
+        .send()
+        .log_msg("failed to send auth request")
+    else {
+        return Err(());
+    };
+    if resp.error_for_status_ref().is_err() {
+        match resp.text() {
+            Ok(text) => error!("error auth: {text}"),
+            Err(e) => error!("error auth (failed to get response text: {e:?})"),
+        }
+        return Err(());
+    }
+    let Ok(resp) = resp.json::<AuthResponse>().log_msg("auth response") else {
+        return Err(());
+    };
+
+    Ok(resp)
+}
+
+pub fn send_register(key: Uuid, save: Vec<Packed>) -> Result<RegisterResponse, ()> {
     debug!("sending register request");
     let client = reqwest::blocking::Client::new();
     let Ok(resp) = client
@@ -23,7 +53,7 @@ pub fn send_register(save: Vec<Packed>) -> Result<RegisterResponse, ()> {
                 .join("/api/register")
                 .expect("url path should be valid"),
         )
-        .json(&common::server_models::RegisterRequest { save })
+        .json(&RegisterRequest { key, save })
         .send()
         .log_msg("failed to send register request")
     else {
@@ -36,17 +66,14 @@ pub fn send_register(save: Vec<Packed>) -> Result<RegisterResponse, ()> {
         }
         return Err(());
     }
-    let Ok(resp) = resp
-        .json::<common::server_models::RegisterResponse>()
-        .log_msg("register response")
-    else {
+    let Ok(resp) = resp.json::<RegisterResponse>().log_msg("register response") else {
         return Err(());
     };
 
     Ok(resp)
 }
 
-pub fn send_register_update(id: Uuid, save: Vec<Packed>) -> Result<(), ()> {
+pub fn send_register_update(id: Uuid, key: Uuid, save: Vec<Packed>) -> Result<(), ()> {
     debug!("sending register update request");
     let client = reqwest::blocking::Client::new();
     let Ok(resp) = client
@@ -55,7 +82,7 @@ pub fn send_register_update(id: Uuid, save: Vec<Packed>) -> Result<(), ()> {
                 .join("/api/register")
                 .expect("url path should be valid"),
         )
-        .json(&common::server_models::UpdateRegisterRequest { id, save })
+        .json(&UpdateRegisterRequest { id, key, save })
         .send()
         .log_msg("failed to send update request")
     else {
