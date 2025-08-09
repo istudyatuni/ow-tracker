@@ -104,7 +104,11 @@ export async function generate_all_svg() {
 		}
 
 		let id = get_profile_id_from_url();
-		listen_profile_update(id);
+		try {
+			listen_profile_update(id);
+		} catch (e) {
+			console.error("failed to start watching updates:", e);
+		}
 	} else {
 		opened_facts = new Set(save_keys);
 	}
