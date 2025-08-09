@@ -4,7 +4,7 @@
     get_facts_ids_for,
     save_key_valid,
   } from "@/lib/data";
-  import { OPENED_FACT, SAVE_FOUND } from "@/lib/stores";
+  import { LITERAL_SAVE_FOUND, OPENED_FACT } from "@/lib/stores";
   import {
     export_save_to_browser_url,
     get_save_from_browser_url,
@@ -51,7 +51,7 @@
 
 <div
   class="wrapper above-map-controls"
-  class:hidden={!($OPENED_FACT || $SAVE_FOUND)}>
+  class:hidden={!($OPENED_FACT || $LITERAL_SAVE_FOUND)}>
   {#if $OPENED_FACT}
     <div>
       Current entry:
@@ -74,7 +74,7 @@
       </ul>
     </div>
   {/if}
-  {#if $SAVE_FOUND}
+  {#if $LITERAL_SAVE_FOUND}
     <div class="padding-top">
       <div>Learn/forget fact:</div>
       <div class="buttons padding-top">

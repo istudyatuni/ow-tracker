@@ -29,6 +29,7 @@ import {
 	load_save_from_server,
 } from "@/lib/saves";
 import {
+	LITERAL_SAVE_FOUND,
 	LOADING,
 	LOADING_TOTAL,
 	MAP_SIZE,
@@ -78,8 +79,9 @@ export async function generate_all_svg() {
 	let save_found = has_save_in_url();
 	let profile_save_found = has_profile_save_in_url();
 	let save_loaded = save_found || profile_save_found;
-	SAVE_FOUND.set(save_found);
+	LITERAL_SAVE_FOUND.set(save_found);
 	PROFILE_SAVE_FOUND.set(profile_save_found);
+	SAVE_FOUND.set(save_loaded);
 
 	let consider_ignored = get(SETTINGS).consider_ignored_facts;
 
