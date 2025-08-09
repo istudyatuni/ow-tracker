@@ -64,6 +64,7 @@ async fn main() -> anyhow::Result<()> {
         .nest(
             "/api",
             Router::new()
+                .route("/ping", get(async || StatusCode::NO_CONTENT))
                 .route("/auth", post(auth))
                 .route(
                     "/register",
