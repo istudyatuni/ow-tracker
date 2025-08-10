@@ -153,13 +153,14 @@ impl Requester {
     }
 }
 
+/// Url should end with a trailing slash or doesn't have any path components
 pub fn get_server_config(url: &str) -> Result<LoadedConfig, ()> {
-    debug!("loading server config");
+    debug!("loading server config from {url}");
     Requester::new()
         .with_address(url)
         .inspect_err(|e| error!("invalid url for server config: {e}"))
         .map_err(|_| ())?
-        .get_json("/config.json")
+        .get_json("config.json")
         .inspect_err(|e| error!("failed to get server config: {e}"))
         .map_err(|_| ())
 }
