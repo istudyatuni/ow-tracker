@@ -1,4 +1,4 @@
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 use serde::{Deserialize, Serialize};
 use tracing::{debug, error, trace};
@@ -53,20 +53,9 @@ impl Config {
         };
         trace!("config path: {}", path.display());
 
-        if !path.exists() {
-            trace!("config not exists, using default");
-            std::fs::create_dir_all(path.parent().expect("config path should have dir name"))?;
-
-            return Ok(Self {
-                config: StoredConfig::default(),
-                path,
-            });
-        }
-
-        trace!("loading config");
-        let config: StoredConfig = serde_json::from_str(&std::fs::read_to_string(&path)?)?;
-
+        let config = StoredConfig::new(&path)?;
         trace!("config loaded");
+
         Ok(Self { config, path })
     }
     pub fn auth_key(&self) -> Option<Uuid> {
@@ -106,6 +95,20 @@ impl Config {
             &self.path,
             serde_json::to_string(&self.config)?,
         )?)
+    }
+}
+
+impl StoredConfig {
+    fn new(path: &Path) -> Result<Self, ConfigError> {
+        if !path.exists() {
+            trace!("config not exists, using default");
+            std::fs::create_dir_all(path.parent().expect("config path should have dir name"))?;
+
+            return Ok(StoredConfig::default());
+        }
+
+        trace!("loading config");
+        Ok(serde_json::from_str(&std::fs::read_to_string(path)?)?)
     }
 }
 
