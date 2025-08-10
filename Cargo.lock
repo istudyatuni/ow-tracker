@@ -3112,6 +3112,7 @@ dependencies = [
 name = "ow-tracker-companion"
 version = "0.0.0"
 dependencies = [
+ "bincode",
  "directories",
  "dotenvy_macro",
  "iced",

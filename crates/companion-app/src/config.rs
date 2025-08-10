@@ -1,21 +1,25 @@
 use std::path::{Path, PathBuf};
 
+use bincode::{Decode, Encode, serde::Compat};
 use serde::{Deserialize, Serialize};
 use tracing::{debug, error, trace};
 use uuid::Uuid;
 
+const ENCODE_CONFIG: bincode::config::Configuration =
+    bincode::config::standard().with_little_endian();
+
 #[derive(Debug, Clone)]
 pub struct Config {
+    auth: AuthConfig,
     config: StoredConfig,
-    path: PathBuf,
+    config_path: PathBuf,
+    auth_config_path: PathBuf,
 }
 
 // "default" is required to not crash deserializer if some field not found
 #[derive(Debug, Default, Clone, Deserialize, Serialize)]
 #[serde(default)]
 pub struct StoredConfig {
-    #[serde(skip_serializing_if = "Auth::is_empty")]
-    auth: Auth,
     addresses: Option<LoadedConfig>,
     profiles: Vec<Profile>,
 }
@@ -28,15 +32,9 @@ pub struct LoadedConfig {
     web: String,
 }
 
-#[derive(Debug, Default, Clone, Deserialize, Serialize)]
-pub struct Auth {
-    pub key: Option<Uuid>,
-}
-
-impl Auth {
-    fn is_empty(&self) -> bool {
-        self.key.is_none()
-    }
+#[derive(Debug, Default, Clone, Decode, Encode)]
+pub struct AuthConfig {
+    pub key: Option<Compat<Uuid>>,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
@@ -47,22 +45,35 @@ pub struct Profile {
 
 impl Config {
     pub fn new() -> Result<Self, ConfigError> {
-        let Some(path) = config_path() else {
+        let Some(config_path) = config_path() else {
             error!("config dir not found");
             return Err(ConfigError::NotFound);
         };
-        trace!("config path: {}", path.display());
+        trace!("config path: {}", config_path.display());
+        let Some(auth_config_path) = auth_config_path() else {
+            error!("auth config dir not found");
+            return Err(ConfigError::NotFound);
+        };
+        trace!("auth config path: {}", auth_config_path.display());
 
-        let config = StoredConfig::new(&path)?;
+        let config = StoredConfig::new(&config_path)?;
         trace!("config loaded");
 
-        Ok(Self { config, path })
+        let auth = AuthConfig::new(&auth_config_path)?;
+        trace!("auth config loaded");
+
+        Ok(Self {
+            auth,
+            config,
+            config_path,
+            auth_config_path,
+        })
     }
     pub fn auth_key(&self) -> Option<Uuid> {
-        self.config.auth.key
+        self.auth.key.clone().map(|k| k.0)
     }
     pub fn set_auth_key(&mut self, key: Uuid) {
-        self.config.auth.key = Some(key);
+        self.auth.key = Some(Compat(key));
     }
     pub fn set_addresses(&mut self, addresses: LoadedConfig) {
         self.config.addresses.replace(addresses);
@@ -91,10 +102,16 @@ impl Config {
     }
     pub fn save_on_disk(&self) -> Result<(), ConfigError> {
         debug!("saving config");
-        Ok(std::fs::write(
-            &self.path,
-            serde_json::to_string(&self.config)?,
-        )?)
+        std::fs::write(&self.config_path, serde_json::to_string(&self.config)?)?;
+
+        debug!("saving auth config");
+        bincode::encode_into_std_write(
+            &self.auth,
+            &mut std::fs::File::create(&self.auth_config_path)?,
+            ENCODE_CONFIG,
+        )?;
+
+        Ok(())
     }
 }
 
@@ -104,7 +121,7 @@ impl StoredConfig {
             trace!("config not exists, using default");
             std::fs::create_dir_all(path.parent().expect("config path should have dir name"))?;
 
-            return Ok(StoredConfig::default());
+            return Ok(Self::default());
         }
 
         trace!("loading config");
@@ -112,8 +129,32 @@ impl StoredConfig {
     }
 }
 
+impl AuthConfig {
+    fn new(path: &Path) -> Result<Self, ConfigError> {
+        if !path.exists() {
+            trace!("auth config not exists, using default");
+            std::fs::create_dir_all(
+                path.parent()
+                    .expect("auth config path should have dir name"),
+            )?;
+
+            return Ok(Self::default());
+        }
+
+        trace!("loading auth config");
+        Ok(bincode::decode_from_std_read(
+            &mut std::fs::File::open(path)?,
+            ENCODE_CONFIG,
+        )?)
+    }
+}
+
 fn config_path() -> Option<PathBuf> {
     config_path_dir().map(|p| p.join("config.json"))
+}
+
+fn auth_config_path() -> Option<PathBuf> {
+    config_path_dir().map(|p| p.join("auth"))
 }
 
 #[cfg(debug_assertions)]
@@ -134,6 +175,10 @@ pub enum ConfigError {
     NotFound,
     #[error("{0}")]
     Json(#[from] serde_json::Error),
+    #[error("{0}")]
+    BincodeDecode(#[from] bincode::error::DecodeError),
+    #[error("{0}")]
+    BincodeEncode(#[from] bincode::error::EncodeError),
     #[error("{0}")]
     Io(#[from] std::io::Error),
 }

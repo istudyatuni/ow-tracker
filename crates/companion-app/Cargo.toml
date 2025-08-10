@@ -13,6 +13,7 @@ default = []
 windows_console = []
 
 [dependencies]
+bincode.workspace = true
 directories.workspace = true
 dotenvy_macro.workspace = true
 iced.workspace = true
