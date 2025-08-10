@@ -56,6 +56,8 @@ async fn main() -> anyhow::Result<()> {
         .ok()
         .unwrap_or(DB_PATH.to_string());
 
+    debug!("using web origin {WEB_ORIGIN}");
+
     let cors = CorsLayer::new()
         .allow_origin([WEB_ORIGIN.parse().unwrap()])
         .allow_methods([Method::GET]);

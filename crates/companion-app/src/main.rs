@@ -357,7 +357,7 @@ struct State {
 }
 
 impl State {
-    // hack to prevent recursion default -> new -> default -> ...
+    // hack to prevent recursion default -> new -> default -> ... in error cases
     fn default() -> Self {
         let (tx, rx) = mpsc::channel();
         Self {
@@ -372,32 +372,29 @@ impl State {
             error: None,
         }
     }
+    fn error(error: Error) -> Self {
+        Self {
+            error: Some(error),
+            ..Self::default()
+        }
+    }
     fn new() -> Self {
         let install_dir = match game::detect_install() {
             Ok(dir) => dir,
             Err(e) => {
-                return Self {
-                    error: Some(Error::GameFind(e)),
-                    ..Self::default()
-                };
+                return Self::error(Error::GameFind(e));
             }
         };
         let profiles = match game::find_profiles(&install_dir.1) {
             Ok(profiles) => profiles,
             Err(e) => {
-                return Self {
-                    error: Some(Error::ProfilesFind(e)),
-                    ..Self::default()
-                };
+                return Self::error(Error::ProfilesFind(e));
             }
         };
         let mut config = match Config::new() {
             Ok(c) => c,
             Err(e) => {
-                return Self {
-                    error: Some(Error::Config(e)),
-                    ..Self::default()
-                };
+                return Self::error(Error::Config(e));
             }
         };
 
@@ -430,6 +427,8 @@ impl State {
                 .save_on_disk()
                 .log_msg("failed to save config on disk");
         }
+
+        debug!("using web address {WEB_ADDRESS}");
 
         Self {
             install: Some(install_dir),
