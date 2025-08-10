@@ -29,9 +29,10 @@ impl Store {
     pub fn new(path: impl AsRef<Path>) -> Result<Self, Error> {
         let mut db = Database::create(path)?;
 
-        // create table
+        // create tables
         let tx = db.begin_write()?;
         tx.open_table(REGISTER_TABLE)?;
+        tx.open_table(USERS_TABLE)?;
         tx.commit()?;
 
         if let Err(e) = db.compact() {
@@ -53,7 +54,6 @@ impl Store {
 
         Ok(())
     }
-    #[expect(unused)]
     pub fn get_user(&self, id: Uuid) -> Result<Option<User>, Error> {
         let tx = self.db.begin_read()?;
         let table = tx.open_table(USERS_TABLE)?;

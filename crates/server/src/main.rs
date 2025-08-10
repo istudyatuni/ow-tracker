@@ -105,6 +105,8 @@ async fn register(
     State(store): State<Store>,
     Json(args): Json<RegisterRequest>,
 ) -> Result<Json<RegisterResponse>, ResponseError<&'static str>> {
+    check_auth(&store, args.key)?;
+
     if !saves::is_valid_number_of_keys(&args.save) {
         return Err(ResponseError::StatusMessage((
             StatusCode::BAD_REQUEST,
@@ -127,6 +129,8 @@ async fn update_register(
     State(watch): State<Watches>,
     Json(args): Json<UpdateRegisterRequest>,
 ) -> Result<(), ResponseError<&'static str>> {
+    check_auth(&store, args.key)?;
+
     if !saves::is_valid_number_of_keys(&args.save) {
         return Err(ResponseError::StatusMessage((
             StatusCode::BAD_REQUEST,
@@ -176,6 +180,8 @@ async fn update_register_fact(
     State(watch): State<Watches>,
     Json(args): Json<UpdateRegisterFactRequest>,
 ) -> Result<(), ResponseError<&'static str>> {
+    check_auth(&store, args.key)?;
+
     if args.num >= saves::KEYS_COUNT {
         return Err(ResponseError::StatusMessage((
             StatusCode::BAD_REQUEST,
@@ -301,4 +307,15 @@ async fn watch_updates(
             .interval(Duration::from_secs(1))
             .text("keeped alive"),
     )
+}
+
+fn check_auth(store: &Store, user: Uuid) -> Result<(), ResponseError<&'static str>> {
+    match store.get_user(user) {
+        Ok(Some(_)) => Ok(()),
+        Ok(None) => Err(ResponseError::Status(StatusCode::UNAUTHORIZED)),
+        Err(e) => {
+            error!("failed to get user: {e}");
+            Err(ResponseError::Status(StatusCode::INTERNAL_SERVER_ERROR))
+        }
+    }
 }
