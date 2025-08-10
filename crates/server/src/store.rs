@@ -7,6 +7,7 @@ use chrono::{DateTime, Utc};
 use redb::ReadableTable;
 use redb::{Database, Error, ReadableDatabase, TableDefinition};
 use tokio::sync::broadcast::{Receiver, Sender, channel, error::SendError};
+use tracing::error;
 use uuid::Uuid;
 
 use common::saves::Packed;
@@ -26,12 +27,16 @@ pub struct Store {
 
 impl Store {
     pub fn new(path: impl AsRef<Path>) -> Result<Self, Error> {
-        let db = Database::create(path)?;
+        let mut db = Database::create(path)?;
 
         // create table
         let tx = db.begin_write()?;
         tx.open_table(REGISTER_TABLE)?;
         tx.commit()?;
+
+        if let Err(e) = db.compact() {
+            error!("failed to compact database: {e}");
+        }
 
         Ok(Self {
             db: Arc::new(db),
