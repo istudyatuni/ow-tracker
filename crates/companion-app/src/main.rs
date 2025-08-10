@@ -361,28 +361,6 @@ struct State {
 }
 
 impl State {
-    // hack to prevent recursion default -> new -> default -> ... in error cases
-    fn default() -> Self {
-        let (tx, rx) = mpsc::channel();
-        Self {
-            install: None,
-            profiles: None,
-            selected_profile: None,
-            send_file_watches: tx,
-            file_watches_receiver: Arc::new(Mutex::new(rx)),
-            copied_toast_hide: None,
-            server_ok: false,
-            client: Requester::new(),
-            config: None,
-            error: None,
-        }
-    }
-    fn error(error: Error) -> Self {
-        Self {
-            error: Some(error),
-            ..Self::default()
-        }
-    }
     fn new() -> Self {
         let install_dir = match game::detect_install() {
             Ok(dir) => dir,
@@ -446,6 +424,28 @@ impl State {
             server_ok,
             client,
             config: Some(config),
+            error: None,
+        }
+    }
+    fn error(error: Error) -> Self {
+        Self {
+            error: Some(error),
+            ..Self::default()
+        }
+    }
+    // hack to prevent recursion default -> new -> default -> ... in error cases
+    fn default() -> Self {
+        let (tx, rx) = mpsc::channel();
+        Self {
+            install: None,
+            profiles: None,
+            selected_profile: None,
+            send_file_watches: tx,
+            file_watches_receiver: Arc::new(Mutex::new(rx)),
+            copied_toast_hide: None,
+            server_ok: false,
+            client: Requester::new(),
+            config: None,
             error: None,
         }
     }
