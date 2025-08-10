@@ -107,7 +107,7 @@ fn update(state: &mut State, message: Message) -> Task<Message> {
                 "should not be called if server not available"
             );
 
-            debug!("updating file {name}");
+            debug!("updating file \"{name}\"");
 
             let Some(config) = &mut state.config else {
                 error!("config not loaded, skipping saving");

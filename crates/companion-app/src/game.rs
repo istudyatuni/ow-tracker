@@ -198,7 +198,7 @@ pub fn file_watcher(
                             if !path.exists() {
                                 return;
                             }
-                            trace!("watched file edited with remove, readding");
+                            trace!("[linux] watched file edited with remove, readding");
                             watch_actions_sender
                                 .send(WatchAction::watch(&name))
                                 .unwrap();
@@ -219,7 +219,7 @@ pub fn file_watcher(
                     .ok();
                 time_since_send = Instant::now();
 
-                trace!("sent event");
+                trace!("sent file update event");
             } else {
                 warn!("got event with empty paths");
             }

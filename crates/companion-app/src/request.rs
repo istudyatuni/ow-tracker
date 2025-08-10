@@ -81,9 +81,10 @@ pub fn send_register(key: Uuid, save: Vec<Packed>) -> Result<RegisterResponse, (
         return Err(());
     };
     if resp.error_for_status_ref().is_err() {
+        let status = resp.status();
         match resp.text() {
-            Ok(text) => error!("error registering save: {text}"),
-            Err(e) => error!("error registering save (failed to get response text: {e:?})"),
+            Ok(text) => error!("error registering save (code: {status}): {text}"),
+            Err(e) => error!("error registering save (code: {status}, failed to get response text: {e:?})"),
         }
         return Err(());
     }
