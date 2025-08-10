@@ -4,7 +4,7 @@ use axum::extract::FromRef;
 use chrono::{DateTime, Utc};
 #[cfg(debug_assertions)]
 use redb::ReadableTable;
-use redb::{Database, Error, TableDefinition};
+use redb::{Database, Error, ReadableDatabase, TableDefinition};
 use serde::{Deserialize, Serialize};
 use tokio::sync::broadcast::{Receiver, Sender, channel, error::SendError};
 use uuid::Uuid;
@@ -22,7 +22,6 @@ pub struct Store {
 }
 
 impl Store {
-    #[expect(clippy::result_large_err)]
     pub fn new(path: impl AsRef<Path>) -> Result<Self, Error> {
         let db = Database::create(path)?;
 
@@ -36,7 +35,6 @@ impl Store {
             watches: Watches::new(),
         })
     }
-    #[expect(clippy::result_large_err)]
     pub fn save_user(&self, id: Uuid, name: Option<String>) -> Result<(), Error> {
         let tx = self.db.begin_write()?;
         {
@@ -48,7 +46,6 @@ impl Store {
         Ok(())
     }
     #[expect(unused)]
-    #[expect(clippy::result_large_err)]
     pub fn get_user(&self, id: Uuid) -> Result<Option<User>, Error> {
         let tx = self.db.begin_read()?;
         let table = tx.open_table(USERS_TABLE)?;
@@ -58,7 +55,6 @@ impl Store {
             .transpose()
             .unwrap())
     }
-    #[expect(clippy::result_large_err)]
     pub fn save_register(&self, id: Uuid, user: Uuid, save: Vec<Packed>) -> Result<(), Error> {
         let tx = self.db.begin_write()?;
         {
@@ -69,7 +65,6 @@ impl Store {
 
         Ok(())
     }
-    #[expect(clippy::result_large_err)]
     pub fn get_register(&self, id: Uuid) -> Result<Option<Registration>, Error> {
         let tx = self.db.begin_read()?;
         let table = tx.open_table(REGISTER_TABLE)?;
@@ -80,7 +75,6 @@ impl Store {
             .unwrap())
     }
     #[cfg(debug_assertions)]
-    #[expect(clippy::result_large_err)]
     pub fn list_registers(&self) -> Result<Vec<(Uuid, Registration)>, Error> {
         let tx = self.db.begin_read()?;
         let table = tx.open_table(REGISTER_TABLE)?;
