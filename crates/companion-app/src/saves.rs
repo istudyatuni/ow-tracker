@@ -2,9 +2,9 @@ use std::{collections::BTreeMap, path::Path};
 
 use serde::Deserialize;
 
-use common::saves::pack_bools;
+use tracing::error;
 
-use crate::log::LogError;
+use common::saves::pack_bools;
 
 #[derive(Debug, Deserialize)]
 pub struct SaveFile {
@@ -35,7 +35,7 @@ impl SaveFact {
 
 pub fn read_save_packed(path: &Path) -> Option<Vec<common::saves::Packed>> {
     let save = SaveFile::load(path)
-        .log_msg("failed to load save file")
+        .inspect_err(|e| error!("failed to load save file: {e}"))
         .ok()?;
     let bools = save.learned_as_bools();
     Some(pack_bools(&bools))

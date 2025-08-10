@@ -21,13 +21,11 @@ use uuid::Uuid;
 
 use config::Config;
 use game::{FileUpdateEvent, InstallType, WatchAction, file_watcher, save_file_for_profile};
-use log::LogError;
 use request::Requester;
 use saves::read_save_packed;
 
 mod config;
 mod game;
-mod log;
 mod request;
 mod saves;
 
@@ -99,7 +97,7 @@ fn update(state: &mut State, message: Message) -> Task<Message> {
             config.add_register(resp.id, selected_profile);
             let _ = config
                 .save_on_disk()
-                .log_msg("failed to save config on disk");
+                .inspect_err(|e| error!("failed to save config on disk: {e}"));
             state.selected_profile.take();
         }
         Message::FileUpdated(FileUpdateEvent::Update { name, path }) => {
@@ -176,7 +174,7 @@ fn update(state: &mut State, message: Message) -> Task<Message> {
             config.remove_register(id);
             let _ = config
                 .save_on_disk()
-                .log_msg("failed to save config on disk");
+                .inspect_err(|e| error!("failed to save config on disk: {e}"));
         }
     }
 
@@ -450,7 +448,7 @@ impl State {
         if need_save_config {
             let _ = config
                 .save_on_disk()
-                .log_msg("failed to save config on disk");
+                .inspect_err(|e| error!("failed to save config on disk: {e}"));
         }
 
         Self {

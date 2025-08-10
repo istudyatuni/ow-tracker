@@ -18,8 +18,6 @@ use notify::event::RemoveKind;
 use notify::{Event, EventKind, RecommendedWatcher, RecursiveMode, Watcher};
 use tracing::{debug, error, trace, warn};
 
-use crate::log::LogError;
-
 #[cfg(target_os = "linux")]
 const LINUX_STEAM_GAME_DIR: &str =
     ".local/share/Steam/steamapps/compatdata/753640/pfx/drive_c/users/steamuser";
@@ -122,7 +120,8 @@ pub fn file_watcher(
             notify::Config::default(),
         );
 
-        let Ok(mut watcher) = watcher.log_msg("failed to start saves watcher") else {
+        let Ok(mut watcher) = watcher.inspect_err(|e| error!("failed to start saves watcher: {e}"))
+        else {
             return;
         };
 
@@ -139,7 +138,7 @@ pub fn file_watcher(
                         RecursiveMode::NonRecursive,
                     ),
                 }
-                .log_msg("failed to un/watch file");
+                .inspect_err(|e| error!("failed to un/watch file: {e}"));
             }
         });
 
@@ -215,7 +214,7 @@ pub fn file_watcher(
                 output
                     .send(FileUpdateEvent::Update { name, path })
                     .await
-                    .log_msg("failed to send file update event")
+                    .inspect_err(|e| error!("failed to send file update event: {e}"))
                     .ok();
                 time_since_send = Instant::now();
 
