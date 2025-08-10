@@ -381,21 +381,11 @@ impl State {
             }
         };
 
-        let client = Requester::new();
+        // remember before loading server config
+        let saved_server_address = config.addresses().map(|a| a.server.clone());
 
-        let server_ok = client.ping().is_ok();
-
-        // auth
         let mut need_save_config = false;
-        if config.auth_key().is_some() {
-            trace!("already registered, skipping auth");
-        } else if server_ok && let Ok(res) = client.auth() {
-            trace!("saving auth");
-            config.set_auth_key(res.key);
-            need_save_config = true;
-        };
-
-        // checking all known web addresses
+        // checking all known web addresses and trying to load server config
         let web_addresses = [
             config.addresses().map(|a| a.web.clone()),
             Some(WEB_ADDRESS.to_string()),
@@ -411,6 +401,44 @@ impl State {
                 break;
             }
         }
+
+        let mut client = Requester::new();
+
+        // search working server address among all known
+        let server_address = [
+            // built-in address
+            Some(client.address().to_string()),
+            // old address from config
+            saved_server_address,
+            // loaded address
+            config.addresses().map(|a| a.server.clone()),
+        ]
+        .into_iter()
+        .flatten()
+        .find(|a| {
+            debug!("checking server {a}");
+            client
+                .with_address(a)
+                .inspect_err(|e| error!("invalid address: {e}"))
+                .map_err(|_| ())
+                .and_then(|client| client.ping())
+                .is_ok()
+        });
+        let server_ok = server_address.is_some();
+        if let Some(server_address) = server_address {
+            client
+                .set_address(&server_address)
+                .expect("should be checked when pinged");
+        }
+
+        // auth
+        if config.auth_key().is_some() {
+            trace!("already registered, skipping auth");
+        } else if server_ok && let Ok(res) = client.auth() {
+            trace!("saving auth");
+            config.set_auth_key(res.key);
+            need_save_config = true;
+        };
 
         let (tx, rx) = mpsc::channel();
         if server_ok {

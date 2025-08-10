@@ -28,14 +28,18 @@ impl Requester {
                 .expect("server url should be valid"),
         }
     }
-    fn address(&self) -> &Url {
+    pub fn address(&self) -> &Url {
         &self.address
+    }
+    pub fn set_address(&mut self, address: &str) -> Result<(), String> {
+        self.address = address
+            .parse()
+            .map_err(|e| format!("failed to parse url: {e}"))?;
+        Ok(())
     }
     pub fn with_address(&self, address: &str) -> Result<Self, String> {
         let mut s = self.clone();
-        s.address = address
-            .parse()
-            .map_err(|e| format!("failed to parse url: {e}"))?;
+        s.set_address(address)?;
         Ok(s)
     }
     fn get_json<Resp: DeserializeOwned>(&self, path: &str) -> ReqResult<Resp> {
