@@ -133,9 +133,8 @@ pub fn file_watcher(
                         &save_file_for_profile(&install_dir, OsStr::new(&action.name)),
                         RecursiveMode::NonRecursive,
                     ),
-                    WatchActionKind::Unwatch => watcher.watch(
+                    WatchActionKind::Unwatch => watcher.unwatch(
                         &save_file_for_profile(&install_dir, OsStr::new(&action.name)),
-                        RecursiveMode::NonRecursive,
                     ),
                 }
                 .inspect_err(|e| error!("failed to un/watch file: {e}"));
