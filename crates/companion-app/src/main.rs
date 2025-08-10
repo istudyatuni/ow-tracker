@@ -119,7 +119,7 @@ fn update(state: &mut State, message: Message) -> Task<Message> {
             };
 
             let Some(id) = config.find_profile(&name) else {
-                debug!("ignoring file update for non-tracked profile");
+                debug!("ignoring file update for non-tracked profile \"{name}\"");
                 return none;
             };
             let Some(key) = config.auth_key() else {
@@ -409,8 +409,7 @@ impl State {
             need_save_config = true;
         };
 
-        if let Ok(server_config) = request::get_server_config(&format!("{WEB_ADDRESS}/config.json"))
-        {
+        if let Ok(server_config) = request::get_server_config(WEB_ADDRESS) {
             config.set_addresses(server_config);
             need_save_config = true;
         }
