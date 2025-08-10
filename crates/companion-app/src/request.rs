@@ -15,7 +15,6 @@ use crate::config::LoadedConfig;
 pub struct Requester {
     client: Client,
     address: Url,
-    new_address: Option<Url>,
 }
 
 impl Requester {
@@ -27,19 +26,16 @@ impl Requester {
             address: crate::SERVER_ADDRESS
                 .parse()
                 .expect("server url should be valid"),
-            new_address: None,
         }
     }
     fn address(&self) -> &Url {
-        self.new_address.as_ref().unwrap_or(&self.address)
+        &self.address
     }
     pub fn with_address(&self, address: &str) -> Result<Self, String> {
         let mut s = self.clone();
-        s.new_address.replace(
-            address
-                .parse()
-                .map_err(|e| format!("failed to parse url: {e}"))?,
-        );
+        s.address = address
+            .parse()
+            .map_err(|e| format!("failed to parse url: {e}"))?;
         Ok(s)
     }
     fn get_json<Resp: DeserializeOwned>(&self, path: &str) -> ReqResult<Resp> {
