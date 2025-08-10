@@ -277,6 +277,9 @@ async fn watch_updates(
 ) -> Sse<impl Stream<Item = Result<sse::Event, Infallible>>> {
     let stream = stream::channel(100, async move |mut output| {
         trace!("starting watch channel");
+        // using loop + try_recv to be able to drop watch.rx
+        //
+        // when using recv().await receiver wasn't dropped
         loop {
             tokio::time::sleep(Duration::from_secs(1)).await;
             let id = match watch.rx.try_recv() {
