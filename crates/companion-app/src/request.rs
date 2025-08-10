@@ -11,7 +11,7 @@ use common::server_models::*;
 
 use crate::config::LoadedConfig;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Requester {
     client: Client,
     address: Url,
@@ -33,13 +33,14 @@ impl Requester {
     fn address(&self) -> &Url {
         self.new_address.as_ref().unwrap_or(&self.address)
     }
-    pub fn with_address(mut self, address: &str) -> Result<Self, String> {
-        self.new_address.replace(
+    pub fn with_address(&self, address: &str) -> Result<Self, String> {
+        let mut s = self.clone();
+        s.new_address.replace(
             address
                 .parse()
                 .map_err(|e| format!("failed to parse url: {e}"))?,
         );
-        Ok(self)
+        Ok(s)
     }
     fn get_json<Resp: DeserializeOwned>(&self, path: &str) -> ReqResult<Resp> {
         self.send_json_no_body(Method::GET, path)
