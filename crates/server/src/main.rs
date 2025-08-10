@@ -143,7 +143,7 @@ async fn update_register(
         }
     };
 
-    if current_save.user != args.key {
+    if current_save.user() != args.key {
         return Err(ResponseError::Status(StatusCode::UNAUTHORIZED));
     }
     if current_save.save == args.save {
@@ -192,7 +192,7 @@ async fn update_register_fact(
         }
     };
 
-    if current_save.user != args.key {
+    if current_save.user() != args.key {
         return Err(ResponseError::Status(StatusCode::UNAUTHORIZED));
     }
     if saves::has_bool_enabled(&current_save.save, args.num) {
@@ -236,8 +236,8 @@ async fn get_register(
 
     Ok(Json(GetRegisterResponse {
         id,
-        save: save.save,
-        updated: save.updated,
+        save: save.save.clone(),
+        updated: save.updated(),
     }))
 }
 
@@ -259,8 +259,8 @@ async fn list_registers(
             .into_iter()
             .map(|(id, r)| GetRegisterResponse {
                 id,
-                save: r.save,
-                updated: r.updated,
+                save: r.save.clone(),
+                updated: r.updated(),
             })
             .collect(),
     }))

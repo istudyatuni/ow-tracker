@@ -1,18 +1,21 @@
-use std::{fmt::Display, path::Path, str::FromStr, sync::Arc};
+use std::{path::Path, sync::Arc};
 
 use axum::extract::FromRef;
+use bincode::{Decode, Encode, serde::Compat};
 use chrono::{DateTime, Utc};
 #[cfg(debug_assertions)]
 use redb::ReadableTable;
 use redb::{Database, Error, ReadableDatabase, TableDefinition};
-use serde::{Deserialize, Serialize};
 use tokio::sync::broadcast::{Receiver, Sender, channel, error::SendError};
 use uuid::Uuid;
 
 use common::saves::Packed;
 
-const REGISTER_TABLE: TableDefinition<String, String> = TableDefinition::new("registrations");
-const USERS_TABLE: TableDefinition<String, String> = TableDefinition::new("users");
+const REGISTER_TABLE: TableDefinition<String, Registration> = TableDefinition::new("registrations");
+const USERS_TABLE: TableDefinition<String, User> = TableDefinition::new("users");
+
+const ENCODE_CONFIG: bincode::config::Configuration =
+    bincode::config::standard().with_little_endian();
 
 #[derive(Debug, Clone)]
 pub struct Store {
@@ -39,7 +42,7 @@ impl Store {
         let tx = self.db.begin_write()?;
         {
             let mut table = tx.open_table(USERS_TABLE)?;
-            table.insert(id.to_string(), User::new(name).to_string())?;
+            table.insert(id.to_string(), User::new(name))?;
         }
         tx.commit()?;
 
@@ -49,17 +52,13 @@ impl Store {
     pub fn get_user(&self, id: Uuid) -> Result<Option<User>, Error> {
         let tx = self.db.begin_read()?;
         let table = tx.open_table(USERS_TABLE)?;
-        Ok(table
-            .get(id.to_string())?
-            .map(|o| o.value().parse())
-            .transpose()
-            .unwrap())
+        Ok(table.get(id.to_string())?.map(|o| o.value()))
     }
     pub fn save_register(&self, id: Uuid, user: Uuid, save: Vec<Packed>) -> Result<(), Error> {
         let tx = self.db.begin_write()?;
         {
             let mut table = tx.open_table(REGISTER_TABLE)?;
-            table.insert(id.to_string(), Registration::new(save, user).to_string())?;
+            table.insert(id.to_string(), Registration::new(save, user))?;
         }
         tx.commit()?;
 
@@ -68,11 +67,7 @@ impl Store {
     pub fn get_register(&self, id: Uuid) -> Result<Option<Registration>, Error> {
         let tx = self.db.begin_read()?;
         let table = tx.open_table(REGISTER_TABLE)?;
-        Ok(table
-            .get(id.to_string())?
-            .map(|o| o.value().parse())
-            .transpose()
-            .unwrap())
+        Ok(table.get(id.to_string())?.map(|o| o.value()))
     }
     #[cfg(debug_assertions)]
     pub fn list_registers(&self) -> Result<Vec<(Uuid, Registration)>, Error> {
@@ -85,36 +80,55 @@ impl Store {
             .map(|(key, value)| {
                 (
                     key.value().parse().expect("uuid should be valid in db"),
-                    value.value().parse().expect("json should be valid in db"),
+                    value.value(),
                 )
             })
             .collect())
     }
 }
 
-/// Implement Display and FromStr traits for Serialize/Deserialize-d type
-macro_rules! serde_with_default_traits {
+/// Implement redb::Value for bincode::Encode/Decode-d type
+macro_rules! bincode_redb_value {
     () => {};
     ($name:ty) => {
-        impl Display for $name {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                f.write_str(&serde_json::to_string(self).unwrap())
+        impl redb::Value for $name {
+            type SelfType<'a>
+                = $name
+            where
+                Self: 'a;
+
+            type AsBytes<'a>
+                = Vec<u8>
+            where
+                Self: 'a;
+
+            fn fixed_width() -> Option<usize> {
+                None
             }
-        }
 
-        impl FromStr for $name {
-            type Err = serde_json::Error;
+            fn from_bytes<'a>(data: &'a [u8]) -> Self::SelfType<'a>
+            where
+                Self: 'a,
+            {
+                bincode::decode_from_slice(data, ENCODE_CONFIG).unwrap().0
+            }
 
-            fn from_str(s: &str) -> Result<Self, Self::Err> {
-                serde_json::from_str(s)
+            fn as_bytes<'a, 'b: 'a>(value: &'a Self::SelfType<'b>) -> Self::AsBytes<'a>
+            where
+                Self: 'b,
+            {
+                bincode::encode_to_vec(value, ENCODE_CONFIG).unwrap()
+            }
+
+            fn type_name() -> redb::TypeName {
+                redb::TypeName::new(stringify!($name))
             }
         }
     };
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Encode, Decode)]
 pub struct User {
-    #[serde(skip_serializing_if = "Option::is_none")]
     name: Option<String>,
 }
 
@@ -124,26 +138,32 @@ impl User {
     }
 }
 
-serde_with_default_traits!(User);
+bincode_redb_value!(User);
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Encode, Decode)]
 pub struct Registration {
     pub save: Vec<Packed>,
-    pub user: Uuid,
-    pub updated: DateTime<Utc>,
+    pub user: Compat<Uuid>,
+    updated: Compat<DateTime<Utc>>,
 }
 
 impl Registration {
     fn new(save: Vec<Packed>, user: Uuid) -> Self {
         Self {
             save,
-            user,
-            updated: Utc::now(),
+            user: Compat(user),
+            updated: Compat(Utc::now()),
         }
+    }
+    pub fn user(&self) -> Uuid {
+        self.user.0
+    }
+    pub fn updated(&self) -> DateTime<Utc> {
+        self.updated.0
     }
 }
 
-serde_with_default_traits!(Registration);
+bincode_redb_value!(Registration);
 
 #[derive(Debug)]
 pub struct Watches {
