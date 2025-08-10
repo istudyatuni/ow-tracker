@@ -385,6 +385,7 @@ impl State {
 
         let server_ok = client.ping().is_ok();
 
+        // auth
         let mut need_save_config = false;
         if config.auth_key().is_some() {
             trace!("already registered, skipping auth");
@@ -394,9 +395,21 @@ impl State {
             need_save_config = true;
         };
 
-        if let Ok(server_config) = request::get_server_config(WEB_ADDRESS) {
-            config.set_addresses(server_config);
-            need_save_config = true;
+        // checking all known web addresses
+        let web_addresses = [
+            config.addresses().map(|a| a.web.clone()),
+            Some(WEB_ADDRESS.to_string()),
+        ]
+        .into_iter()
+        .flatten();
+        for web_address in web_addresses {
+            debug!("checking web address {web_address}");
+            if let Ok(server_config) = request::get_server_config(&web_address) {
+                config.set_addresses(server_config);
+                need_save_config = true;
+                debug!("using web address {web_address}");
+                break;
+            }
         }
 
         let (tx, rx) = mpsc::channel();
@@ -411,8 +424,6 @@ impl State {
                 .save_on_disk()
                 .log_msg("failed to save config on disk");
         }
-
-        debug!("using web address {WEB_ADDRESS}");
 
         Self {
             install: Some(install_dir),

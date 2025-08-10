@@ -27,9 +27,9 @@ pub struct StoredConfig {
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct LoadedConfig {
     #[serde(rename = "server_address")]
-    server: String,
+    pub server: String,
     #[serde(rename = "web_address")]
-    web: String,
+    pub web: String,
 }
 
 #[derive(Debug, Default, Clone, Decode, Encode)]
@@ -77,6 +77,9 @@ impl Config {
     }
     pub fn set_addresses(&mut self, addresses: LoadedConfig) {
         self.config.addresses.replace(addresses);
+    }
+    pub fn addresses(&mut self) -> Option<&LoadedConfig> {
+        self.config.addresses.as_ref()
     }
     pub fn profiles(&self) -> &[Profile] {
         &self.config.profiles
