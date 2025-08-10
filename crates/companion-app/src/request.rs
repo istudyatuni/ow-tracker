@@ -120,44 +120,40 @@ impl Requester {
     }
 }
 
-pub fn ping() -> Result<(), ()> {
-    debug!("sending ping request");
-    Requester::new()
-        .get("/api/ping")
-        .inspect_err(|e| error!("failed to ping: {e}"))
-        .map(|_| ())
-        .map_err(|_| ())
-}
-
-pub fn auth() -> Result<AuthResponse, ()> {
-    debug!("sending auth request");
-    Requester::new()
-        .post_json("/api/auth", &AuthRequest { name: None })
-        .inspect_err(|e| error!("failed to auth: {e}"))
-        .map_err(|_| ())
-}
-
-// todo: pass name
-pub fn send_register(key: Uuid, save: Vec<Packed>) -> Result<RegisterResponse, ()> {
-    debug!("sending register request");
-    Requester::new()
-        .post_json("/api/register", &RegisterRequest { key, save })
-        .inspect_err(|e| error!("failed to register save: {e}"))
-        .map_err(|_| ())
-}
-
-pub fn send_register_update(id: Uuid, key: Uuid, save: Vec<Packed>) -> Result<(), ()> {
-    debug!("sending register update request");
-    let resp = Requester::new()
-        .put("/api/register", &UpdateRegisterRequest { id, key, save })
-        .inspect_err(|e| error!("failed to update save: {e}"))
-        .map_err(|_| ())?;
-
-    if resp.status() == StatusCode::NOT_MODIFIED {
-        trace!("save not modified");
+impl Requester {
+    pub fn ping(&self) -> Result<(), ()> {
+        debug!("sending ping request");
+        self.get("/api/ping")
+            .inspect_err(|e| error!("failed to ping: {e}"))
+            .map(|_| ())
+            .map_err(|_| ())
     }
+    pub fn auth(&self) -> Result<AuthResponse, ()> {
+        debug!("sending auth request");
+        self.post_json("/api/auth", &AuthRequest { name: None })
+            .inspect_err(|e| error!("failed to auth: {e}"))
+            .map_err(|_| ())
+    }
+    // todo: pass name
+    pub fn send_register(&self, key: Uuid, save: Vec<Packed>) -> Result<RegisterResponse, ()> {
+        debug!("sending register request");
+        self.post_json("/api/register", &RegisterRequest { key, save })
+            .inspect_err(|e| error!("failed to register save: {e}"))
+            .map_err(|_| ())
+    }
+    pub fn send_register_update(&self, id: Uuid, key: Uuid, save: Vec<Packed>) -> Result<(), ()> {
+        debug!("sending register update request");
+        let resp = self
+            .put("/api/register", &UpdateRegisterRequest { id, key, save })
+            .inspect_err(|e| error!("failed to update save: {e}"))
+            .map_err(|_| ())?;
 
-    Ok(())
+        if resp.status() == StatusCode::NOT_MODIFIED {
+            trace!("save not modified");
+        }
+
+        Ok(())
+    }
 }
 
 pub fn get_server_config(url: &str) -> Result<LoadedConfig, ()> {

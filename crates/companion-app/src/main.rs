@@ -22,6 +22,7 @@ use uuid::Uuid;
 use config::Config;
 use game::{FileUpdateEvent, InstallType, WatchAction, file_watcher, save_file_for_profile};
 use log::LogError;
+use request::Requester;
 use saves::read_save_packed;
 
 mod config;
@@ -86,7 +87,7 @@ fn update(state: &mut State, message: Message) -> Task<Message> {
                 return none;
             };
 
-            let Ok(resp) = request::send_register(key, save_packed) else {
+            let Ok(resp) = state.client.send_register(key, save_packed) else {
                 return none;
             };
 
@@ -127,7 +128,7 @@ fn update(state: &mut State, message: Message) -> Task<Message> {
                 return none;
             };
 
-            let _ = request::send_register_update(id, key, save_packed);
+            let _ = state.client.send_register_update(id, key, save_packed);
         }
         Message::SelectProfile(name) => {
             if let Some(ref current) = state.selected_profile
@@ -350,6 +351,9 @@ struct State {
     /// If server behaves good
     server_ok: bool,
 
+    /// Client for sending requests to server
+    client: Requester,
+
     /// App's config
     config: Option<Config>,
 
@@ -368,6 +372,7 @@ impl State {
             file_watches_receiver: Arc::new(Mutex::new(rx)),
             copied_toast_hide: None,
             server_ok: false,
+            client: Requester::new(),
             config: None,
             error: None,
         }
@@ -398,12 +403,14 @@ impl State {
             }
         };
 
-        let server_ok = request::ping().is_ok();
+        let client = Requester::new();
+
+        let server_ok = client.ping().is_ok();
 
         let mut need_save_config = false;
         if config.auth_key().is_some() {
             trace!("already registered, skipping auth");
-        } else if server_ok && let Ok(res) = request::auth() {
+        } else if server_ok && let Ok(res) = client.auth() {
             trace!("saving auth");
             config.set_auth_key(res.key);
             need_save_config = true;
@@ -437,6 +444,7 @@ impl State {
             file_watches_receiver: Arc::new(Mutex::new(rx)),
             copied_toast_hide: None,
             server_ok,
+            client,
             config: Some(config),
             error: None,
         }
