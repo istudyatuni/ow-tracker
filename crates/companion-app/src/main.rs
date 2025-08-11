@@ -383,7 +383,8 @@ impl State {
         let saved_server_address = config.addresses().map(|a| a.server.clone());
 
         let mut need_save_config = false;
-        // checking all known web addresses and trying to load server config
+
+        // check all known web addresses and try to load server config
         let web_addresses = [
             config.addresses().map(|a| a.web.clone()),
             Some(WEB_ADDRESS.to_string()),
