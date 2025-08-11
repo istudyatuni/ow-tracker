@@ -137,7 +137,15 @@ fn update(state: &mut State, message: Message) -> Task<Message> {
             state.selected_profile.replace(name.clone());
         }
         Message::ShareProfile(id) => {
-            let url = format!("{WEB_ADDRESS}#profile={id}");
+            let Some(config) = &mut state.config else {
+                error!("config not loaded, skipping sharing");
+                return none;
+            };
+            let Some(address) = config.web_address() else {
+                error!("web address not loaded, skipping sharing");
+                return none;
+            };
+            let url = format!("{address}#profile={id}");
 
             return clipboard::write(url)
                 .chain(Task::done(Message::HideProfileShared))
@@ -380,25 +388,30 @@ impl State {
         };
 
         // remember before loading server config
-        let saved_server_address = config.addresses().map(|a| a.server.clone());
+        let saved_server_address = config.server_address_owned();
 
         let mut need_save_config = false;
 
         // check all known web addresses and try to load server config
-        let web_addresses = [
-            config.addresses().map(|a| a.web.clone()),
+        let server_config = [
+            // built-in address
             Some(WEB_ADDRESS.to_string()),
+            // old address from config
+            config.web_address_owned(),
         ]
         .into_iter()
-        .flatten();
-        for web_address in web_addresses {
-            debug!("checking web address {web_address}");
-            if let Ok(server_config) = request::get_server_config(&web_address) {
-                config.set_addresses(server_config);
-                need_save_config = true;
-                debug!("using web address {web_address}");
-                break;
-            }
+        .flatten()
+        .map(|address| {
+            debug!("checking web address {address}");
+            request::get_server_config(&address)
+                .inspect(|_| debug!("using web address {address}"))
+                .ok()
+        })
+        .find_map(|config| config);
+        // todo: probably handle somehow if no web is available?
+        if let Some(server_config) = server_config {
+            config.set_addresses(server_config);
+            need_save_config = true;
         }
 
         let mut client = Requester::new();
@@ -410,7 +423,7 @@ impl State {
             // old address from config
             saved_server_address,
             // loaded address
-            config.addresses().map(|a| a.server.clone()),
+            config.server_address_owned(),
         ]
         .into_iter()
         .flatten()

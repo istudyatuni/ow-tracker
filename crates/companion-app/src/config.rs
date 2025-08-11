@@ -77,8 +77,18 @@ impl Config {
     pub fn set_addresses(&mut self, addresses: LoadedConfig) {
         self.config.addresses.replace(addresses);
     }
-    pub fn addresses(&mut self) -> Option<&LoadedConfig> {
-        self.config.addresses.as_ref()
+    /*pub fn server_address(&self) -> Option<&str> {
+        self.config.addresses.as_ref().map(|a| a.server.as_str())
+    }*/
+    pub fn web_address(&self) -> Option<&str> {
+        self.config.addresses.as_ref().map(|a| a.web.as_str())
+    }
+    // "_owned" to not call many times .map(ToOwned::to_owned)
+    pub fn server_address_owned(&self) -> Option<String> {
+        self.config.addresses.as_ref().map(|a| a.server.clone())
+    }
+    pub fn web_address_owned(&self) -> Option<String> {
+        self.config.addresses.as_ref().map(|a| a.web.clone())
     }
     pub fn profiles(&self) -> &[Profile] {
         &self.config.profiles
