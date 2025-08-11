@@ -24,7 +24,7 @@
         {$t("profile-load-error-popup-server-unavailable")}
       {/if}
     </div>
-    <div class="mtop">
+    <div>
       <button onclick={reset_profile}
         >{$t("sidebar-show-full-map-button")}</button>
     </div>
@@ -32,11 +32,13 @@
 </Popup>
 
 <style lang="scss">
-  .center > * {
-    margin: auto;
-    width: fit-content;
-  }
-  .mtop {
-    margin-top: 1em;
+  .center {
+    & > * {
+      margin: auto;
+      width: fit-content;
+    }
+    & > *:has(+ div) {
+      margin-bottom: 1em;
+    }
   }
 </style>
