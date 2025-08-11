@@ -25,3 +25,6 @@ tracing.workspace = true
 uuid.workspace = true
 
 common.workspace = true
+
+[build-dependencies]
+common = { workspace = true, features = ["build"] }

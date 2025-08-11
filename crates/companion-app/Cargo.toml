@@ -26,6 +26,9 @@ uuid.workspace = true
 
 common.workspace = true
 
+[build-dependencies]
+common = { workspace = true, features = ["build"] }
+
 [target.'cfg(windows)'.dependencies]
 reqwest = { workspace = true, features = ["default-tls", "native-tls"] }
 

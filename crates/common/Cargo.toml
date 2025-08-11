@@ -3,6 +3,10 @@ name = "ow-tracker-common"
 version.workspace = true
 edition.workspace = true
 
+[features]
+default = []
+build = []
+
 [dependencies]
 chrono.workspace = true
 serde.workspace = true
