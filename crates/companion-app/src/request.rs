@@ -43,7 +43,7 @@ impl Requester {
         Ok(s)
     }
     fn get_json<Resp: DeserializeOwned>(&self, path: &str) -> ReqResult<Resp> {
-        self.send_json_no_body(Method::GET, path)
+        self.get(path)?.json()
     }
     fn get(&self, path: &str) -> ReqResult<Response> {
         self.send_no_body(Method::GET, path)
@@ -74,6 +74,7 @@ impl Requester {
     ) -> ReqResult<Resp> {
         self.send_body(method, path, body)?.json()
     }
+    #[expect(unused)]
     fn send_json_no_body<Resp: DeserializeOwned>(
         &self,
         method: Method,

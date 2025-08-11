@@ -64,9 +64,7 @@ pub fn detect_install() -> Result<(InstallType, PathBuf), DetectError> {
     }
 
     for (ty, path) in search {
-        // debug!("searching install in {}", path.display());
         if path.exists() {
-            // debug!("install found");
             return Ok((ty, path));
         }
     }
@@ -107,7 +105,7 @@ pub fn file_watcher(
     watch_actions_sender: std::sync::mpsc::Sender<WatchAction>,
     watch_actions_receiver: Arc<Mutex<std::sync::mpsc::Receiver<WatchAction>>>,
 ) -> impl Stream<Item = FileUpdateEvent> {
-    // using async channel here is required because otherwise channel won't be dropped on resubscription
+    // using async channel here because otherwise channel won't be dropped on resubscription
     let (mut tx, mut rx) = mpsc::channel::<notify::Result<Event>>(100);
 
     stream::channel(100, async move |mut output| {

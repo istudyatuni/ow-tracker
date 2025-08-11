@@ -16,7 +16,6 @@ pub struct Config {
     auth_config_path: PathBuf,
 }
 
-// "default" is required to not crash deserializer if some field not found
 #[derive(Debug, Default, Clone, Deserialize, Serialize)]
 #[serde(default)]
 pub struct StoredConfig {

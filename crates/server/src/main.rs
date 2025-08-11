@@ -20,9 +20,9 @@ use uuid::Uuid;
 
 use common::saves;
 use common::server_models::*;
-use store::{Store, Watches};
 
 use response::ResponseError;
+use store::{Store, Watches};
 
 mod response;
 mod store;
