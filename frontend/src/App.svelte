@@ -63,10 +63,10 @@
   <Map />
   <FactsPanel {facts} />
   <Loading />
-  {#if !$SESSION_SETTINGS.welcome_popup_done}
-    <WelcomePopup />
-  {:else if $PROFILE_SAVE_LOADING_STATUS !== null}
+  {#if $PROFILE_SAVE_LOADING_STATUS !== null}
     <ServerErrorPopup />
+  {:else if !$SESSION_SETTINGS.welcome_popup_done}
+    <WelcomePopup />
   {:else if is_map_empty}
     <Popup>{$t("map-empty-popup")}</Popup>
   {/if}
