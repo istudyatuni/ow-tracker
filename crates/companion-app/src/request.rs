@@ -145,18 +145,35 @@ impl Requester {
             .map_err(|_| ())
     }
     // todo: pass name
-    pub fn send_register(&self, key: Uuid, save: Vec<Packed>) -> Result<RegisterResponse, ()> {
+    pub fn send_register(
+        &self,
+        key: Uuid,
+        save: Vec<Packed>,
+    ) -> Result<RegisterResponse, ServerError> {
         debug!("sending register request");
         self.post_json("/api/register", &RegisterRequest { key, save })
             .inspect_err(|e| error!("failed to register save: {e}"))
-            .map_err(|_| ())
+            .map_err(|e| {
+                e.status()
+                    .map(ServerError::from_unathorized)
+                    .unwrap_or(ServerError::Other)
+            })
     }
-    pub fn send_register_update(&self, id: Uuid, key: Uuid, save: Vec<Packed>) -> Result<(), ()> {
+    pub fn send_register_update(
+        &self,
+        id: Uuid,
+        key: Uuid,
+        save: Vec<Packed>,
+    ) -> Result<(), ServerError> {
         debug!("sending register update request");
         let resp = self
             .put("/api/register", &UpdateRegisterRequest { id, key, save })
             .inspect_err(|e| error!("failed to update save: {e}"))
-            .map_err(|_| ())?;
+            .map_err(|e| {
+                e.status()
+                    .map(ServerError::from_unathorized)
+                    .unwrap_or(ServerError::Other)
+            })?;
 
         if resp.status() == StatusCode::NOT_MODIFIED {
             trace!("save not modified");
@@ -176,4 +193,21 @@ pub fn get_server_config(url: &str) -> Result<LoadedConfig, ()> {
         .get_json("config.json")
         .inspect_err(|e| error!("failed to get server config: {e}"))
         .map_err(|_| ())
+}
+
+#[derive(Debug, thiserror::Error)]
+pub enum ServerError {
+    #[error("wrong auth")]
+    WrongAuth,
+    #[error("other error")]
+    Other,
+}
+
+impl ServerError {
+    fn from_unathorized(status: StatusCode) -> Self {
+        match status {
+            StatusCode::UNAUTHORIZED => Self::WrongAuth,
+            _ => Self::Other,
+        }
+    }
 }

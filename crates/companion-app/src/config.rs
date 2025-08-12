@@ -125,6 +125,10 @@ impl Config {
 
         Ok(())
     }
+    pub fn reset_config(&mut self) {
+        self.auth = AuthConfig::default();
+        self.config = StoredConfig::default();
+    }
 }
 
 impl StoredConfig {

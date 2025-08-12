@@ -21,7 +21,7 @@ use uuid::Uuid;
 
 use config::Config;
 use game::{FileUpdateEvent, InstallType, WatchAction, file_watcher, save_file_for_profile};
-use request::Requester;
+use request::{Requester, ServerError};
 use saves::read_save_packed;
 
 mod config;
@@ -85,8 +85,13 @@ fn update(state: &mut State, message: Message) -> Task<Message> {
                 return none;
             };
 
-            let Ok(resp) = state.client.send_register(key, save_packed) else {
-                return none;
+            let resp = match state.client.send_register(key, save_packed) {
+                Ok(resp) => resp,
+                Err(ServerError::WrongAuth) => {
+                    error!("got unauthorized, config probably broken, suggesting to reset");
+                    return Task::done(Message::ConfigProbablyBroken);
+                }
+                Err(_) => return none,
             };
 
             state
@@ -126,7 +131,12 @@ fn update(state: &mut State, message: Message) -> Task<Message> {
                 return none;
             };
 
-            let _ = state.client.send_register_update(id, key, save_packed);
+            if let Err(ServerError::WrongAuth) =
+                state.client.send_register_update(id, key, save_packed)
+            {
+                error!("got unauthorized, config probably broken, suggesting to reset");
+                return Task::done(Message::ConfigProbablyBroken);
+            };
         }
         Message::SelectProfile(name) => {
             if let Some(ref current) = state.selected_profile
@@ -183,6 +193,20 @@ fn update(state: &mut State, message: Message) -> Task<Message> {
             let _ = config
                 .save_on_disk()
                 .inspect_err(|e| error!("failed to save config on disk: {e}"));
+        }
+        Message::ConfigProbablyBroken => state.need_reset_config = true,
+        Message::ResetConfig => {
+            let Some(config) = &mut state.config else {
+                error!("config not loaded, skipping forgetting");
+                return none;
+            };
+
+            config.reset_config();
+            let _ = config
+                .save_on_disk()
+                .inspect_err(|e| error!("failed to save config on disk: {e}"));
+
+            state.need_reset_config = false;
         }
     }
 
@@ -242,10 +266,8 @@ fn view(state: &State) -> Element<'_, Message> {
         .into()
     });
 
-    let server_ok_block: Element<_> = if state.server_ok {
-        Space::new(0, 0).into()
-    } else {
-        text("Server unavailable")
+    let error_msg = |s: &'static str| {
+        text(s)
             .font(Font {
                 style: font::Style::Italic,
                 ..Default::default()
@@ -255,6 +277,23 @@ fn view(state: &State) -> Element<'_, Message> {
             })
             .size(20)
             .into()
+    };
+
+    let server_ok_block: Element<_> = if state.server_ok {
+        Space::new(0, 0).into()
+    } else {
+        error_msg("Server unavailable")
+    };
+
+    let config_reset_block: Element<_> = if state.need_reset_config {
+        error_msg("Something broken, try to reset config")
+    } else {
+        Space::new(0, 0).into()
+    };
+    let config_reset_button: Element<_> = if state.need_reset_config {
+        button("Reset config").on_press(Message::ResetConfig).into()
+    } else {
+        Space::new(0, 0).into()
     };
 
     let copied_block: Element<_> = if state.copied_toast_hide.is_some() {
@@ -283,9 +322,11 @@ fn view(state: &State) -> Element<'_, Message> {
             text("Found profiles:").size(20),
             Column::from_iter(profiles),
             server_ok_block,
+            config_reset_block,
             row![
                 button("Register").on_press_maybe(
                     if state.server_ok
+                        && !state.need_reset_config
                         && let Some(ref p) = state.selected_profile
                         && config.find_profile(p).is_none()
                     {
@@ -294,6 +335,7 @@ fn view(state: &State) -> Element<'_, Message> {
                         None
                     }
                 ),
+                config_reset_button,
                 copied_block,
             ]
             .spacing(10),
@@ -335,6 +377,8 @@ enum Message {
     ShowProfileShared,
     HideProfileShared,
     ForgetRegister(Uuid),
+    ConfigProbablyBroken,
+    ResetConfig,
 }
 
 #[derive(Debug)]
@@ -362,6 +406,14 @@ struct State {
 
     /// App's config
     config: Option<Config>,
+
+    /// If something broke and config reset should help
+    ///
+    /// Examples:
+    ///
+    /// - error occured when loading an app
+    /// - "unauthorized" reply from server
+    need_reset_config: bool,
 
     error: Option<Error>,
 }
@@ -475,12 +527,14 @@ impl State {
             server_ok,
             client,
             config: Some(config),
+            need_reset_config: false,
             error: None,
         }
     }
     fn error(error: Error) -> Self {
         Self {
             error: Some(error),
+            need_reset_config: true,
             ..Default::default()
         }
     }
@@ -499,6 +553,7 @@ impl Default for State {
             server_ok: false,
             client: Requester::new(),
             config: None,
+            need_reset_config: false,
             error: None,
         }
     }
