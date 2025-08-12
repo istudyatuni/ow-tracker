@@ -11,6 +11,11 @@ use common::server_models::*;
 
 use crate::config::LoadedConfig;
 
+#[cfg(not(debug_assertions))]
+const USER_AGENT: &str = concat!(env!("CARGO_PKG_NAME"), "/", env!("CARGO_PKG_VERSION"));
+#[cfg(debug_assertions)]
+const USER_AGENT: &str = concat!(env!("CARGO_PKG_NAME"), "/dev");
+
 #[derive(Debug, Clone)]
 pub struct Requester {
     client: Client,
@@ -19,7 +24,10 @@ pub struct Requester {
 
 impl Requester {
     pub fn new() -> Self {
-        let client = Client::new();
+        let client = Client::builder()
+            .user_agent(USER_AGENT)
+            .build()
+            .expect("can't initialize http client");
 
         Self {
             client,
