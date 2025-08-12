@@ -84,13 +84,17 @@ async fn main() -> anyhow::Result<()> {
         .layer(cors)
         .layer(TraceLayer::new_for_http().make_span_with(DefaultMakeSpan::default()))
         .layer(RequestBodyLimitLayer::new(1024))
-        .with_state(Store::new(db_path)?);
+        .with_state(Store::new(db_path).inspect_err(|e| error!("failed to init store: {e}"))?);
 
     let url = format!("0.0.0.0:{}", *SERVER_PORT);
     debug!("http listen on {url}");
-    let listener = TcpListener::bind(url).await?;
+    let listener = TcpListener::bind(&url)
+        .await
+        .inspect_err(|e| error!("failed to bind tcp to {url}: {e}"))?;
 
-    axum::serve(listener, app).await?;
+    axum::serve(listener, app)
+        .await
+        .inspect_err(|e| error!("failed to start serving axum: {e}"))?;
 
     Ok(())
 }
