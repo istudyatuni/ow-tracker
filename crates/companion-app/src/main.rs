@@ -56,6 +56,22 @@ fn update(state: &mut State, message: Message) -> Task<Message> {
     let none = Task::none();
 
     match message {
+        Message::Auth => {
+            let Some(config) = &mut state.config else {
+                error!("config not loaded, skipping forgetting");
+                return none;
+            };
+
+            if state.server_ok
+                && let Ok(res) = state.client.auth()
+            {
+                trace!("saving auth");
+                config.set_auth_key(res.key);
+                let _ = config
+                    .save_on_disk()
+                    .inspect_err(|e| error!("failed to save config on disk: {e}"));
+            }
+        }
         Message::RegisterOnServer => {
             debug_assert!(
                 state.server_ok,
@@ -207,6 +223,8 @@ fn update(state: &mut State, message: Message) -> Task<Message> {
                 .inspect_err(|e| error!("failed to save config on disk: {e}"));
 
             state.need_reset_config = false;
+
+            return Task::done(Message::Auth);
         }
     }
 
@@ -370,6 +388,7 @@ fn subscription(state: &State) -> Subscription<Message> {
 
 #[derive(Debug, Clone)]
 enum Message {
+    Auth,
     RegisterOnServer,
     SelectProfile(String),
     FileUpdated(FileUpdateEvent),
@@ -377,6 +396,7 @@ enum Message {
     ShowProfileShared,
     HideProfileShared,
     ForgetRegister(Uuid),
+
     ConfigProbablyBroken,
     ResetConfig,
 }
