@@ -49,7 +49,7 @@ pub fn main() -> iced::Result {
         .window_size((1200.0, 800.0))
         .resizable(cfg!(not(debug_assertions)))
         .theme(|_| Theme::Nord)
-        .run()
+        .run_with(|| (State::new(), Task::none()))
 }
 
 fn update(state: &mut State, message: Message) -> Task<Message> {
@@ -468,10 +468,12 @@ impl State {
     fn error(error: Error) -> Self {
         Self {
             error: Some(error),
-            ..Self::default()
+            ..Default::default()
         }
     }
-    // hack to prevent recursion default -> new -> default -> ... in error cases
+}
+
+impl Default for State {
     fn default() -> Self {
         let (tx, rx) = mpsc::channel();
         Self {
@@ -486,12 +488,6 @@ impl State {
             config: None,
             error: None,
         }
-    }
-}
-
-impl Default for State {
-    fn default() -> Self {
-        Self::new()
     }
 }
 
