@@ -25,9 +25,6 @@ export default defineConfig({
 		injectMetrikaPlugin("101631901"),
 	],
 	base: "/ow-tracker",
-	preview: {
-		port: 8080,
-	},
 	build: {
 		sourcemap: true,
 		rollupOptions: {
