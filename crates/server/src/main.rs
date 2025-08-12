@@ -59,7 +59,12 @@ async fn main() -> anyhow::Result<()> {
     debug!("using web origin {WEB_ORIGIN}");
 
     let cors = CorsLayer::new()
-        .allow_origin([WEB_ORIGIN.parse().unwrap()])
+        .allow_origin([
+            // vite local addresses
+            "http://localhost:8080".parse().unwrap(),
+            "http://localhost:4173".parse().unwrap(),
+            WEB_ORIGIN.parse().unwrap(),
+        ])
         .allow_methods([Method::GET]);
     let app = Router::new()
         .route("/", get(async || Redirect::to(WEB_ORIGIN)))
