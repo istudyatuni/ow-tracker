@@ -14,7 +14,7 @@ use iced::{
 #[cfg(target_os = "windows")]
 use notify::event::ModifyKind;
 #[cfg(target_os = "linux")]
-use notify::event::RemoveKind;
+use notify::event::{CreateKind, RemoveKind};
 use notify::{Event, EventKind, RecommendedWatcher, RecursiveMode, Watcher};
 use tracing::{debug, error, instrument, trace, warn};
 
@@ -131,6 +131,9 @@ pub fn file_watcher(
             for action in watch_actions_receiver.lock().unwrap().iter() {
                 trace!("got watcher action: {action:?}");
                 let _ = match action {
+                    WatchAction::WatchNewSaves => {
+                        watcher.watch(&install_dir, RecursiveMode::NonRecursive)
+                    }
                     WatchAction::WatchProfile { name } => watcher.watch(
                         &save_file_for_profile(&install_dir, OsStr::new(&name)),
                         RecursiveMode::NonRecursive,
@@ -159,25 +162,48 @@ pub fn file_watcher(
                 }
             };
 
-            trace!(
-                "notified about event: kind = {:?}, paths len = {}",
+            if !matches!(res.kind, EventKind::Access(_)) {
+                trace!(
+                    "notified about event: kind = {:?}, paths = {:?}",
+                    res.kind, res.paths,
+                );
+            }
+
+            // saving in separate variable because can't check res.paths[0].is_dir() after folder was deleted
+            let is_folder_event = matches!(
                 res.kind,
-                res.paths.len()
+                EventKind::Create(CreateKind::Folder) | EventKind::Remove(RemoveKind::Folder)
             );
+
             #[cfg(target_os = "linux")]
-            if !matches!(res.kind, EventKind::Remove(RemoveKind::File)) {
+            if !matches!(
+                res.kind,
+                // save update
+                EventKind::Remove(RemoveKind::File)
+                    // new save created
+                    | EventKind::Create(CreateKind::Folder)
+                    // save removed
+                    | EventKind::Remove(RemoveKind::Folder)
+            ) {
                 continue;
             }
             #[cfg(target_os = "windows")]
-            if !matches!(res.kind, EventKind::Modify(ModifyKind::Any)) {
+            if !matches!(
+                res.kind,
+                EventKind::Modify(ModifyKind::Any)
+                    // todo: check
+                    | EventKind::Create(CreateKind::Folder)
+                    | EventKind::Remove(RemoveKind::Folder)
+            ) {
                 continue;
             }
 
-            if !res.paths.is_empty() {
-                if res.paths.len() != 1 {
-                    warn!("got event with number of paths > 1");
-                }
-
+            if res.paths.len() == 1
+                && res.paths[0]
+                    .file_name()
+                    .is_some_and(|name| name == "data.owsave")
+            {
+                // save file updated
                 let path = res.paths[0].clone();
                 let name = path
                     .parent()
@@ -187,7 +213,7 @@ pub fn file_watcher(
                     .to_str()
                     .expect("save dir name should be valid utf")
                     .to_string();
-                debug!("got event for \"{name}\"");
+                debug!("got update event for \"{name}\"");
 
                 // on linux watcher stops tracking deleted file, but on windows does not
                 #[cfg(target_os = "linux")]
@@ -220,8 +246,33 @@ pub fn file_watcher(
                 time_since_send = Instant::now();
 
                 trace!("sent file update event");
-            } else {
-                warn!("got event with empty paths");
+            } else if res.paths.len() == 1 && is_folder_event {
+                // save created/deleted
+                let path = res.paths[0].clone();
+                let name = path
+                    .file_name()
+                    .expect("save path dir should be non-empty")
+                    .to_str()
+                    .expect("save dir name should be valid utf")
+                    .to_string();
+                debug!("got create/delete event for \"{name}\"");
+
+                let event = match res.kind {
+                    EventKind::Create(_) => FileUpdateEvent::SaveCreate { name },
+                    EventKind::Remove(_) => FileUpdateEvent::SaveDelete { name },
+                    _ => {
+                        error!(
+                            "got unknown event kind where expected event for save create/remove"
+                        );
+                        continue;
+                    }
+                };
+
+                output
+                    .send(event)
+                    .await
+                    .inspect_err(|e| error!("failed to send save create/delete event: {e}"))
+                    .ok();
             }
         }
     })
@@ -229,6 +280,7 @@ pub fn file_watcher(
 
 #[derive(Debug)]
 pub enum WatchAction {
+    WatchNewSaves,
     WatchProfile { name: String },
     UnwatchProfile { name: String },
 }
@@ -247,8 +299,11 @@ impl WatchAction {
 }
 
 #[derive(Debug, Clone)]
+#[expect(clippy::enum_variant_names)]
 pub enum FileUpdateEvent {
+    SaveCreate { name: String },
     SaveUpdate { name: String, path: PathBuf },
+    SaveDelete { name: String },
 }
 
 #[derive(Debug, thiserror::Error)]

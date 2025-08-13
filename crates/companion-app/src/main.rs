@@ -159,6 +159,37 @@ fn update(state: &mut State, message: Message) -> Task<Message> {
                 return Task::done(Message::ConfigProbablyBroken);
             };
         }
+        Message::FileUpdated(FileUpdateEvent::SaveCreate { name }) => {
+            let Some(profiles) = &mut state.profiles else {
+                error!("no profiles in state, skipping adding new");
+                return none;
+            };
+
+            profiles.push(name);
+        }
+        Message::FileUpdated(FileUpdateEvent::SaveDelete { name }) => {
+            let Some(profiles) = &mut state.profiles else {
+                error!("no profiles in state, skipping remove");
+                return none;
+            };
+
+            profiles.retain(|e| e != &name);
+
+            let Some(config) = &mut state.config else {
+                error!("config not loaded, skipping unwatch after save remove");
+                return none;
+            };
+
+            // unwatch and forget
+            if let Some(id) = config.find_profile(&name) {
+                state
+                    .send_file_watches
+                    .send(WatchAction::unwatch(&name))
+                    .unwrap();
+                config.remove_register(id);
+                let _ = config.save_on_disk();
+            }
+        }
         Message::SelectProfile(name) => {
             if let Some(ref current) = state.selected_profile
                 && current == &name
@@ -525,6 +556,7 @@ impl State {
 
         let (tx, rx) = mpsc::channel();
         if server_ok {
+            tx.send(WatchAction::WatchNewSaves).unwrap();
             for profile in config.profiles() {
                 tx.send(WatchAction::watch(&profile.name)).unwrap();
             }
