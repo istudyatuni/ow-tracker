@@ -130,15 +130,14 @@ pub fn file_watcher(
         std::thread::spawn(move || {
             for action in watch_actions_receiver.lock().unwrap().iter() {
                 trace!("got watcher action: {action:?}");
-                let _ = match action.kind {
-                    WatchActionKind::Watch => watcher.watch(
-                        &save_file_for_profile(&install_dir, OsStr::new(&action.name)),
+                let _ = match action {
+                    WatchAction::WatchProfile { name } => watcher.watch(
+                        &save_file_for_profile(&install_dir, OsStr::new(&name)),
                         RecursiveMode::NonRecursive,
                     ),
-                    WatchActionKind::Unwatch => watcher.unwatch(&save_file_for_profile(
-                        &install_dir,
-                        OsStr::new(&action.name),
-                    )),
+                    WatchAction::UnwatchProfile { name } => {
+                        watcher.unwatch(&save_file_for_profile(&install_dir, OsStr::new(&name)))
+                    }
                 }
                 .inspect_err(|e| error!("failed to un/watch file: {e}"));
             }
@@ -214,7 +213,7 @@ pub fn file_watcher(
 
                 last_name = name.clone();
                 output
-                    .send(FileUpdateEvent::Update { name, path })
+                    .send(FileUpdateEvent::SaveUpdate { name, path })
                     .await
                     .inspect_err(|e| error!("failed to send file update event: {e}"))
                     .ok();
@@ -229,27 +228,19 @@ pub fn file_watcher(
 }
 
 #[derive(Debug)]
-pub struct WatchAction {
-    kind: WatchActionKind,
-    name: String,
-}
-
-#[derive(Debug)]
-enum WatchActionKind {
-    Watch,
-    Unwatch,
+pub enum WatchAction {
+    WatchProfile { name: String },
+    UnwatchProfile { name: String },
 }
 
 impl WatchAction {
     pub fn watch(name: &str) -> Self {
-        Self {
-            kind: WatchActionKind::Watch,
+        Self::WatchProfile {
             name: name.to_string(),
         }
     }
     pub fn unwatch(name: &str) -> Self {
-        Self {
-            kind: WatchActionKind::Unwatch,
+        Self::UnwatchProfile {
             name: name.to_string(),
         }
     }
@@ -257,7 +248,7 @@ impl WatchAction {
 
 #[derive(Debug, Clone)]
 pub enum FileUpdateEvent {
-    Update { name: String, path: PathBuf },
+    SaveUpdate { name: String, path: PathBuf },
 }
 
 #[derive(Debug, thiserror::Error)]

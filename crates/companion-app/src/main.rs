@@ -126,7 +126,7 @@ fn update(state: &mut State, message: Message) -> Task<Message> {
                 .inspect_err(|e| error!("failed to save config on disk: {e}"));
             state.selected_profile.take();
         }
-        Message::FileUpdated(FileUpdateEvent::Update { name, path }) => {
+        Message::FileUpdated(FileUpdateEvent::SaveUpdate { name, path }) => {
             debug_assert!(
                 state.server_ok,
                 "should not be called if server not available"
