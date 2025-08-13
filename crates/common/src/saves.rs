@@ -11,6 +11,10 @@ const PACKED_LEN: usize = {
     }
 };
 
+pub fn empty() -> Vec<Packed> {
+    (0..PACKED_LEN).map(|_| 0).collect()
+}
+
 pub fn pack_bools(bools: &[bool]) -> Vec<Packed> {
     let mut bytes = Vec::with_capacity(bools.len() / PACKED_SIZE + 1);
     for chunk in bools.chunks(PACKED_SIZE) {

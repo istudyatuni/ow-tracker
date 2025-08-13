@@ -4,7 +4,7 @@ use serde::Deserialize;
 
 use tracing::error;
 
-use common::saves::pack_bools;
+use common::saves::{empty, pack_bools};
 
 #[derive(Debug, Deserialize)]
 pub struct SaveFile {
@@ -37,6 +37,9 @@ pub fn read_save_packed(path: &Path) -> Option<Vec<common::saves::Packed>> {
     let save = SaveFile::load(path)
         .inspect_err(|e| error!("failed to load save file: {e}"))
         .ok()?;
+    if save.fact_saves.is_empty() {
+        return Some(empty());
+    }
     let bools = save.learned_as_bools();
     Some(pack_bools(&bools))
 }
