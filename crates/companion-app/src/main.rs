@@ -16,7 +16,7 @@ use std::time::Duration;
 use iced::task::Handle;
 use iced::widget::{self, Column, Space, button, column, container, row, text};
 use iced::{Element, Fill, Font, Subscription, Task, Theme, clipboard, font};
-use tracing::{debug, error, trace};
+use tracing::{debug, error, instrument, trace};
 use uuid::Uuid;
 
 use config::Config;
@@ -52,6 +52,7 @@ pub fn main() -> iced::Result {
         .run_with(|| (State::new(), Task::done(Message::Auth { force: false })))
 }
 
+#[instrument(skip(state))]
 fn update(state: &mut State, message: Message) -> Task<Message> {
     let none = Task::none();
 
@@ -235,6 +236,7 @@ fn update(state: &mut State, message: Message) -> Task<Message> {
     none
 }
 
+#[instrument(skip(state))]
 fn view(state: &State) -> Element<'_, Message> {
     if let Some(ref err) = state.error {
         let inner: Element<_> = match err {
@@ -370,6 +372,7 @@ fn view(state: &State) -> Element<'_, Message> {
     .into()
 }
 
+#[instrument(skip(state))]
 fn subscription(state: &State) -> Subscription<Message> {
     if !state.server_ok {
         return Subscription::none();
@@ -443,6 +446,7 @@ struct State {
 }
 
 impl State {
+    #[instrument(name = "State::new")]
     fn new() -> Self {
         let install_dir = match game::detect_install() {
             Ok(dir) => dir,

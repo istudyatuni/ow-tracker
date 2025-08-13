@@ -16,7 +16,7 @@ use notify::event::ModifyKind;
 #[cfg(target_os = "linux")]
 use notify::event::RemoveKind;
 use notify::{Event, EventKind, RecommendedWatcher, RecursiveMode, Watcher};
-use tracing::{debug, error, trace, warn};
+use tracing::{debug, error, instrument, trace, warn};
 
 #[cfg(target_os = "linux")]
 const LINUX_STEAM_GAME_DIR: &str =
@@ -40,6 +40,7 @@ impl Display for InstallType {
     }
 }
 
+#[instrument]
 pub fn detect_install() -> Result<(InstallType, PathBuf), DetectError> {
     let Some(home) = home_dir() else {
         return Err(DetectError::NoHome);
@@ -65,6 +66,7 @@ pub fn detect_install() -> Result<(InstallType, PathBuf), DetectError> {
 
     for (ty, path) in search {
         if path.exists() {
+            trace!("found game path: {}", path.display());
             return Ok((ty, path));
         }
     }
@@ -74,6 +76,7 @@ pub fn detect_install() -> Result<(InstallType, PathBuf), DetectError> {
 }
 
 /// Find profiles names
+#[instrument]
 pub fn find_profiles(path: &Path) -> Result<Vec<String>, FindProfilesError> {
     let entries = std::fs::read_dir(path)?
         .map(|res| res.map(|e| e.path()))
@@ -98,6 +101,7 @@ pub fn save_file_for_profile(path: &Path, name: &OsStr) -> PathBuf {
     path.join(name).join("data.owsave")
 }
 
+#[instrument(skip_all, fields(path = install_dir.display().to_string()))]
 pub fn file_watcher(
     install_dir: PathBuf,
     #[rustfmt::skip]

@@ -2,7 +2,7 @@ use std::path::{Path, PathBuf};
 
 use bincode::{Decode, Encode, serde::Compat};
 use serde::{Deserialize, Serialize};
-use tracing::{debug, error, trace};
+use tracing::{debug, error, instrument, trace};
 use uuid::Uuid;
 
 const ENCODE_CONFIG: bincode::config::Configuration =
@@ -43,6 +43,7 @@ pub struct Profile {
 }
 
 impl Config {
+    #[instrument(name = "Config::new")]
     pub fn new() -> Result<Self, ConfigError> {
         let Some(config_path) = config_path() else {
             error!("config dir not found");
