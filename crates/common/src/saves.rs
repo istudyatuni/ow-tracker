@@ -3,20 +3,22 @@ pub type Packed = u8;
 const PACKED_SIZE: usize = Packed::BITS as usize;
 
 pub const KEYS_COUNT: usize = 374;
-const PACKED_LEN: usize = {
-    if KEYS_COUNT % PACKED_SIZE == 0 {
-        KEYS_COUNT / PACKED_SIZE
+const PACKED_LEN: usize = packed_len(KEYS_COUNT);
+
+const fn packed_len(bools: usize) -> usize {
+    if bools % PACKED_SIZE == 0 {
+        bools / PACKED_SIZE
     } else {
-        KEYS_COUNT / PACKED_SIZE + 1
+        bools / PACKED_SIZE + 1
     }
-};
+}
 
 pub fn empty() -> Vec<Packed> {
     (0..PACKED_LEN).map(|_| 0).collect()
 }
 
 pub fn pack_bools(bools: &[bool]) -> Vec<Packed> {
-    let mut bytes = Vec::with_capacity(bools.len() / PACKED_SIZE + 1);
+    let mut bytes = Vec::with_capacity(packed_len(bools.len()));
     for chunk in bools.chunks(PACKED_SIZE) {
         let mut byte = 0;
         for (i, b) in chunk.iter().enumerate() {
