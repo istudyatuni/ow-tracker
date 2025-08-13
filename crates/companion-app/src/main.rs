@@ -49,18 +49,22 @@ pub fn main() -> iced::Result {
         .window_size((1200.0, 800.0))
         .resizable(cfg!(not(debug_assertions)))
         .theme(|_| Theme::Nord)
-        .run_with(|| (State::new(), Task::none()))
+        .run_with(|| (State::new(), Task::done(Message::Auth { force: false })))
 }
 
 fn update(state: &mut State, message: Message) -> Task<Message> {
     let none = Task::none();
 
     match message {
-        Message::Auth => {
+        Message::Auth { force } => {
             let Some(config) = &mut state.config else {
                 error!("config not loaded, skipping forgetting");
                 return none;
             };
+
+            if !force && config.auth_key().is_some() {
+                trace!("already registered, skipping auth");
+            }
 
             if state.server_ok
                 && let Ok(res) = state.client.auth()
@@ -224,7 +228,7 @@ fn update(state: &mut State, message: Message) -> Task<Message> {
 
             state.need_reset_config = false;
 
-            return Task::done(Message::Auth);
+            return Task::done(Message::Auth { force: true });
         }
     }
 
@@ -388,7 +392,7 @@ fn subscription(state: &State) -> Subscription<Message> {
 
 #[derive(Debug, Clone)]
 enum Message {
-    Auth,
+    Auth { force: bool },
     RegisterOnServer,
     SelectProfile(String),
     FileUpdated(FileUpdateEvent),
@@ -514,15 +518,6 @@ impl State {
                 .set_address(&server_address)
                 .expect("should be checked when pinged");
         }
-
-        // auth
-        if config.auth_key().is_some() {
-            trace!("already registered, skipping auth");
-        } else if server_ok && let Ok(res) = client.auth() {
-            trace!("saving auth");
-            config.set_auth_key(res.key);
-            need_save_config = true;
-        };
 
         let (tx, rx) = mpsc::channel();
         if server_ok {
