@@ -203,10 +203,7 @@ fn update(state: &mut State, message: Message) -> Task<Message> {
                 error!("config not loaded, skipping sharing");
                 return none;
             };
-            let Some(address) = config.web_address() else {
-                error!("web address not loaded, skipping sharing");
-                return none;
-            };
+            let address = config.web_address().unwrap_or(WEB_ADDRESS);
             let url = format!("{address}#profile={id}");
 
             return clipboard::write(url)
