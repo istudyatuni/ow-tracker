@@ -253,6 +253,13 @@ fn update(state: &mut State, message: Message) -> Task<Message> {
                 return none;
             };
 
+            for profile in config.profiles() {
+                state
+                    .send_file_watches
+                    .send(WatchAction::unwatch(&profile.name))
+                    .unwrap();
+            }
+
             config.reset_config();
             let _ = config
                 .save_on_disk()
