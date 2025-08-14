@@ -120,7 +120,7 @@ fn update(state: &mut State, message: Message) -> Task<Message> {
                 .send(WatchAction::watch(selected_profile))
                 .unwrap();
 
-            config.add_register(resp.id, selected_profile);
+            config.add_profile(resp.id, selected_profile);
             let _ = config
                 .save_on_disk()
                 .inspect_err(|e| error!("failed to save config on disk: {e}"));
@@ -186,7 +186,7 @@ fn update(state: &mut State, message: Message) -> Task<Message> {
                     .send_file_watches
                     .send(WatchAction::unwatch(&name))
                     .unwrap();
-                config.remove_register(id);
+                config.remove_profile(id);
                 let _ = config.save_on_disk();
             }
         }
@@ -241,7 +241,7 @@ fn update(state: &mut State, message: Message) -> Task<Message> {
                 ))
                 .unwrap();
 
-            config.remove_register(id);
+            config.remove_profile(id);
             let _ = config
                 .save_on_disk()
                 .inspect_err(|e| error!("failed to save config on disk: {e}"));

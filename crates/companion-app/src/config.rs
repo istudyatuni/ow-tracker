@@ -104,13 +104,13 @@ impl Config {
     pub fn get_profile(&self, id: Uuid) -> Option<&Profile> {
         self.config.profiles.iter().find(|p| p.id == id)
     }
-    pub fn add_register(&mut self, id: Uuid, name: &str) {
+    pub fn add_profile(&mut self, id: Uuid, name: &str) {
         self.config.profiles.push(Profile {
             id,
             name: name.to_string(),
         });
     }
-    pub fn remove_register(&mut self, id: Uuid) {
+    pub fn remove_profile(&mut self, id: Uuid) {
         self.config.profiles.retain(|p| p.id != id);
     }
     pub fn save_on_disk(&self) -> Result<(), ConfigError> {
