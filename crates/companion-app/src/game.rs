@@ -198,13 +198,12 @@ pub fn file_watcher(
                 continue;
             }
 
-            if res.paths.len() == 1
-                && res.paths[0]
-                    .file_name()
-                    .is_some_and(|name| name == "data.owsave")
-            {
+            let [path] = res.paths.as_slice() else {
+                continue;
+            };
+
+            if path.file_name().is_some_and(|name| name == "data.owsave") {
                 // save file updated
-                let path = res.paths[0].clone();
                 let name = path
                     .parent()
                     .expect("save path should have dir")
@@ -239,14 +238,17 @@ pub fn file_watcher(
 
                 last_name = name.clone();
                 output
-                    .send(FileUpdateEvent::SaveUpdate { name, path })
+                    .send(FileUpdateEvent::SaveUpdate {
+                        name,
+                        path: path.clone(),
+                    })
                     .await
                     .inspect_err(|e| error!("failed to send file update event: {e}"))
                     .ok();
                 time_since_send = Instant::now();
 
                 trace!("sent file update event");
-            } else if res.paths.len() == 1 && is_folder_event {
+            } else if is_folder_event {
                 // save created/deleted
                 let path = res.paths[0].clone();
                 let name = path
@@ -260,10 +262,8 @@ pub fn file_watcher(
                 let event = match res.kind {
                     EventKind::Create(_) => FileUpdateEvent::SaveCreate { name },
                     EventKind::Remove(_) => FileUpdateEvent::SaveDelete { name },
-                    _ => {
-                        error!(
-                            "got unknown event kind where expected event for save create/remove"
-                        );
+                    kind => {
+                        error!("got unknown event kind {kind:?} for save create/delete");
                         continue;
                     }
                 };

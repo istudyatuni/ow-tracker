@@ -59,7 +59,7 @@ fn update(state: &mut State, message: Message) -> Task<Message> {
     match message {
         Message::Auth { force } => {
             let Some(config) = &mut state.config else {
-                error!("config not loaded, skipping forgetting");
+                error!("config not loaded, skipping auth");
                 return none;
             };
 
