@@ -15,7 +15,7 @@ use std::time::Duration;
 
 use iced::widget::{self, Column, Space, button, column, container, row, text};
 use iced::{Element, Fill, Font, Subscription, Task, Theme, clipboard, font};
-use tracing::{debug, error, instrument, trace};
+use tracing::{debug, error, info, instrument, trace};
 use uuid::Uuid;
 
 use config::Config;
@@ -42,6 +42,8 @@ const COPIED_TOAST_DURATION: Duration = Duration::from_secs(2);
 
 pub fn main() -> iced::Result {
     common::logger::init_logging(env!("CARGO_CRATE_NAME"));
+
+    info!("app version v{}", env!("CARGO_PKG_VERSION"));
 
     iced::application("Outer Wilds Tracker - Companion App", update, view)
         .subscription(subscription)
