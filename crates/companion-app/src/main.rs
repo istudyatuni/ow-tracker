@@ -13,7 +13,6 @@ use std::path::PathBuf;
 use std::sync::{Arc, LazyLock, Mutex, mpsc};
 use std::time::Duration;
 
-use iced::task::Handle;
 use iced::widget::{self, Column, Space, button, column, container, row, text};
 use iced::{Element, Fill, Font, Subscription, Task, Theme, clipboard, font};
 use tracing::{debug, error, instrument, trace};
@@ -206,22 +205,16 @@ fn update(state: &mut State, message: Message) -> Task<Message> {
             let address = config.web_address().unwrap_or(WEB_ADDRESS);
             let url = format!("{address}#profile={id}");
 
-            return clipboard::write(url)
-                .chain(Task::done(Message::HideProfileShared))
-                .chain(Task::done(Message::ShowProfileShared));
+            return clipboard::write(url).chain(Task::done(Message::ShowProfileShared));
         }
         Message::ShowProfileShared => {
-            let (task, abort) = Task::future(async {
+            state.copied_toast_num += 1;
+            return Task::future(async {
                 std::thread::sleep(COPIED_TOAST_DURATION);
                 Message::HideProfileShared
-            })
-            .abortable();
-            state.copied_toast_hide.replace(abort);
-            return task;
+            });
         }
-        Message::HideProfileShared => {
-            state.copied_toast_hide.take();
-        }
+        Message::HideProfileShared => state.copied_toast_num -= 1,
         Message::ForgetRegister(id) => {
             let Some(config) = &mut state.config else {
                 error!("config not loaded, skipping forgetting");
@@ -355,7 +348,7 @@ fn view(state: &State) -> Element<'_, Message> {
         Space::new(0, 0).into()
     };
 
-    let copied_block: Element<_> = if state.copied_toast_hide.is_some() {
+    let copied_block: Element<_> = if state.copied_toast_num > 0 {
         text("Copied")
             .font(Font {
                 style: font::Style::Italic,
@@ -457,8 +450,10 @@ struct State {
     /// Receiver for file watch thread
     file_watches_receiver: Arc<Mutex<mpsc::Receiver<WatchAction>>>,
 
-    /// Handle to hide "copied" toast
-    copied_toast_hide: Option<Handle>,
+    /// Number of consecutive "copied" toasts shown
+    ///
+    /// Used to correctly handle repeated clicks on "Share" button
+    copied_toast_num: u8,
 
     /// If server behaves good
     server_ok: bool,
@@ -578,7 +573,7 @@ impl State {
             selected_profile: None,
             send_file_watches: tx,
             file_watches_receiver: Arc::new(Mutex::new(rx)),
-            copied_toast_hide: None,
+            copied_toast_num: 0,
             server_ok,
             client,
             config: Some(config),
@@ -604,7 +599,7 @@ impl Default for State {
             selected_profile: None,
             send_file_watches: tx,
             file_watches_receiver: Arc::new(Mutex::new(rx)),
-            copied_toast_hide: None,
+            copied_toast_num: 0,
             server_ok: false,
             client: Requester::new(),
             config: None,
