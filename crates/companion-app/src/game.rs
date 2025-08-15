@@ -23,6 +23,13 @@ const LINUX_STEAM_GAME_DIR: &str =
     ".local/share/Steam/steamapps/compatdata/753640/pfx/drive_c/users/steamuser";
 const SAVE_DIR: &str = "AppData/LocalLow/Mobius Digital/Outer Wilds/SteamSaves";
 
+/// Duration during which events must be debounced
+const DEBOUNCE_DUR: Duration = Duration::from_secs(1);
+
+/// How long to wait before check if file was created again when detecting rename
+#[cfg(target_os = "linux")]
+const REMOVE_CREATE_WAIT: Duration = Duration::from_secs(1);
+
 #[derive(Debug, Clone, Copy)]
 pub enum InstallType {
     Steam,
@@ -219,7 +226,7 @@ pub fn file_watcher(
                 if matches!(res.kind, EventKind::Remove(RemoveKind::File)) {
                     std::thread::scope(|s| {
                         s.spawn(|| {
-                            std::thread::sleep(Duration::from_secs(1));
+                            std::thread::sleep(REMOVE_CREATE_WAIT);
                             if !path.exists() {
                                 return;
                             }
@@ -231,7 +238,7 @@ pub fn file_watcher(
                     });
                 }
 
-                if last_name == name && time_since_send.elapsed() < Duration::from_secs(1) {
+                if last_name == name && time_since_send.elapsed() < DEBOUNCE_DUR {
                     trace!("debounced duplicate event for \"{name}\"");
                     continue;
                 }
