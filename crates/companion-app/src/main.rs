@@ -320,21 +320,33 @@ fn view(state: &State) -> Element<'_, Message> {
         .into()
     });
 
-    let error_msg = |s: &'static str| {
+    #[derive(Clone, Copy)]
+    enum NotifKind {
+        Success,
+        Error,
+    }
+
+    let notif_msg = |s: &'static str, kind: NotifKind| {
         text(s)
             .font(Font {
                 style: font::Style::Italic,
                 ..Default::default()
             })
-            .style(|theme: &Theme| widget::text::Style {
-                color: Some(theme.palette().danger),
+            .style(move |theme: &Theme| widget::text::Style {
+                color: Some(match kind {
+                    NotifKind::Success => theme.palette().success,
+                    NotifKind::Error => theme.palette().danger,
+                }),
             })
             .size(20)
             .into()
     };
+    let error_msg = |s: &'static str| notif_msg(s, NotifKind::Error);
+
+    let empty_block = || Space::new(0, 0).into();
 
     let server_ok_block: Element<_> = if state.server_ok {
-        Space::new(0, 0).into()
+        empty_block()
     } else {
         error_msg("Server unavailable")
     };
@@ -342,27 +354,18 @@ fn view(state: &State) -> Element<'_, Message> {
     let config_reset_block: Element<_> = if state.need_reset_config {
         error_msg("Something broken, try to reset config")
     } else {
-        Space::new(0, 0).into()
+        empty_block()
     };
     let config_reset_button: Element<_> = if state.need_reset_config {
         button("Reset config").on_press(Message::ResetConfig).into()
     } else {
-        Space::new(0, 0).into()
+        empty_block()
     };
 
     let copied_block: Element<_> = if state.copied_toast_num > 0 {
-        text("Copied")
-            .font(Font {
-                style: font::Style::Italic,
-                ..Default::default()
-            })
-            .style(|theme: &Theme| widget::text::Style {
-                color: Some(theme.palette().success),
-            })
-            .size(20)
-            .into()
+        notif_msg("Copied", NotifKind::Success)
     } else {
-        Space::new(0, 0).into()
+        empty_block()
     };
 
     container(
