@@ -13,7 +13,7 @@ use std::path::PathBuf;
 use std::sync::{Arc, LazyLock, Mutex, mpsc};
 use std::time::Duration;
 
-use iced::widget::{self, Column, Space, button, column, container, row, text};
+use iced::widget::{self, Column, Space, button, column, container, row, scrollable, text};
 use iced::{Element, Fill, Font, Subscription, Task, Theme, clipboard, font};
 use tracing::{debug, error, info, instrument, trace};
 use uuid::Uuid;
@@ -400,7 +400,15 @@ fn view(state: &State) -> Element<'_, Message> {
     ]
     .spacing(10);
 
-    container(
+    // currently entire block is inside scrollable because when only profiles
+    // list is in scrollable it moves buttons below it outside of screen
+    //
+    // scrollable(profiles).height(Fill) helps, but it remains the same heigth
+    // when list is small
+    //
+    // scrollable(profiles).height(Shrink) fixes problem with small list, but
+    // does not help with initial problem. probably this is a bug in iced
+    container(scrollable(
         column![
             top_block,
             Column::from_iter(profiles),
@@ -409,7 +417,7 @@ fn view(state: &State) -> Element<'_, Message> {
             bottom_block,
         ]
         .spacing(10),
-    )
+    ))
     .padding(10)
     .center_x(Fill)
     .center_y(Fill)
