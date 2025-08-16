@@ -29,6 +29,8 @@ pub struct LoadedConfig {
     pub server: String,
     #[serde(rename = "web_address")]
     pub web: String,
+    #[serde(rename = "latest_version")]
+    pub version: String,
 }
 
 #[derive(Debug, Default, Clone, Decode, Encode)]

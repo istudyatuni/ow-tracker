@@ -37,13 +37,14 @@ static SERVER_PORT: LazyLock<u16> = LazyLock::new(|| {
 });
 static SERVER_ADDRESS: LazyLock<String> =
     LazyLock::new(|| format!("{SERVER_HOST}:{}", *SERVER_PORT));
+const APP_VERSION: &str = dotenvy_macro::dotenv!("CARGO_PKG_VERSION");
 
 const COPIED_TOAST_DURATION: Duration = Duration::from_secs(2);
 
 pub fn main() -> iced::Result {
     common::logger::init_logging(env!("CARGO_CRATE_NAME"));
 
-    info!("app version v{}", env!("CARGO_PKG_VERSION"));
+    info!("app version v{APP_VERSION}");
 
     iced::application("Outer Wilds Tracker - Companion App", update, view)
         .subscription(subscription)
@@ -350,6 +351,11 @@ fn view(state: &State) -> Element<'_, Message> {
     } else {
         error_msg("Server unavailable")
     };
+    let app_update_block: Element<_> = if state.app_outdated {
+        error_msg("Please update app")
+    } else {
+        empty_block()
+    };
 
     let config_reset_block: Element<_> = if state.need_reset_config {
         error_msg("Something broken, try to reset config")
@@ -379,6 +385,7 @@ fn view(state: &State) -> Element<'_, Message> {
             text("Found profiles:").size(20),
             Column::from_iter(profiles),
             server_ok_block,
+            app_update_block,
             config_reset_block,
             row![
                 button("Register").on_press_maybe(
@@ -462,6 +469,8 @@ struct State {
 
     /// If server behaves good
     server_ok: bool,
+    /// If app need to be updated
+    app_outdated: bool,
 
     /// Client for sending requests to server
     client: Requester,
@@ -506,6 +515,7 @@ impl State {
         let saved_server_address = config.server_address_owned();
 
         let mut need_save_config = false;
+        let mut app_outdated = false;
 
         // check all known web addresses and try to load server config
         let server_config = [
@@ -524,9 +534,20 @@ impl State {
         })
         .find_map(|config| config);
         // todo: probably handle somehow if no web is available?
-        if let Some(server_config) = server_config {
-            config.set_addresses(server_config);
+        if let Some(ref server_config) = server_config {
+            config.set_addresses(server_config.clone());
             need_save_config = true;
+
+            if server_config.version != APP_VERSION {
+                trace!("new app version: v{}", server_config.version);
+                app_outdated = true;
+
+                // hack for local development
+                #[cfg(debug_assertions)]
+                if server_config.version == "$latest_version" {
+                    app_outdated = false;
+                }
+            }
         }
 
         let mut client = Requester::new();
@@ -580,6 +601,7 @@ impl State {
             file_watches_receiver: Arc::new(Mutex::new(rx)),
             copied_toast_num: 0,
             server_ok,
+            app_outdated,
             client,
             config: Some(config),
             need_reset_config: false,
@@ -606,6 +628,7 @@ impl Default for State {
             file_watches_receiver: Arc::new(Mutex::new(rx)),
             copied_toast_num: 0,
             server_ok: false,
+            app_outdated: false,
             client: Requester::new(),
             config: None,
             need_reset_config: false,
