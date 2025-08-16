@@ -374,34 +374,39 @@ fn view(state: &State) -> Element<'_, Message> {
         empty_block()
     };
 
+    let top_block = column![
+        row![
+            text("Game installation found! Type: ").size(20),
+            text(install_dir.0.to_string()).size(20),
+        ],
+        text("Select profile and press \"Register\"").size(20),
+        // todo: show something when no profiles found
+        text("Found profiles:").size(20),
+    ];
+    let bottom_block = row![
+        button("Register").on_press_maybe(
+            if state.server_ok
+                && !state.need_reset_config
+                && let Some(ref p) = state.selected_profile
+                && config.find_profile(p).is_none()
+            {
+                Some(Message::RegisterOnServer)
+            } else {
+                None
+            }
+        ),
+        config_reset_button,
+        copied_block,
+    ]
+    .spacing(10);
+
     container(
         column![
-            row![
-                text("Game installation found! Type: ").size(20),
-                text(install_dir.0.to_string()).size(20),
-            ],
-            text("Select profile and press \"Register\"").size(20),
-            // todo: show something when no profiles found
-            text("Found profiles:").size(20),
+            top_block,
             Column::from_iter(profiles),
             // using separate nested column to prevent spacing between empty elements
             column![server_ok_block, app_update_block, config_reset_block],
-            row![
-                button("Register").on_press_maybe(
-                    if state.server_ok
-                        && !state.need_reset_config
-                        && let Some(ref p) = state.selected_profile
-                        && config.find_profile(p).is_none()
-                    {
-                        Some(Message::RegisterOnServer)
-                    } else {
-                        None
-                    }
-                ),
-                config_reset_button,
-                copied_block,
-            ]
-            .spacing(10),
+            bottom_block,
         ]
         .spacing(10),
     )
