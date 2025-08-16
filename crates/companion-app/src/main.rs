@@ -384,9 +384,8 @@ fn view(state: &State) -> Element<'_, Message> {
             // todo: show something when no profiles found
             text("Found profiles:").size(20),
             Column::from_iter(profiles),
-            server_ok_block,
-            app_update_block,
-            config_reset_block,
+            // using separate nested column to prevent spacing between empty elements
+            column![server_ok_block, app_update_block, config_reset_block],
             row![
                 button("Register").on_press_maybe(
                     if state.server_ok
