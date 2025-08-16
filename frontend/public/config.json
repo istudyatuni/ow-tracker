@@ -1,1 +1,1 @@
-{ "server_address": "$server_address", "web_address": "$web_address" }
+{ "server_address": "$server_address", "web_address": "$web_address", "latest_version": "$latest_version" }

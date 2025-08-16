@@ -30,6 +30,7 @@
             nodePackages.nodejs
             sd
             dotenvy
+            toml-cli
 
             cargo-nextest
           ];

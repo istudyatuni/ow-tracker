@@ -112,18 +112,20 @@ minify-json:
 
 [private]
 write-config:
+	#!/usr/bin/env bash
+	export LATEST_VERSION="$(toml get --raw Cargo.toml workspace.package.version)"
 	dotenvy just write-config-impl
 
 [private]
-write-config-dev:
+write-config-dev: && write-config
 	mkdir -p frontend/dist
 	cp {{ app-config-file-source }} {{ app-config-file }}
-	dotenvy just write-config-impl
 
 [private]
 write-config-impl:
 	sd '\$server_address' "$SERVER_HOST:$SERVER_PORT" {{ app-config-file }}
 	sd '\$web_address' "$WEB_ADDRESS" {{ app-config-file }}
+	sd '\$latest_version' "$LATEST_VERSION" {{ app-config-file }}
 
 # extract game translations
 extract-translations:
